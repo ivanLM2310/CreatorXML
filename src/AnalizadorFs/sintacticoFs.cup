@@ -1,0 +1,837 @@
+package AnalizadorFs;
+
+import AnalizadorFs.Estructura.*;
+import AnalizadorGxml.ErrorEjecucion;
+import java_cup.runtime.*;
+import creatorxml.Main;
+
+parser code
+{: 
+	/*---------------Metodo que se llamara cuando sea encontrado algun error-----------------------------*/
+	public void syntax_error(Symbol s){
+	   	System.out.println("Error Sintactico -> lexema: |" + s.value +  "| " + "  Columna: "+  s.right + "linea:  "+  (s.left + 1) );
+	   	String error = "el token \"" + s.value + "\" no es valida ";
+                ErrorEjecucion err = new ErrorEjecucion("Sintactico Gxml",error,"sintactico","sintactico",(s.left + 1),s.right);
+                Main.errores.add(err);							
+	}
+	/*-----------------------------metodo para cuando ya no se pueda recuperar los errores-------------------*/
+	public void unrecovered_syntax_error(Symbol s) throws java.lang.Exception{
+	    System.out.println("Error Sintactico No Recuperable-> lexema: |" + s.value + "| Linea: " + s.right + " Columna: " + s.left);
+	}
+
+	public NodoArbol getNodoRaiz(){
+		return this.action_obj.raiz;
+	}
+:}
+action code
+{:
+	NodoArbol raiz;
+:}
+
+
+terminal String importar,parentesisa,parentesisc,puntoycoma,var,igual
+	,coma,imprimir,detener
+	,retornar,selecciona,llavea,llavec,caso,dospuntos,si
+	,sino,or,and,not,mayorq,menorq
+	,mayorigual,menorigual,igualigual,diferente,mas,menos
+	,por ,dividir,potencia,masmas
+	,menosmenos,id,t_true,t_false,numero,punto,descendente
+	,ascendente,maximo,invertir
+	,filter,buscar,map,reduce,todos,defecto,cadena,alguno
+	,ternario,funcion,corchetea,corchetec
+	,masigual,menosigual,porigual,divigual,minimo;
+
+
+non terminal INICIA;
+non terminal NodoArbol LISTA_IMPORTAR;
+non terminal NodoArbol DOCUMENTO;
+non terminal Integer TIPO_ASIGNACION;
+non terminal NodoArbol METODO;
+non terminal NodoArbol LISTA_VARS;
+non terminal NodoArbol DECLA_VECTOR;
+non terminal NodoArbol DECLA_OBJETO;
+non terminal NodoArbol S_IMPORTAR;
+non terminal NodoArbol S_DECLARACION;
+non terminal NodoArbol S_ASIGNACION;
+non terminal NodoArbol LISTA_IDS;
+non terminal NodoArbol S_IMPRIMIR;
+non terminal NodoArbol S_DETENER;
+non terminal NodoArbol S_RETORNAR;
+non terminal NodoArbol S_SELECCIONA;
+non terminal NodoArbol LISTA_CASOS;
+non terminal NodoArbol S_CASO;
+non terminal NodoArbol CASO_DEFECTO;
+non terminal NodoArbol S_SI;
+non terminal NodoArbol LISTA_SINO_SI;
+non terminal NodoArbol SINO;
+non terminal NodoArbol LISTA_SENTENCIAS;
+non terminal NodoArbol SENTENCIA;
+non terminal NodoArbol OP_LOGICAS;
+non terminal NodoArbol OP_REL;
+non terminal NodoArbol OP_ARISM;
+non terminal NodoArbol OP_NEGATIVA;
+non terminal NodoArbol TERMINALES;		
+non terminal NodoArbol TERMINALES_PUNTUALES;
+non terminal NodoArbol LISTA_OPCIONESID;
+non terminal NodoArbol OPCIONES_ID;
+non terminal NodoArbol LISTA_PARAMETROS ;
+non terminal NodoArbol S_LLAMADA_METODO;
+
+precedence right ternario;
+precedence left or;
+precedence left and;
+precedence left not;
+precedence left mayorq, menorq, mayorigual , menorigual, diferente;
+precedence left mas, menos;
+precedence left por,dividir;
+precedence left potencia;
+
+
+
+start with INICIA;
+
+
+INICIA::= DOCUMENTO:b
+		{:
+			raiz = b;
+		:};
+
+DOCUMENTO::=LISTA_IMPORTAR:ab LISTA_SENTENCIAS:e
+			{:
+				RESULT = new NodoArbol(ConstantesFs.DOCUMENTO);
+				RESULT.addHijos(ab,e);
+			:}
+			|LISTA_SENTENCIAS:e
+			{:
+				RESULT = new NodoArbol(ConstantesFs.DOCUMENTO);
+				NodoArbol ab = new NodoArbol(ConstantesFs.LISTA_IMPORTAR);
+				RESULT.addHijos(ab,e);
+			:};
+
+LISTA_IMPORTAR::=LISTA_IMPORTAR:l S_IMPORTAR:e
+				{:
+					RESULT = l;
+					RESULT.addHijos(e);
+				:}
+				|S_IMPORTAR:e
+				{:
+					RESULT = new NodoArbol(ConstantesFs.LISTA_IMPORTAR);
+					RESULT.addHijos(e);
+				:};
+
+S_IMPORTAR::= importar:w parentesisa OP_LOGICAS:e parentesisc puntoycoma
+				{:
+					RESULT = new NodoArbol(ConstantesFs.IMPORTAR);
+					RESULT.addHijos(e);
+					RESULT.setPosicion(wleft,wright);
+				:};
+
+METODO::= funcion:t id:w parentesisa  LISTA_VARS:lv parentesisc llavea llavec
+		{:
+			RESULT = new NodoArbol(ConstantesFs.FUNCION,w,ConstantesFs.ID);
+			NodoArbol ab = lv;
+			NodoArbol ls = new NodoArbol(ConstantesFs.LISTA_SENTENCIAS);
+			RESULT.addHijos(ab,ls);
+			RESULT.setPosicion(tleft,tright);
+		:}
+		|funcion:t id:w parentesisa  parentesisc llavea llavec
+		{:
+			RESULT = new NodoArbol(ConstantesFs.FUNCION,w,ConstantesFs.ID);
+			NodoArbol ab = new NodoArbol(ConstantesFs.LISTA_PARAMETROS);
+			NodoArbol ls = new NodoArbol(ConstantesFs.LISTA_SENTENCIAS);
+			RESULT.addHijos(ab,ls);
+			RESULT.setPosicion(tleft,tright);
+		:}
+		|funcion:t id:w parentesisa  LISTA_VARS:lv parentesisc llavea LISTA_SENTENCIAS:ls llavec
+		{:
+			RESULT = new NodoArbol(ConstantesFs.FUNCION,w,ConstantesFs.ID);
+			NodoArbol ab = lv;
+			RESULT.addHijos(ab,ls);
+			RESULT.setPosicion(tleft,tright);
+		:}
+		|funcion:t id:w parentesisa  parentesisc llavea LISTA_SENTENCIAS:ls llavec
+		{:
+			RESULT = new NodoArbol(ConstantesFs.FUNCION,w,ConstantesFs.ID);
+			NodoArbol ab = new NodoArbol(ConstantesFs.LISTA_PARAMETROS);
+			RESULT.addHijos(ab,ls);
+			RESULT.setPosicion(tleft,tright);
+
+		:};
+
+LISTA_VARS::= LISTA_VARS:l coma var id:t
+			{:
+				RESULT = l;
+				NodoArbol abc = new NodoArbol(ConstantesFs.ID,t,ConstantesFs.ID);
+				abc.setPosicion(tleft,tright);
+				RESULT.addHijos(abc);
+			:}
+			|var id:t
+			{:
+				RESULT = new NodoArbol(ConstantesFs.LISTA_PARAMETROS);
+				NodoArbol abc = new NodoArbol(ConstantesFs.ID,t,ConstantesFs.ID);
+				abc.setPosicion(tleft,tright);
+				RESULT.addHijos(abc);
+			:}
+			;
+
+S_DECLARACION::= var:w LISTA_IDS:l puntoycoma
+				{:
+					RESULT = new NodoArbol(ConstantesFs.DECLARAR);
+					RESULT.addHijos(l);
+					RESULT.setPosicion(wleft, wright);
+				:}
+				|var:w LISTA_IDS:l igual OP_LOGICAS:e puntoycoma
+				{:
+					RESULT = new NodoArbol(ConstantesFs.DECLARAR);
+					RESULT.addHijos(l,e);
+					RESULT.setPosicion(wleft, wright);
+				:}
+				;
+
+DECLA_VECTOR::= corchetea:w corchetec
+				{:
+					RESULT = new NodoArbol(ConstantesFs.VECTOR_DECLARAR);
+					RESULT.setPosicion(wleft, wright);
+				:}
+				|corchetea:w LISTA_PARAMETROS:e corchetec
+				{:
+					RESULT = e;
+					RESULT.setConstEtiqueta(ConstantesFs.VECTOR_DECLARAR);
+					RESULT.addHijos(e);
+					RESULT.setPosicion(wleft, wright);
+				:};
+
+DECLA_OBJETO::= llavea:w llavec
+				{:
+					RESULT = new NodoArbol(ConstantesFs.OBJETO_DECLARAR);
+					RESULT.setPosicion(wleft, wright);
+				:}
+				|llavea:w LISTA_PARAMETROS:e llavec
+				{:
+					RESULT = e;
+					RESULT.setConstEtiqueta(ConstantesFs.OBJETO_DECLARAR);
+					RESULT.addHijos(e);
+					RESULT.setPosicion(wleft, wright);
+				:};
+
+S_ASIGNACION::= id:w TIPO_ASIGNACION:ta OP_LOGICAS:e puntoycoma
+			{:
+				RESULT = new NodoArbol(ConstantesFs.ASIGNACION);
+				NodoArbol lAsig = new NodoArbol(ConstantesFs.ID,w,ConstantesFs.ID);
+				lAsig.setPosicion(wleft, wright);
+				if (ta != ConstantesFs.IGUAL) {
+	                NodoArbol tipo = new NodoArbol(ta);
+	                NodoArbol var1 = new NodoArbol(ConstantesFs.ID,w,ConstantesFs.ID);
+					var1.setPosicion(taleft, taright);
+					tipo.setPosicion(taleft, taright);
+					tipo.addHijos(var1,e);
+					e = tipo;
+                }
+                RESULT.addHijos(lAsig,e);
+				RESULT.setPosicion(wleft, wright);
+			:}
+			|id:w corchetea OP_LOGICAS:pos corchetec TIPO_ASIGNACION:ta OP_LOGICAS:e puntoycoma
+			{:
+				RESULT = new NodoArbol(ConstantesFs.ASIGNACION);
+				NodoArbol lAsig = new NodoArbol(ConstantesFs.ID,w,ConstantesFs.ID_VECTOR);
+				lAsig.addHijos(pos);
+				if (ta != ConstantesFs.IGUAL) {
+	                NodoArbol tipo = new NodoArbol(ta);
+	                NodoArbol var1 = new NodoArbol(ConstantesFs.ID,w,ConstantesFs.ID);
+					var1.setPosicion(taleft, taright);
+					tipo.setPosicion(taleft, taright);
+					tipo.addHijos(var1,e);
+					e = tipo;
+                }
+				RESULT.addHijos(lAsig,e);
+				RESULT.setPosicion(wleft, wright);
+			:}
+			|id:w LISTA_OPCIONESID:lo TIPO_ASIGNACION:ta OP_LOGICAS:e puntoycoma
+			{:
+				RESULT = new NodoArbol(ConstantesFs.ASIGNACION);
+				NodoArbol lAsig = new NodoArbol(ConstantesFs.ID,w,ConstantesFs.ID);
+				lAsig.addHijos(lo);
+				if (ta != ConstantesFs.IGUAL) {
+	                NodoArbol tipo = new NodoArbol(ta);
+	                NodoArbol var1 = new NodoArbol(ConstantesFs.ID,w,ConstantesFs.ID);
+					var1.setPosicion(taleft, taright);
+					tipo.setPosicion(taleft, taright);
+					tipo.addHijos(var1,e);
+					e = tipo;
+                }
+                RESULT.addHijos(lAsig,e);
+				RESULT.setPosicion(wleft, wright);
+			:}
+			|id:w  corchetea OP_LOGICAS:pos  corchetec LISTA_OPCIONESID:lo TIPO_ASIGNACION:ta OP_LOGICAS:e puntoycoma
+			{:
+				RESULT = new NodoArbol(ConstantesFs.ASIGNACION);
+				NodoArbol lAsig = new NodoArbol(ConstantesFs.ID,w,ConstantesFs.ID_VECTOR);
+				lAsig.addHijos(pos,lo);
+				if (ta != ConstantesFs.IGUAL) {
+	                NodoArbol tipo = new NodoArbol(ta);
+	                NodoArbol var1 = new NodoArbol(ConstantesFs.ID,w,ConstantesFs.ID);
+					var1.setPosicion(taleft, taright);
+					tipo.setPosicion(taleft, taright);
+					tipo.addHijos(var1,e,lo);
+					e = tipo;
+                }
+				RESULT.addHijos(lAsig,e);
+				RESULT.setPosicion(wleft, wright);
+			:};
+
+
+TIPO_ASIGNACION::=igual
+				{:
+					RESULT = ConstantesFs.IGUAL;
+				:} 
+				|masigual
+				{:
+					RESULT = ConstantesFs.MAS_IGUAL;
+				:}
+				|menosigual
+				{:
+					RESULT = ConstantesFs.MENOS_IGUAL;
+				:}
+				|porigual
+				{:
+					RESULT = ConstantesFs.POR_IGUAL;
+				:}
+				|divigual
+				{:
+					RESULT = ConstantesFs.DIV_IGUAL;
+				:};
+
+LISTA_IDS::=LISTA_IDS:l coma id:e
+			{:
+				RESULT = l;
+				NodoArbol ab = new NodoArbol(ConstantesFs.ID,e,ConstantesFs.ID);
+				ab.setPosicion(eleft, eright);
+				RESULT.addHijos(ab);
+			:}
+			|id:e
+			{:
+				RESULT = new NodoArbol(ConstantesFs.LISTA_IDS);
+				NodoArbol ab = new NodoArbol(ConstantesFs.ID,e,ConstantesFs.ID);
+				ab.setPosicion(eleft, eright);
+				RESULT.addHijos(ab);
+			:};
+
+S_IMPRIMIR::= imprimir:w parentesisa OP_LOGICAS:e parentesisc puntoycoma
+			{:
+				RESULT = new NodoArbol(ConstantesFs.IMPRIMIR);
+				RESULT.addHijos(e);
+				RESULT.setPosicion(wleft, wright);
+			:};
+
+S_DETENER::= detener:w puntoycoma
+			{:
+				RESULT = new NodoArbol(ConstantesFs.DETENER);
+				RESULT.setPosicion(wleft, wright);
+			:};
+
+S_RETORNAR::= retornar:w OP_LOGICAS:e puntoycoma
+			{:
+				RESULT = new NodoArbol(ConstantesFs.RETORNAR);
+				RESULT.addHijos(e);
+				RESULT.setPosicion(wleft, wright);
+			:}
+			|retornar:w puntoycoma
+			{:
+				RESULT = new NodoArbol(ConstantesFs.RETORNAR);
+				RESULT.setPosicion(wleft, wright);
+			:};
+
+S_SELECCIONA::= selecciona:w parentesisa OP_LOGICAS:e parentesisc llavea LISTA_CASOS:sc llavec 
+				{:
+					RESULT = new NodoArbol(ConstantesFs.SELECCIONA);
+					RESULT.addHijos(e,sc);
+					RESULT.setPosicion(wleft, wright);
+				:}
+				;
+
+LISTA_CASOS::= LISTA_CASOS:l S_CASO:c
+			{:
+				NodoArbol sc = l;
+				sc.addHijos(c);
+				RESULT = sc;
+			:}
+			|S_CASO:c
+			{:
+				NodoArbol sc = new NodoArbol(ConstantesFs.CASOS);
+				sc.addHijos(c);
+				RESULT = sc;
+			:};
+
+S_CASO::= caso:w TERMINALES_PUNTUALES:tp dospuntos llavea LISTA_SENTENCIAS:ls llavec 
+			{:
+				NodoArbol sc = new NodoArbol(ConstantesFs.CASO);
+				sc.addHijos(tp,ls);
+				RESULT = sc;
+				RESULT.setPosicion(wleft, wright);
+			:}
+			|caso:w TERMINALES_PUNTUALES:tp dospuntos llavea llavec
+			{:
+				NodoArbol sc = new NodoArbol(ConstantesFs.CASO);
+				sc.addHijos(tp);
+				RESULT = sc;
+				RESULT.setPosicion(wleft, wright);
+			:}
+			|CASO_DEFECTO:e
+			{:
+				RESULT = e;
+			:};
+
+CASO_DEFECTO::= defecto:w dospuntos llavea LISTA_SENTENCIAS:ls llavec
+				{:
+					NodoArbol sc = new NodoArbol(ConstantesFs.DEFECTO);
+					sc.addHijos(ls);
+					RESULT = sc;
+					RESULT.setPosicion(wleft, wright);
+				:}
+				|defecto:w dospuntos llavea  llavec
+				{:
+					NodoArbol sc = new NodoArbol(ConstantesFs.DEFECTO);
+					RESULT = sc;
+					RESULT.setPosicion(wleft, wright);
+				:};
+
+S_SI::= si:w parentesisa OP_LOGICAS:e parentesisc llavea llavec
+		{:
+			RESULT = new NodoArbol(ConstantesFs.SI_PADRE);
+			NodoArbol nsi = new NodoArbol(ConstantesFs.SI);
+			nsi.addHijos(e,new NodoArbol(ConstantesFs.LISTA_SENTENCIAS));
+			RESULT.setPosicion(wleft, wright);
+		:}
+		| si:w parentesisa OP_LOGICAS:e parentesisc llavea llavec LISTA_SINO_SI:ls
+		{:
+			RESULT = new NodoArbol(ConstantesFs.SI_PADRE);
+			NodoArbol nsi = new NodoArbol(ConstantesFs.SI);
+			nsi.addHijos(e,new NodoArbol(ConstantesFs.LISTA_SENTENCIAS));
+			RESULT.addTodosHijos(ls.getHijosNodo());
+			RESULT.setPosicion(wleft, wright);
+		:}
+		| si:w parentesisa OP_LOGICAS:e parentesisc llavea llavec SINO:ls
+		{:
+			RESULT = new NodoArbol(ConstantesFs.SI_PADRE);
+			NodoArbol nsi = new NodoArbol(ConstantesFs.SI);
+			nsi.addHijos(e,new NodoArbol(ConstantesFs.LISTA_SENTENCIAS));
+			RESULT.addHijos(ls);;
+			RESULT.setPosicion(wleft, wright);
+		:}
+		| si:w parentesisa OP_LOGICAS:e parentesisc llavea LISTA_SENTENCIAS:s llavec
+		{:
+			RESULT = new NodoArbol(ConstantesFs.SI_PADRE);
+			NodoArbol nsi = new NodoArbol(ConstantesFs.SI);
+			nsi.addHijos(e,s);
+			RESULT.addHijos(nsi);
+			RESULT.setPosicion(wleft, wright);
+		:}
+		| si:w parentesisa OP_LOGICAS:e parentesisc llavea LISTA_SENTENCIAS:s llavec LISTA_SINO_SI:ls
+		{:
+			RESULT = new NodoArbol(ConstantesFs.SI_PADRE);
+			NodoArbol nsi = new NodoArbol(ConstantesFs.SI);
+			nsi.addHijos(e,s);
+			RESULT.addHijos(nsi);
+			RESULT.addTodosHijos(ls.getHijosNodo());
+			RESULT.setPosicion(wleft, wright);
+		:}
+		| si:w parentesisa OP_LOGICAS:e parentesisc llavea LISTA_SENTENCIAS:s llavec SINO:ls
+		{:
+			RESULT = new NodoArbol(ConstantesFs.SI_PADRE);
+			NodoArbol nsi = new NodoArbol(ConstantesFs.SI);
+			nsi.addHijos(e,s);
+			RESULT.addHijos(nsi);
+			RESULT.addHijos(ls);
+			RESULT.setPosicion(wleft, wright);
+		:};
+
+LISTA_SINO_SI::= sino S_SI:s
+				{:
+					RESULT = s;
+				:};
+
+SINO::= sino:w llavea  llavec
+		{:
+			RESULT = new NodoArbol(ConstantesFs.SI);
+			NodoArbol nodosino = new NodoArbol(ConstantesFs.BOOLEANO_TRUE,"true",ConstantesFs.TIPO_BOOLEANO);
+			RESULT.addHijos(nodosino,new NodoArbol(ConstantesFs.LISTA_SENTENCIAS));
+			RESULT.setPosicion(wleft, wright);
+		:}
+		|sino:w llavea LISTA_SENTENCIAS:s llavec
+		{:
+			RESULT = new NodoArbol(ConstantesFs.SI);
+			NodoArbol nodosino = new NodoArbol(ConstantesFs.BOOLEANO_TRUE,"true",ConstantesFs.TIPO_BOOLEANO);
+			RESULT.addHijos(nodosino,s);
+			RESULT.setPosicion(wleft, wright);
+		:};
+
+LISTA_SENTENCIAS::=LISTA_SENTENCIAS:l SENTENCIA:t
+				{:
+					RESULT = l;
+					RESULT.addHijos(t);
+				:}
+				|SENTENCIA:t
+				{:
+					RESULT = new NodoArbol(ConstantesFs.LISTA_SENTENCIAS);
+					RESULT.addHijos(t);
+				:};
+
+
+SENTENCIA::= S_DECLARACION:t
+			{:
+				RESULT = t;
+			:}
+			|S_ASIGNACION:t
+			{:
+				RESULT = t;
+			:}
+			|S_IMPRIMIR:t
+			{:
+				RESULT = t;
+			:}
+			|S_DETENER:t
+			{:
+				RESULT = t;
+			:}
+			|S_RETORNAR:t
+			{:
+				RESULT = t;
+			:}
+			|S_SELECCIONA:t
+			{:
+				RESULT = t;
+			:}
+			|S_SI:t
+			{:
+				RESULT = t;
+			:}
+			|METODO:t
+			{:
+				RESULT = t;
+			:};
+
+OP_LOGICAS::= OP_LOGICAS:n1 or OP_LOGICAS:n2
+            {:
+        		RESULT = new NodoArbol(ConstantesFs.OR);
+        		RESULT.addHijos(n1);
+        		RESULT.addHijos(n2);
+        		RESULT.setPosicion(n1left, n1right);
+        	:}
+            | OP_LOGICAS:n1 and OP_LOGICAS:n2
+            {:
+        		RESULT = new NodoArbol(ConstantesFs.AND);
+        		RESULT.addHijos(n1);
+        		RESULT.addHijos(n2);
+        		RESULT.setPosicion(n1left, n1right);
+        	:}
+            | not OP_LOGICAS:n1
+            {:
+        		RESULT = new NodoArbol(ConstantesFs.NOT);
+        		RESULT.addHijos(n1);
+        		RESULT.setPosicion(n1left, n1right);
+        	:}
+        	| OP_LOGICAS:n1 ternario OP_LOGICAS:n2 dospuntos OP_LOGICAS:n3
+        	{:
+        		RESULT = new NodoArbol(ConstantesFs.TERNARIO);
+        		RESULT.addHijos(n1,n2,n3);
+        		RESULT.setPosicion(n1left, n1right);
+        	:}
+            | OP_REL:n1
+            {:
+        		RESULT = n1;
+        	:};
+
+OP_REL::= OP_ARISM:n1 mayorq OP_ARISM:n2
+        {:
+        	RESULT = new NodoArbol(ConstantesFs.MAYORQ);
+			RESULT.addHijos(n1);
+			RESULT.addHijos(n2);
+			RESULT.setPosicion(n1left, n1right);
+        :}
+        | OP_ARISM:n1 menorq OP_ARISM:n2
+        {:
+        	RESULT = new NodoArbol(ConstantesFs.MENORQ);
+			RESULT.addHijos(n1);
+			RESULT.addHijos(n2);
+			RESULT.setPosicion(n1left, n1right);
+        :}
+        | OP_ARISM:n1 mayorigual OP_ARISM:n2
+        {:
+        	RESULT = new NodoArbol(ConstantesFs.MAYORIGUALQ);
+			RESULT.addHijos(n1);
+			RESULT.addHijos(n2);
+			RESULT.setPosicion(n1left, n1right);
+        :}
+        | OP_ARISM:n1 menorigual OP_ARISM:n2
+        {:
+        	RESULT = new NodoArbol(ConstantesFs.MENORIGUALQ);
+			RESULT.addHijos(n2);
+			RESULT.addHijos(n1);
+			RESULT.setPosicion(n1left, n1right);
+        :}
+        | OP_ARISM:n1 igualigual OP_ARISM:n2
+        {:
+        	RESULT = new NodoArbol(ConstantesFs.IGUALIGUAL);
+			RESULT.addHijos(n1);
+			RESULT.addHijos(n2);
+			RESULT.setPosicion(n1left, n1right);
+        :}
+        | OP_ARISM:n1 diferente OP_ARISM:n2
+        {:
+        	RESULT = new NodoArbol(ConstantesFs.DIFERENTE);
+			RESULT.addHijos(n1);
+			RESULT.addHijos(n2);
+			RESULT.setPosicion(n1left, n1right);
+        :}
+        | OP_ARISM:n1
+        {:
+        	RESULT = n1;
+        :};
+
+OP_ARISM::= OP_ARISM:n1 mas OP_ARISM:n2
+			{:
+				RESULT = new NodoArbol(ConstantesFs.SUMA);
+				RESULT.addHijos(n1);
+				RESULT.addHijos(n2);
+				RESULT.setPosicion(n1left, n1right);
+			:}
+			| OP_ARISM:n1 menos OP_ARISM:n2
+			{:
+				RESULT = new NodoArbol(ConstantesFs.RESTA);
+				RESULT.addHijos(n1);
+				RESULT.addHijos(n2);
+				RESULT.setPosicion(n1left, n1right);
+			:}
+			| OP_ARISM:n1 por OP_ARISM:n2
+			{:
+				RESULT = new NodoArbol(ConstantesFs.MULTIPLICACION);
+				RESULT.addHijos(n1);
+				RESULT.addHijos(n2);
+				RESULT.setPosicion(n1left, n1right);
+			:}
+			| OP_ARISM:n1 dividir OP_ARISM:n2
+			{:
+				RESULT = new NodoArbol(ConstantesFs.DIVISION);
+				RESULT.addHijos(n1);
+				RESULT.addHijos(n2);
+				RESULT.setPosicion(n1left, n1right);
+			:}
+			| OP_ARISM:n1 potencia OP_ARISM:n2
+			{:
+				RESULT = new NodoArbol(ConstantesFs.POTENCIA);
+				RESULT.addHijos(n1);
+				RESULT.addHijos(n2);
+				RESULT.setPosicion(n1left, n1right);
+			:}
+			| OP_NEGATIVA:n1
+			{:
+				RESULT = n1;
+			:};
+
+OP_NEGATIVA::= menos  TERMINALES:n1
+			{:
+				NodoArbol nodo1 = new NodoArbol(ConstantesFs.RESTA);
+				NodoArbol nodo2 = new NodoArbol(ConstantesFs.NUMERO,"0",ConstantesFs.TIPO_NUMERO);
+				nodo1.addHijos(nodo2);
+				nodo1.addHijos(n1);
+				RESULT = nodo1;
+				RESULT.setPosicion(n1left, n1right);
+			:}
+			| TERMINALES:n1 masmas
+            {:
+            	NodoArbol nodo1 = new NodoArbol(ConstantesFs.AUMENTO);
+				NodoArbol nodo2 = new NodoArbol(ConstantesFs.NUMERO,"1",ConstantesFs.TIPO_NUMERO);
+				nodo1.addHijos(n1,nodo2);
+            	RESULT = nodo1;
+            	RESULT.setPosicion(n1left, n1right);
+            :}
+            | TERMINALES:n1 menosmenos
+            {:
+            	NodoArbol nodo1 = new NodoArbol(ConstantesFs.DISMINUCION);
+				NodoArbol nodo2 = new NodoArbol(ConstantesFs.NUMERO,"1",ConstantesFs.TIPO_NUMERO);
+				nodo1.addHijos(n1,nodo2);
+            	RESULT = nodo1;
+            	RESULT.setPosicion(n1left, n1right);
+            :}
+            | TERMINALES:n1
+            {:
+            	RESULT = n1;
+            :};
+
+
+
+TERMINALES::= parentesisa  OP_LOGICAS:n1 parentesisc
+			{:
+				RESULT = n1;
+				RESULT.setPosicion(n1left, n1right);
+			:} 
+			|DECLA_VECTOR:n1
+			{:
+				RESULT = n1;
+			:}
+			|DECLA_OBJETO:n1
+			{:
+				RESULT = n1;
+			:}
+			|TERMINALES_PUNTUALES:t
+			{:
+				RESULT = t;
+			:}
+			|id:t
+			{:
+				RESULT = new NodoArbol(ConstantesFs.ID,t,ConstantesFs.ID);
+				RESULT.setPosicion(tleft, tright);
+			:}
+			|id:t LISTA_OPCIONESID:o
+			{:
+				RESULT = new NodoArbol(ConstantesFs.ID,t,ConstantesFs.ID);
+				RESULT.addHijos(o);
+				RESULT.setPosicion(tleft, tright);
+			:}
+			|id:t corchetea OP_LOGICAS:t1 corchetec 
+			{:
+				RESULT = new NodoArbol(ConstantesFs.ID,t,ConstantesFs.ID_VECTOR);
+				RESULT.addHijos(t1);
+				RESULT.setPosicion(tleft, tright);
+			:}
+			|id:t corchetea OP_LOGICAS:t1 corchetec LISTA_OPCIONESID:o
+			{:
+				RESULT = new NodoArbol(ConstantesFs.ID,t,ConstantesFs.ID_VECTOR);
+				RESULT.addHijos(t1,o);
+				RESULT.setPosicion(tleft, tright);
+			:}
+			|S_LLAMADA_METODO:t
+			{:
+				RESULT = t;
+			:}
+			|S_LLAMADA_METODO:t LISTA_OPCIONESID:o
+			{:
+				RESULT = t;
+				RESULT.addHijos(o);
+			:}
+			;
+
+
+		
+TERMINALES_PUNTUALES::= cadena:t
+			{:
+				RESULT = new NodoArbol(ConstantesFs.CADENA,t,ConstantesFs.TIPO_CADENA);
+				RESULT.setPosicion(tleft, tright);
+			:}
+			| t_true:t
+			{:
+				RESULT = new NodoArbol(ConstantesFs.BOOLEANO_TRUE,"true",ConstantesFs.TIPO_BOOLEANO);
+				RESULT.setPosicion(tleft, tright);
+			:}
+			| t_false:t
+			{:
+				RESULT = new NodoArbol(ConstantesFs.BOOLEANO_FALSE,"false",ConstantesFs.TIPO_BOOLEANO);
+				RESULT.setPosicion(tleft, tright);
+			:}
+			|numero:t
+			{:
+				RESULT = new NodoArbol(ConstantesFs.NUMERO,t,ConstantesFs.TIPO_NUMERO);
+				RESULT.setPosicion(tleft, tright);
+			:};
+
+LISTA_OPCIONESID::= LISTA_OPCIONESID:l punto OPCIONES_ID:t
+				   {:
+				   		RESULT = l;
+				  		RESULT.addHijos(t);
+					:}
+				   |punto OPCIONES_ID:t
+				  	{:
+				  		RESULT = new NodoArbol(ConstantesFs.LISTA_PUNTO);
+				  		RESULT.addHijos(t);
+					:};
+ 
+OPCIONES_ID::= descendente:t parentesisa parentesisc
+			{:
+				RESULT = new NodoArbol(ConstantesFs.LLAMADAS_METODOS_NATIVOS,ConstantesFs.DESCENDENTE);
+				RESULT.setPosicion(tleft, tright);
+			:}
+			|ascendente:t parentesisa parentesisc
+			{:
+				RESULT = new NodoArbol(ConstantesFs.LLAMADAS_METODOS_NATIVOS,ConstantesFs.ASCENDENTE);
+				RESULT.setPosicion(tleft, tright);
+			:}
+			| invertir:t parentesisa parentesisc 
+			{:
+				RESULT = new NodoArbol(ConstantesFs.LLAMADAS_METODOS_NATIVOS,ConstantesFs.INVERTIR);
+				RESULT.setPosicion(tleft, tright);
+			:}
+			| maximo:t parentesisa parentesisc 
+			{:
+				RESULT = new NodoArbol(ConstantesFs.LLAMADAS_METODOS_NATIVOS,ConstantesFs.MAXIMO);
+				RESULT.setPosicion(tleft, tright);
+			:}
+			| minimo:t parentesisa parentesisc 
+			{:
+				RESULT = new NodoArbol(ConstantesFs.LLAMADAS_METODOS_NATIVOS,ConstantesFs.MINIMO);
+				RESULT.setPosicion(tleft, tright);
+			:}
+			| filter parentesisa id:t parentesisc 
+			{:
+				RESULT = new NodoArbol(ConstantesFs.LLAMADAS_METODOS_NATIVOS,t,ConstantesFs.FILTER);
+				RESULT.setPosicion(tleft, tright);
+			:}
+			| buscar parentesisa id:t parentesisc
+			{:
+				RESULT = new NodoArbol(ConstantesFs.LLAMADAS_METODOS_NATIVOS,t,ConstantesFs.BUSCAR);
+				RESULT.setPosicion(tleft, tright);
+			:}
+			| map parentesisa id:t parentesisc
+			{:
+				RESULT = new NodoArbol(ConstantesFs.LLAMADAS_METODOS_NATIVOS,t,ConstantesFs.MAP);
+				RESULT.setPosicion(tleft, tright);
+			:}
+			| reduce parentesisa id:t parentesisc
+			{:
+				RESULT = new NodoArbol(ConstantesFs.LLAMADAS_METODOS_NATIVOS,t,ConstantesFs.REDUCE);
+				RESULT.setPosicion(tleft, tright);
+			:}
+			| todos parentesisa id:t parentesisc
+			{:
+				RESULT = new NodoArbol(ConstantesFs.LLAMADAS_METODOS_NATIVOS,t,ConstantesFs.TODOS);
+				RESULT.setPosicion(tleft, tright);
+			:}
+			| alguno parentesisa id:t parentesisc
+			{:
+				RESULT = new NodoArbol(ConstantesFs.LLAMADAS_METODOS_NATIVOS,t,ConstantesFs.ALGUNO);
+				RESULT.setPosicion(tleft, tright);
+
+			:}
+			| S_LLAMADA_METODO:t
+			{:
+				RESULT = t;
+			:}
+			|id:t
+			{:
+				RESULT = new NodoArbol(ConstantesFs.ID,t,ConstantesFs.ID);
+				RESULT.setPosicion(tleft, tright);
+			:};
+
+LISTA_PARAMETROS::= LISTA_PARAMETROS:l coma OP_LOGICAS:t
+					{:
+						RESULT = l;
+						RESULT.addHijos(t);
+					:}
+					| OP_LOGICAS:t
+					{:
+						RESULT = new NodoArbol(ConstantesFs.LISTA_PARAMETROS);
+						RESULT.addHijos(t);
+					:};
+
+S_LLAMADA_METODO::= id:w parentesisa parentesisc
+			{:
+				RESULT = new NodoArbol(ConstantesFs.LLAMADA_METODO,w,ConstantesFs.LLAMADA_METODO);
+				NodoArbol ab = new NodoArbol(ConstantesFs.LISTA_PARAMETROS);
+				RESULT.addHijos(ab);
+				RESULT.setPosicion(wleft, wright);
+			:}
+			| id:w parentesisa LISTA_PARAMETROS:t parentesisc
+			{:
+				RESULT = new NodoArbol(ConstantesFs.LLAMADA_METODO,w,ConstantesFs.LLAMADA_METODO);
+				RESULT.addHijos(t);
+				RESULT.setPosicion(wleft, wright);
+			:};

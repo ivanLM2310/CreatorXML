@@ -1,0 +1,532 @@
+package AnalizadorGxml;
+
+import AnalizadorGxml.Estructura.*;
+import java_cup.runtime.*;
+import java.util.ArrayList;
+import creatorxml.Main;
+
+
+parser code
+{: 
+
+	/*---------------Metodo que se llamara cuando sea encontrado algun error-----------------------------*/
+
+	public void syntax_error(Symbol s){
+	   	System.out.println("Error Sintactico -> lexema: |" + s.value +  "| " + "  Columna: "+  s.right + "linea:  "+  (s.left + 1) );
+	   	String error = "el token \"" + s.value + "\" no es valida ";
+                ErrorEjecucion err = new ErrorEjecucion("Sintactico Gxml",error,"sintactico","sintactico",(s.left + 1),s.right);
+                Main.errores.add(err);
+								
+	}
+
+	/*-----------------------------metodo para cuando ya no se pueda recuperar los errores-------------------*/
+
+	public void unrecovered_syntax_error(Symbol s) throws java.lang.Exception{
+	    System.out.println("Error Sintactico No Recuperable-> lexema: |" + s.value + "| Linea: " + s.right + " Columna: " + s.left);
+	}
+
+	public Documento getDocumento(){
+
+		return this.action_obj.raiz;
+	}
+
+
+
+:}
+action code
+{:
+	Documento raiz;
+:}
+
+
+terminal String abrir;  
+terminal String abrird;  
+terminal String textoXml;   
+terminal String etq_importar;        
+terminal String etq_ventana;         
+terminal String etq_contenedor;      
+terminal String etq_texto;           
+terminal String etq_control;         
+terminal String etq_listadatos;      
+terminal String etq_datos;           
+terminal String etq_defecto;         
+terminal String etq_multimedia;      
+terminal String etq_boton;           
+terminal String etq_enviar; 
+terminal String codigo;
+         
+		 
+		 
+terminal String atb_id;                  
+terminal String atb_tipo;                
+terminal String atb_color;               
+terminal String atb_accioninicial;       
+terminal String atb_accionfinal;         
+terminal String atb_x;                  
+terminal String atb_y;                  
+terminal String atb_alto;               
+terminal String atb_ancho;              
+terminal String atb_borde;              
+terminal String atb_nombre;             
+terminal String atb_fuente;             
+terminal String atb_tam;                 
+terminal String atb_negrita;             
+terminal String atb_cursiva;             
+terminal String atb_maximo;              
+terminal String atb_minimo;             
+terminal String atb_accion;            
+terminal String atb_referencia;      
+terminal String atb_path;         
+terminal String atb_auto_reprodu;   
+terminal String igual;         
+terminal String cadenaXml;       
+terminal String cerrar;         
+terminal String numero;
+terminal String verdadero;         
+terminal String falso;
+terminal String exp_id;
+
+
+non terminal INICIA;
+non terminal Documento DOCUMENTO;
+non terminal ArrayList<Etiqueta> LISTA_IMPORTAR;
+non terminal EtiquetaImportar ETQ_IMPORTAR;
+non terminal ArrayList<Etiqueta> LISTA_VENTANA;
+non terminal EtiquetaVentana ETQ_VENTANA ;
+non terminal ArrayList<Etiqueta> LISTA_CONTENEDOR;
+non terminal EtiquetaContenedor ETQ_CONTENEDOR ;
+non terminal ArrayList<Etiqueta> LISTA_CONTENIDO;
+non terminal Etiqueta CONTENIDO;
+non terminal EtiquetaTexto ETQ_TEXTO;
+non terminal EtiquetaControlador ETQ_CONTROLADOR;
+non terminal ArrayList<Etiqueta> CONTENIDO_CONTROL;
+non terminal EtiquetaListaDatos ETQ_LISTADATOS;
+non terminal ArrayList<Etiqueta> LISTA_DATO;
+non terminal EtiquetaDato ETQ_DATO;
+non terminal EtiquetaDefecto ETQ_DEFECTO;
+non terminal EtiquetaMultimedia ETQ_MULTIMEDIA;
+non terminal EtiquetaBoton ETQ_BOTON;
+non terminal EtiquetaEnviar ETQ_ENVIAR;
+non terminal String TEXTO;
+non terminal ArrayList<Atributo> LISTA_ELEMENTO;
+non terminal Atributo ELEMENTO;
+non terminal String BOOLEANOS;
+
+
+/*Inicio de la gramatica*/
+start with INICIA;
+
+
+INICIA::= DOCUMENTO:doc
+		{:
+			raiz=doc;
+		:};
+
+DOCUMENTO::= LISTA_IMPORTAR:li LISTA_VENTANA:lista
+			{:
+				Documento doct = new Documento();
+				for( Etiqueta etq :lista ){
+					doct.addVentana(etq);
+				}
+				for(Etiqueta etq :li ){
+					doct.addImportados(etq);
+				}
+				RESULT = doct;
+			:}
+			|LISTA_VENTANA:lista
+			{:
+				Documento doct = new Documento();
+				for(Etiqueta etq :lista ){
+					doct.addVentana(etq);
+				}
+				RESULT = doct;
+			:};
+
+LISTA_IMPORTAR::= LISTA_IMPORTAR:l ETQ_IMPORTAR:c
+                {:
+                	ArrayList<Etiqueta> lista = l;
+					lista.add(c);
+					RESULT = lista;
+				:}
+                |ETQ_IMPORTAR:c
+                {:
+                	ArrayList<Etiqueta> lista = new ArrayList();
+					lista.add(c);
+					RESULT = lista;
+				:};
+
+ETQ_IMPORTAR ::= abrir:er etq_importar cerrar TEXTO:t abrird etq_importar cerrar
+				{:
+					EtiquetaImportar etq = new EtiquetaImportar(t);
+					etq.setLineaColumna(erleft+1,erright);
+					RESULT = etq;
+				:};
+
+LISTA_VENTANA::= LISTA_VENTANA:l ETQ_VENTANA:c
+				{:
+					ArrayList<Etiqueta> lista =l;
+					lista.add(c);
+					RESULT = lista;
+				:}
+				|ETQ_VENTANA:c
+				{:
+					ArrayList<Etiqueta> lista = new ArrayList();
+					lista.add(c);
+					RESULT = lista;
+				:};	
+
+ETQ_VENTANA ::= abrir:er  etq_ventana LISTA_ELEMENTO:l cerrar LISTA_CONTENEDOR:lc abrird etq_ventana cerrar
+				{:
+					EtiquetaVentana etq = new EtiquetaVentana();
+					etq.setAtributos(l);
+					etq.setContenido(lc);
+					etq.setLineaColumna(erleft+1,erright);
+					RESULT = etq;
+				:};
+
+LISTA_CONTENEDOR::= LISTA_CONTENEDOR:l ETQ_CONTENEDOR:c
+				{:
+					ArrayList<Etiqueta> lista = l;
+					lista.add(c);
+					RESULT = lista;
+				:}
+				|ETQ_CONTENEDOR:c
+				{:
+					ArrayList<Etiqueta> lista = new ArrayList();
+					lista.add(c);
+					RESULT = lista;
+				:};
+
+ETQ_CONTENEDOR ::= abrir:er etq_contenedor LISTA_ELEMENTO:l cerrar LISTA_CONTENIDO:lc abrird etq_contenedor cerrar
+				{:
+					EtiquetaContenedor etq = new EtiquetaContenedor();
+					etq.setAtributos(l);
+					etq.setContenido(lc);
+					etq.setLineaColumna(erleft+1,erright);
+					RESULT = etq;
+				:}
+				|abrir:er etq_contenedor LISTA_ELEMENTO:l cerrar abrird etq_contenedor cerrar
+				{:
+					EtiquetaContenedor etq = new EtiquetaContenedor();
+					etq.setAtributos(l);
+					etq.setLineaColumna(erleft+1,erright);
+					RESULT = etq;
+
+				:};
+
+LISTA_CONTENIDO::= LISTA_CONTENIDO:l CONTENIDO:c
+				{:
+					ArrayList<Etiqueta> lista = l;
+					lista.add(c);
+					RESULT = lista;
+				:}
+				|CONTENIDO:c
+				{:
+					ArrayList<Etiqueta> lista = new ArrayList();
+					lista.add(c);
+					RESULT = lista;
+				:};
+
+CONTENIDO::= ETQ_TEXTO:e
+			{:
+				RESULT = e;
+			:}
+			|ETQ_CONTROLADOR:e
+			{:
+				RESULT = e;
+			:}
+			|ETQ_MULTIMEDIA:e
+			{:
+				RESULT = e;
+			:}
+			|ETQ_BOTON:e
+			{:
+				RESULT = e;
+			:}
+			|ETQ_ENVIAR:e
+			{:
+				RESULT = e;
+			:};
+
+ETQ_TEXTO::= abrir:er etq_texto LISTA_ELEMENTO:l cerrar TEXTO:t abrird etq_texto cerrar
+				{:
+					EtiquetaTexto etq = new EtiquetaTexto(t.trim());
+					etq.setAtributos(l);
+					etq.setLineaColumna(erleft+1,erright);
+					RESULT = etq;
+				:}
+				|abrir:er etq_texto cerrar TEXTO:t abrird etq_texto cerrar
+				{:
+					EtiquetaTexto etq = new EtiquetaTexto(t.trim());
+					etq.setLineaColumna(erleft+1,erright);
+					RESULT = etq;
+				:};
+
+ETQ_CONTROLADOR::= abrir:er etq_control LISTA_ELEMENTO:l cerrar CONTENIDO_CONTROL:cl abrird etq_control cerrar
+				{:
+					EtiquetaControlador etq = new EtiquetaControlador();
+					etq.setAtributos(l);
+					etq.setContenido(cl);
+					etq.setLineaColumna(erleft+1,erright);
+					RESULT = etq;
+				:}
+				|abrir:er etq_control LISTA_ELEMENTO:l cerrar abrird etq_control cerrar
+				{:
+					EtiquetaControlador etq = new EtiquetaControlador();
+					etq.setAtributos(l);
+					etq.setLineaColumna(erleft+1,erright);
+					RESULT = etq;
+				:};
+
+CONTENIDO_CONTROL::= ETQ_DEFECTO:l ETQ_LISTADATOS:e
+				{:
+					ArrayList<Etiqueta> lista = new ArrayList();
+					lista.add(l);
+					lista.add(e);
+					RESULT = lista;
+				:}
+				|ETQ_LISTADATOS:l ETQ_DEFECTO:e
+				{:
+					ArrayList<Etiqueta> lista = new ArrayList();
+					lista.add(l);
+					lista.add(e);
+					RESULT = lista;
+				:}
+				|ETQ_LISTADATOS:e
+				{:
+					ArrayList<Etiqueta> lista = new ArrayList();
+					lista.add(e);
+					RESULT = lista;
+				:}
+				|ETQ_DEFECTO:e
+				{:
+					ArrayList<Etiqueta> lista = new ArrayList();
+					lista.add(e);
+					RESULT = lista;
+				:};
+
+ETQ_LISTADATOS::= abrir:er etq_listadatos cerrar LISTA_DATO:l abrird etq_listadatos cerrar
+			{:
+				EtiquetaListaDatos etq = new EtiquetaListaDatos();
+				etq.setContenido(l);
+				etq.setLineaColumna(erleft+1,erright);
+				RESULT = etq;
+			:};
+
+LISTA_DATO::= LISTA_DATO:l ETQ_DATO:d
+			{:
+				ArrayList<Etiqueta> lista = l;
+				lista.add(d);
+				RESULT = lista;
+			:}
+			|ETQ_DATO:d
+			{:
+				ArrayList<Etiqueta> lista = new ArrayList();
+				lista.add(d);
+				RESULT = lista;
+			:};
+
+ETQ_DATO::= abrir:er etq_datos cerrar TEXTO:t abrird etq_datos cerrar
+			{:
+				EtiquetaDato etq = new EtiquetaDato(t);
+				etq.setLineaColumna(erleft+1,erright);
+				RESULT = etq;
+			:}
+			|abrir:er etq_datos cerrar abrird etq_datos cerrar
+			{:
+				EtiquetaDato etq = new EtiquetaDato("");
+				etq.setLineaColumna(erleft+1,erright);
+				RESULT = etq;
+			:};
+			
+ETQ_DEFECTO::= abrir:er etq_defecto cerrar TEXTO:t abrird etq_defecto cerrar
+			{:
+				EtiquetaDefecto etq = new EtiquetaDefecto(t);
+				etq.setLineaColumna(erleft+1,erright);
+				RESULT = etq;
+			:}
+			|abrir:er etq_defecto  cerrar abrird etq_defecto cerrar
+			{:
+				EtiquetaDefecto etq = new EtiquetaDefecto("");
+				etq.setLineaColumna(erleft+1,erright);
+				RESULT = etq;
+
+			:};
+
+ETQ_MULTIMEDIA::= abrir:er etq_multimedia LISTA_ELEMENTO:atb cerrar abrird etq_multimedia cerrar
+			{:
+				EtiquetaMultimedia etq = new EtiquetaMultimedia();
+				etq.setLineaColumna(erleft+1,erright);
+				etq.setAtributos(atb);
+				RESULT = etq;
+			:};
+
+ETQ_BOTON::= abrir:er etq_boton LISTA_ELEMENTO:atb cerrar ETQ_TEXTO:e1 abrird etq_boton cerrar
+			{:
+				EtiquetaBoton etq = new EtiquetaBoton(e1.getTexto().trim());
+				etq.setAtributos(atb);
+				etq.setLineaColumna(erleft+1,erright);
+				e1.setTipoTextoInterno(true);
+				etq.addEtiquetasHijas(e1);
+				RESULT = etq;
+			:}
+			|abrir:er etq_boton LISTA_ELEMENTO:atb cerrar TEXTO:t abrird etq_boton cerrar
+			{:
+				EtiquetaBoton etq = new EtiquetaBoton(t.trim());
+				etq.setLineaColumna(erleft+1,erright);
+				etq.setAtributos(atb);
+				RESULT = etq;
+			:};
+
+ETQ_ENVIAR::= abrir:er etq_enviar LISTA_ELEMENTO:atb cerrar ETQ_TEXTO:e1 abrird etq_enviar cerrar
+			{:
+				EtiquetaEnviar etq = new EtiquetaEnviar(e1.getTexto().trim());
+				etq.setLineaColumna(erleft+1,erright);
+				etq.setAtributos(atb);
+				e1.setTipoTextoInterno(true);
+				etq.addEtiquetasHijas(e1);
+				RESULT = etq;
+			:}
+			|abrir:er etq_enviar LISTA_ELEMENTO:atb cerrar TEXTO:t abrird etq_enviar cerrar
+			{:
+				EtiquetaEnviar etq = new EtiquetaEnviar(t.trim());
+				etq.setLineaColumna(erleft+1,erright);
+				etq.setAtributos(atb);
+				RESULT = etq;
+			:};
+
+
+TEXTO ::= TEXTO:l textoXml:e
+		{:
+			RESULT = l;
+			RESULT +=" " + e;
+		:}
+		| textoXml:e
+		{:
+			RESULT = e;
+		:};
+
+LISTA_ELEMENTO::= LISTA_ELEMENTO:l ELEMENTO:e
+				{:
+					ArrayList<Atributo> lista = l;
+					lista.add(e);
+					RESULT = lista;
+				:}
+				|ELEMENTO:e
+				{:
+					ArrayList<Atributo> lista = new ArrayList();
+					lista.add(e);
+					RESULT = lista;
+				:};
+		
+ELEMENTO::= atb_id igual cadenaXml:cont
+			{:
+				Atributo atb = new Atributo(Constantes.atb_id,Constantes.tipo_id,cont);
+				RESULT = atb;
+			:}
+			| atb_tipo igual cadenaXml:cont
+			{:
+				Atributo atb = new Atributo(Constantes.atb_tipo,Constantes.tipo_id,cont);
+				RESULT = atb;
+			:}                
+			| atb_color igual cadenaXml:cont
+			{:
+				Atributo atb = new Atributo(Constantes.atb_color,Constantes.tipo_cadena,cont);
+				RESULT = atb;
+			:}
+			| atb_accioninicial igual codigo:cont
+			{:
+				Atributo atb = new Atributo(Constantes.atb_accionInicial,Constantes.tipo_codigo,cont);
+				RESULT = atb;
+			:}
+			| atb_accionfinal igual codigo:cont
+			{:
+				Atributo atb = new Atributo(Constantes.atb_accionFinal,Constantes.tipo_codigo,cont);
+				RESULT = atb;
+			:}
+			| atb_x igual numero:cont
+			{:
+				Atributo atb = new Atributo(Constantes.atb_x,Constantes.tipo_numero,cont);
+				RESULT = atb;
+			:}
+			| atb_y igual numero:cont
+			{:
+				Atributo atb = new Atributo(Constantes.atb_y,Constantes.tipo_numero,cont);
+				RESULT = atb;
+			:}
+			| atb_alto igual numero:cont
+			{:
+				Atributo atb = new Atributo(Constantes.atb_alto,Constantes.tipo_numero,cont);
+				RESULT = atb;
+			:}
+			| atb_ancho igual numero:cont
+			{:
+				Atributo atb = new Atributo(Constantes.atb_ancho,Constantes.tipo_numero,cont);
+				RESULT = atb;
+			:}
+			| atb_borde igual BOOLEANOS:cont
+			{:
+				Atributo atb = new Atributo(Constantes.atb_borde,Constantes.tipo_booleano,cont);
+				RESULT = atb;
+			:}
+			| atb_nombre igual cadenaXml:cont
+			{:
+				Atributo atb = new Atributo(Constantes.atb_nombre,Constantes.tipo_id,cont);
+				RESULT = atb;
+			:}
+			| atb_fuente igual cadenaXml:cont
+			{:
+				Atributo atb = new Atributo(Constantes.atb_fuente,Constantes.tipo_cadena,cont);
+				RESULT = atb;
+			:}
+			| atb_tam igual numero:cont
+			{:
+				Atributo atb = new Atributo(Constantes.atb_tam,Constantes.tipo_numero,cont);
+				RESULT = atb;
+			:}
+			| atb_negrita igual BOOLEANOS:cont
+			{:
+				Atributo atb = new Atributo(Constantes.atb_negrita,Constantes.tipo_booleano,cont);
+				RESULT = atb;
+			:}
+			| atb_cursiva igual BOOLEANOS:cont
+			{:
+				Atributo atb = new Atributo(Constantes.atb_cursiva,Constantes.tipo_booleano,cont);
+				RESULT = atb;
+			:}
+			| atb_maximo igual numero:cont
+			{:
+				Atributo atb = new Atributo(Constantes.atb_maximo,Constantes.tipo_numero,cont);
+				RESULT = atb;
+			:}
+			| atb_minimo igual numero:cont
+			{:
+				Atributo atb = new Atributo(Constantes.atb_minimo,Constantes.tipo_numero,cont);
+				RESULT = atb;
+			:}
+			| atb_accion igual codigo:cont
+			{:
+				Atributo atb = new Atributo(Constantes.atb_accion,Constantes.tipo_codigo,cont);
+				RESULT = atb;
+			:}
+			| atb_referencia igual cadenaXml:cont
+			{:
+				Atributo atb = new Atributo(Constantes.atb_referencia,Constantes.tipo_id,cont);
+				RESULT = atb;
+			:}
+			| atb_path igual cadenaXml:cont
+			{:
+				Atributo atb = new Atributo(Constantes.atb_path,Constantes.tipo_cadena,cont);
+				RESULT = atb;
+			:}
+			| atb_auto_reprodu igual BOOLEANOS:cont 
+			{:
+				Atributo atb = new Atributo(Constantes.atb_autoRepro,Constantes.tipo_booleano,cont);
+				RESULT = atb;
+			:};
+
+BOOLEANOS::= verdadero{:RESULT="verdadero";:}
+			|falso{:RESULT="falso";:};
+
+
+

@@ -1,0 +1,348 @@
+package AnalizadorFs;
+
+import AnalizadorGxml.Estructura.*;
+import java_cup.runtime.*;
+import java.util.ArrayList;
+import creatorxml.interfaz;
+
+parser code
+{: 
+
+	/*---------------Metodo que se llamara cuando sea encontrado algun error-----------------------------*/
+
+	public void syntax_error(Symbol s){
+	   	System.out.println("Error Sintactico -> lexema: |" + s.value +  "| " + "  Columna: "+  s.right + "linea:  "+  (s.left + 1) );
+	   	String error = "el token \"" + s.value + "\" no es valida ";
+                ErrorEjecucion err = new ErrorEjecucion("Sintactico Gxml",error,"sintactico","sintactico",(s.left + 1),s.right);
+                interfaz.errores.add(err);
+								
+	}
+
+	/*-----------------------------metodo para cuando ya no se pueda recuperar los errores-------------------*/
+
+	public void unrecovered_syntax_error(Symbol s) throws java.lang.Exception{
+	    System.out.println("Error Sintactico No Recuperable-> lexema: |" + s.value + "| Linea: " + s.right + " Columna: " + s.left);
+	}
+
+	public Documento getDocumento(){
+
+		return this.action_obj.raiz;
+	}
+
+
+
+:}
+action code
+{:
+	Documento raiz;
+:}
+
+
+terminal importar,parentesisa,parentesisc,puntoycoma,var,igual,coma,imprimir,detener
+	,retornar,selecciona,llavea,llavec,caso,dospuntos,si,sino,or,and,not,mayorq,menorq
+	,mayorigual,menorigual,igualigual,diferente,mas,menos,por ,dividir,potencia,masmas
+	,menosmenos,id,t_true,t_false,numero,punto,descendente,ascendente,maximo,invertir
+	,filter,buscar,map,reduce,todos,algunos;
+
+
+
+non terminal S_IMPORTAR;
+non terminal S_DECLARACION;
+non terminal S_ASIGNACION;
+non terminal LISTA_IDS;
+non terminal S_IMPRIMIR;
+non terminal S_DETENER;
+non terminal S_RETORNAR;
+non terminal S_SELECCIONA;
+non terminal LISTA_CASOS;
+non terminal S_CASO;
+non terminal CASO_DEFECTO;
+non terminal S_SI;
+non terminal LISTA_SINO_SI;
+non terminal SINO;
+non terminal LISTA_SENTENCIAS;
+non terminal SENTENCIA;
+non terminal OP_LOGICAS;
+non terminal OP_REL;
+non terminal OP_ARISM;
+non terminal OP_NEGATIVA;
+non terminal TERMINALES;		
+non terminal TERMINALES_PUNTUALES;
+non terminal LISTA_OPCIONESID;
+non terminal OPCIONES_ID;
+non terminal LISTA_PARAMETROS ;
+non terminal S_LLAMADA_METODO;
+ 
+S_IMPORTAR::= importar parentesisa OP_LOGICAS parentesisc puntoycoma;
+
+S_DECLARACION::= var LISTA_IDS puntoycoma
+				|var LISTA_IDS igual OP_LOGICAS puntoycoma;
+
+S_ASIGNACION ::= id igual OP_LOGICAS puntoycoma;
+
+LISTA_IDS::= LISTA_IDS coma id
+			|id;
+
+S_IMPRIMIR::= imprimir parentesisa OP_LOGICAS parentesisc puntoycoma;
+
+S_DETENER::= detener puntoycoma;
+
+S_RETORNAR::= retornar OP_LOGICAS puntoycoma
+				|retornar puntoycoma;
+
+S_SELECCIONA::= selecciona parentesisa OP_LOGICAS parentesisc llavea LISTA_CASOS llavec 
+				| selecciona parentesisa OP_LOGICAS parentesisc llavea LISTA_CASOS CASO_DEFECTO llavec ;
+
+LISTA_CASOS::= LISTA_CASOS S_CASO
+			|S_CASO;
+
+S_CASO::= caso TERMINALES_PUNTUALES dospuntos llavea LISTA_SENTENCIAS llavec ;
+
+CASO_DEFECTO::= defecto dospuntos llavea LISTA_SENTENCIAS llavec;
+
+S_SI::= si parentesisa parentesisc llavea llavec
+		| si parentesisa parentesisc llavea llavec LISTA_SINO_SI
+		| si parentesisa parentesisc llavea llavec SINO
+		| si parentesisa parentesisc llavea LISTA_SENTENCIAS llavec
+		| si parentesisa parentesisc llavea LISTA_SENTENCIAS llavec LISTA_SINO_SI
+		| si parentesisa parentesisc llavea LISTA_SENTENCIAS llavec SINO;
+
+LISTA_SINO_SI::= sino S_SI
+
+SINO::= sino llavea  llavec
+		sino llavea LISTA_SENTENCIAS llavec;
+
+LISTA_SENTENCIAS::=LISTA_SENTENCIAS SENTENCIA
+				|SENTENCIA;
+
+
+SENTENCIA::= S_DECLARACION
+			|S_ASIGNACION
+			|S_IMPRIMIR
+			|S_DETENER
+			|S_RETORNAR
+			|S_SELECCIONA
+			|S_SI
+			;
+
+OP_LOGICAS::= OP_LOGICAS:n1 or OP_LOGICAS:n2
+            {:
+        		RESULT = new NodoArbol(ConstantesJs.or);
+        		RESULT.addHijos(n1);
+        		RESULT.addHijos(n2);
+        		RESULT.setPosicion(n1left, n1right);
+        	:}
+            | OP_LOGICAS:n1 and OP_LOGICAS:n2
+            {:
+        		RESULT = new NodoArbol(ConstantesJs.and);
+        		RESULT.addHijos(n1);
+        		RESULT.addHijos(n2);
+        		RESULT.setPosicion(n1left, n1right);
+        	:}
+            | not OP_LOGICAS:n1
+            {:
+        		RESULT = new NodoArbol(ConstantesJs.not);
+        		RESULT.addHijos(n1);
+        		RESULT.setPosicion(n1left, n1right);
+        	:}
+            | OP_REL:n1
+            {:
+        		RESULT = n1;
+        	:};
+
+OP_REL::= OP_ARISM:n1 mayorq OP_ARISM:n2
+        {:
+        	RESULT = new NodoArbol(ConstantesJs.mayorQ);
+			RESULT.addHijos(n1);
+			RESULT.addHijos(n2);
+			RESULT.setPosicion(n1left, n1right);
+        :}
+        | OP_ARISM:n1 menorq OP_ARISM:n2
+        {:
+        	RESULT = new NodoArbol(ConstantesJs.menorQ);
+			RESULT.addHijos(n1);
+			RESULT.addHijos(n2);
+			RESULT.setPosicion(n1left, n1right);
+        :}
+        | OP_ARISM:n1 mayorigual OP_ARISM:n2
+        {:
+        	RESULT = new NodoArbol(ConstantesJs.mayorIgualQ);
+			RESULT.addHijos(n1);
+			RESULT.addHijos(n2);
+			RESULT.setPosicion(n1left, n1right);
+        :}
+        | OP_ARISM:n1 menorigual OP_ARISM:n2
+        {:
+        	RESULT = new NodoArbol(ConstantesJs.menorIgualQ);
+			RESULT.addHijos(n2);
+			RESULT.addHijos(n1);
+			RESULT.setPosicion(n1left, n1right);
+        :}
+        | OP_ARISM:n1 igualigual OP_ARISM:n2
+        {:
+        	RESULT = new NodoArbol(ConstantesJs.igualIgual);
+			RESULT.addHijos(n1);
+			RESULT.addHijos(n2);
+			RESULT.setPosicion(n1left, n1right);
+        :}
+        | OP_ARISM:n1 diferente OP_ARISM:n2
+        {:
+        	RESULT = new NodoArbol(ConstantesJs.diferente);
+			RESULT.addHijos(n1);
+			RESULT.addHijos(n2);
+			RESULT.setPosicion(n1left, n1right);
+        :}
+        | OP_ARISM:n1
+        {:
+        	RESULT = n1;
+        :};
+
+OP_ARISM::= OP_ARISM:n1 mas OP_ARISM:n2
+			{:
+				RESULT = new NodoArbol(ConstantesJs.suma);
+				RESULT.addHijos(n1);
+				RESULT.addHijos(n2);
+				RESULT.setPosicion(n1left, n1right);
+			:}
+			| OP_ARISM:n1 menos OP_ARISM:n2
+			{:
+				RESULT = new NodoArbol(ConstantesJs.resta);
+				RESULT.addHijos(n1);
+				RESULT.addHijos(n2);
+				RESULT.setPosicion(n1left, n1right);
+			:}
+			| OP_ARISM:n1 por OP_ARISM:n2
+			{:
+				RESULT = new NodoArbol(ConstantesJs.multiplicacion);
+				RESULT.addHijos(n1);
+				RESULT.addHijos(n2);
+				RESULT.setPosicion(n1left, n1right);
+			:}
+			| OP_ARISM:n1 dividir OP_ARISM:n2
+			{:
+				RESULT = new NodoArbol(ConstantesJs.division);
+				RESULT.addHijos(n1);
+				RESULT.addHijos(n2);
+				RESULT.setPosicion(n1left, n1right);
+			:}
+			| OP_ARISM:n1 potencia OP_ARISM:n2
+			{:
+				RESULT = new NodoArbol(ConstantesJs.potencia);
+				RESULT.addHijos(n1);
+				RESULT.addHijos(n2);
+				RESULT.setPosicion(n1left, n1right);
+			:}
+			| OP_NEGATIVA:n1
+			{:
+				RESULT = n1;
+			:};
+
+OP_NEGATIVA::= menos  TERMINALES:n1
+			{:
+				NodoArbol nodo1 = new NodoArbol(ConstantesJs.resta);
+				NodoArbol nodo2 = new NodoArbol(ConstantesJs.numero,"0",ConstantesJs.tipoNumero);
+				nodo1.addHijos(nodo2);
+				nodo1.addHijos(n1);
+				RESULT = nodo1;
+				RESULT.setPosicion(n1left, n1right);
+			:}
+			| TERMINALES:n1 masmas
+            {:
+            	NodoArbol nodo1 = new NodoArbol(ConstantesJs.aumento);
+				NodoArbol nodo2 = new NodoArbol(ConstantesJs.numero,"1",ConstantesJs.tipoNumero);
+				nodo1.addHijos(n1,nodo2);
+            	RESULT = nodo1;
+            	RESULT.setPosicion(n1left, n1right);
+            :}
+            | TERMINALES:n1 menosmenos
+            {:
+            	NodoArbol nodo1 = new NodoArbol(ConstantesJs.disminucion);
+				NodoArbol nodo2 = new NodoArbol(ConstantesJs.numero,"1",ConstantesJs.tipoNumero);
+				nodo1.addHijos(n1,nodo2);
+            	RESULT = nodo1;
+            	RESULT.setPosicion(n1left, n1right);
+            :}
+            | TERMINALES:n1
+            {:
+            	RESULT = n1;
+            :};
+
+
+
+TERMINALES::= parentesisa  OP_LOGICAS:n1 parentesisc
+			{:
+				RESULT = n1;
+				RESULT.setPosicion(n1left, n1right);
+			:} 
+			|TERMINALES_PUNTUALES:t
+			{:
+				RESULT = t;
+			:}
+			|id:t
+			{:
+				RESULT = new NodoArbol(ConstantesJs.id,t,ConstantesJs.id);
+				RESULT.setPosicion(tleft, tright);
+			:}
+			|id:t llavea OP_LOGICAS:t1 llavec 
+			{:
+				RESULT = new NodoArbol(ConstantesJs.idVector,t,ConstantesJs.id);
+				RESULT.addHijos(t1);
+				RESULT.setPosicion(tleft, tright);
+			:}
+			|id:t LISTA_OPCIONESID
+			{:
+				RESULT = new NodoArbol(ConstantesJs.llamadasMetodosNativos,t,ConstantesJs.id);
+				RESULT.addHijos(o);
+				RESULT.setPosicion(tleft, tright);
+			:}
+			
+			|S_LLAMADA_METODO:t
+			{:
+				RESULT = t;
+			:}
+			;
+
+
+		
+TERMINALES_PUNTUALES::= cadena:t
+			{:
+				RESULT = new NodoArbol(ConstantesJs.cadena,t,ConstantesJs.tipoCadena);
+				RESULT.setPosicion(tleft, tright);
+			:}
+			| t_true:t
+			{:
+				RESULT = new NodoArbol(ConstantesJs.booleano_true,t,ConstantesJs.tipoBooleano);
+				RESULT.setPosicion(tleft, tright);
+			:}
+			| t_false:t
+			{:
+				RESULT = new NodoArbol(ConstantesJs.booleano_false,t,ConstantesJs.tipoBooleano);
+				RESULT.setPosicion(tleft, tright);
+			:}
+			|numero:t
+			{:
+				RESULT = new NodoArbol(ConstantesJs.numero,t,ConstantesJs.tipoNumero);
+				RESULT.setPosicion(tleft, tright);
+			:};
+
+LISTA_OPCIONESID::= LISTA_OPCIONESID punto OPCIONES_ID
+				   |punto OPCIONES_ID
+ 
+OPCIONES_ID::= descendentes parentesisa parentesisc
+			|ascendente parentesisa parentesisc
+			| invertir parentesisa parentesisc 
+			| maximo parentesisa parentesisc 
+			| filter parentesisa id parentesisc 
+			| buscar parentesisa id parentesisc
+			| map parentesisa id parentesisc
+			| reduce parentesisa id parentesisc
+			| todos parentesisa id parentesisc
+			| alguno parentesisa id parentesisc
+			| S_LLAMADA_METODO
+			;
+
+LISTA_PARAMETROS ::= LISTA_PARAMETROS coma OP_LOGICAS
+					| OP_LOGICAS;
+
+S_LLAMADA_METODO::= id parentesisc parentesisc
+			| id parentesisc LISTA_PARAMETROS parentesisc;

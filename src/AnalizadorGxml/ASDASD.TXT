@@ -1,0 +1,28 @@
+
+crearArrayDesdeArchivo parentesisa parentesisc puntoycoma;
+
+
+leerGxml parentesisa OP_LOGICAS parentesisc puntoycoma
+
+obtenerporEtiqueta parentesisa OP_LOGICAS parentesisc puntoycoma
+
+obtenerporId parentesisa OP_LOGICAS parentesisc puntoycoma
+
+obtenerpornombre parentesisa OP_LOGICAS parentesisc puntoycoma
+
+crearVentana parentesisa OP_LOGICAS coma, OP_LOGICAS coma,OP_LOGICAS coma  parentesisc puntoycoma
+
+crearContenedor parentesisa OP_LOGICAS coma OP_LOGICAS coma OP_LOGICAS coma OP_LOGICAS coma OP_LOGICAS  coma OP_LOGICAS parentesisc 
+
+crearTexto parentesisa OP_LOGICAS coma OP_LOGICAS coma OP_LOGICAS coma OP_LOGICAS coma OP_LOGICAS coma OP_LOGICAS coma OP_LOGICAS coma OP_LOGICAS parentesisc 
+
+crearCajaTexto parentesisa OP_LOGICAS coma OP_LOGICAS coma OP_LOGICAS coma OP_LOGICAS coma OP_LOGICAS 
+                coma OP_LOGICAS coma OP_LOGICAS coma OP_LOGICAS coma OP_LOGICAS
+                coma OP_LOGICAS coma OP_LOGICAS parentesisc
+
+crearCajaTexto parentesisa OP_LOGICAS coma OP_LOGICAS coma OP_LOGICAS coma OP_LOGICAS coma OP_LOGICAS 
+                coma OP_LOGICAS coma OP_LOGICAS coma OP_LOGICAS coma OP_LOGICAS
+                coma OP_LOGICAS coma OP_LOGICAS parentesisc
+
+crearControlNumero parentesisa OP_LOGICAS coma OP_LOGICAS coma OP_LOGICAS coma OP_LOGICAS coma OP_LOGICAS 
+                coma OP_LOGICAS coma OP_LOGICAS coma OP_LOGICAS parentesisc

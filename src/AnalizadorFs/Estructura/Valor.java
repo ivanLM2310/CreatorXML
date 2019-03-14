@@ -18,6 +18,8 @@ public class Valor {
     int etqTipo;
 
     int proveniente;
+    
+   
 
     public Valor(Object val, int etq) {
         this.valor = val;
@@ -33,38 +35,12 @@ public class Valor {
                 valor = val;
                 break;
             case ConstantesFs.TIPO_NUMERO:
-                
-                  
-                
+
                 valor = Double.parseDouble(val);
                 break;
 
         }
         etqTipo = etq;
-    }
-
-    public Valor(int tamaño, int etq) {
-        switch (etq) {
-            case ConstantesFs.TIPO_VECTOR:
-                Valor[] v = new Valor[tamaño];
-                valor = v;
-                break;
-
-        }
-        this.etqTipo = etq;
-    }
-
-    public Valor(LinkedList<Valor> nodo, int etq) {
-        switch (etq) {
-            case ConstantesFs.TIPO_VECTOR:
-                Valor[] v = new Valor[nodo.size()];
-                for (int i = 0; i < v.length; i++) {
-                    v[i] = nodo.get(i);
-                }
-                valor = v;
-                break;
-        }
-        this.etqTipo = etq;
     }
 
     public Object getValor() {
@@ -94,13 +70,14 @@ public class Valor {
             } else {
                 return "falso";
             }
-        }else if (etqTipo == ConstantesFs.TIPO_NUMERO){
+        } else if (etqTipo == ConstantesFs.TIPO_NUMERO) {
             double num = getNumber();
-            if(num % 1 == 0 && num<999999999){
-                int i = (int)num;
+            if (num % 1 == 0 && num < 999999999) {
+                int i = (int) num;
                 return Integer.toString(i);
             }
         }
+        
         return valor.toString();
     }
 
@@ -109,7 +86,7 @@ public class Valor {
     }
 
     public ArrayList<Valor> getVector() {
-        return ( ArrayList<Valor>) valor;
+        return (ArrayList<Valor>) valor;
     }
 
     public boolean isNull() {
@@ -122,6 +99,37 @@ public class Valor {
 
     }
 
+    public Valor getCopia() {
+        Object vNuevo;
+        switch (etqTipo) {
+            case ConstantesFs.VECTOR_HETEROGENEO:
+            case ConstantesFs.VECTOR_HOMOGENEO:{
+                ArrayList<Valor> vector =getVector();
+                ArrayList<Valor> vectorN = new ArrayList();
+                int tam = vector.size();
+                for (int i = 0; i < tam; i++) {
+                    vectorN.add(vector.get(i).getCopia());
+                }
+                vNuevo = vectorN;
+                break;
+            }
+            case ConstantesFs.TIPO_OBJETO: {
+                vNuevo = ((Objeto)valor).getCopia();
+                break;
+            }
+            default: {
+                 vNuevo = valor;
+                break;
+            }
+        }
+        return new Valor(vNuevo,etqTipo);
+    }
+    
+    public void setValorTipo(Object objeto, int tipo){
+        this.etqTipo = tipo;
+        valor = objeto;
+    }
+    
     public void copiarValor(Valor v) {
         this.etqTipo = v.etqTipo;
         this.valor = v.valor;
@@ -138,12 +146,12 @@ public class Valor {
     public boolean isProveniente(int proveniente) {
         return this.proveniente == proveniente;
     }
-    
-    public boolean isVectorHomogeneo(int tipo){
-        if(valor instanceof ArrayList){
+
+    public boolean isVectorHomogeneo(int tipo) {
+        if (valor instanceof ArrayList) {
             ArrayList<Valor> temp = (ArrayList<Valor>) valor;
-            for(Valor v : temp){
-                if(!v.isTipoIgual(tipo)){
+            for (Valor v : temp) {
+                if (!v.isTipoIgual(tipo)) {
                     return false;
                 }
             }

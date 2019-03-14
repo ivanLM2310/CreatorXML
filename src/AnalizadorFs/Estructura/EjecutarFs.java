@@ -5,6 +5,7 @@
  */
 package AnalizadorFs.Estructura;
 
+import AnalizadorFs.Interfaz.ComponenteGenerico;
 import AnalizadorGxml.ErrorEjecucion;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -70,20 +71,18 @@ public class EjecutarFs {
         return sentencias;
     }
 
-    public Valor ejecutarMetodo(NodoArbol raizMetodo, TablaAmbientes ambientes) {
+    public Valor ejecutarMetodo(NodoArbol raizMetodo, TablaAmbientes ambientes, ArrayList<Valor> paramValor) {
         //ver que tipo de parametros son los que se van a valuar
-        a +=1;
-        if(a % 100 == 0){
-            System.err.println("salida:"+a);
-        }
-        String cadenaError = "";
-        ArrayList<Valor> parametros = new ArrayList();
 
-        int p = 0;
-        for (NodoArbol parametro : raizMetodo.getElemento(0).getHijosNodo()) {
-            //valores que tiene  cada parametro
-            parametros.add(evaluarExp(parametro, ambientes));
-            p += 1;
+        ArrayList<Valor> parametros = null;
+        if (paramValor != null) {
+            parametros = new ArrayList();
+            for (NodoArbol parametro : raizMetodo.getElemento(0).getHijosNodo()) {
+                //valores que tiene  cada parametro
+                parametros.add(evaluarExp(parametro, ambientes));
+            }
+        } else {
+            parametros = paramValor;
         }
 
         //encontrar metodo en la lista
@@ -92,7 +91,7 @@ public class EjecutarFs {
         if (metodos.containsKey("fun_" + raizMetodo.getValor())) {
 
             String tempAmbiente = strAmbito;
-            strAmbito += "-" + "fun_" + raizMetodo.getValor();
+            strAmbito = "fun_" + raizMetodo.getValor();
             met = metodos.get("fun_" + raizMetodo.getValor());
             TablaEjecucion tablaMetodo = new TablaEjecucion();
 
@@ -147,7 +146,7 @@ public class EjecutarFs {
 
             } else if (nSentencia.isEtiquetaIgual(ConstantesFs.LLAMADA_METODO)) {
                 //metodos que no retornan nada
-                ejecutarMetodo(nSentencia, ambientes);
+                ejecutarMetodo(nSentencia, ambientes, null);
                 //evaluarMetodo(ClaseActual, (NodoEjecutarMetodo) nSentencia, variablesLocales);
             } else if (nSentencia.isEtiquetaIgual(ConstantesFs.IMPRIMIR)) {
                 ejecutarImprimir(nSentencia, ambientes);
@@ -179,21 +178,22 @@ public class EjecutarFs {
     public void ejecutarDeclaracion(NodoArbol raiz, TablaAmbientes ambientes) {
 
         if (raiz.getTamañoH() == 1) {
+            //solo declaracion sin valor al final
             for (NodoArbol v : raiz.getElemento(0).getHijosNodo()) {
                 if (!ambientes.getUltimo().variables.containsKey(v.getValor())) {
-                    ambientes.add_a_Ambiente(v.getValor(), new Valor("", ConstantesFs.TIPO_NULL));
+                    ambientes.add_a_Ambiente(v.getValor(), new Valor("", ConstantesFs.TIPO_INDEFINIDO));
                 } else {
                     detectarError("ya existe una variable con el nombre:" + v.getValor(), ambientes, v);
                 }
             }
-
         } else if (raiz.getTamañoH() == 2) {
+            //declaracion con una asignacion final
             NodoArbol ultimo = null;
             int i = 0;
             for (i = 0; i < raiz.getElemento(0).getTamañoH() - 1; i++) {
                 NodoArbol v = raiz.getElemento(0).getElemento(i);
                 if (!ambientes.getUltimo().variables.containsKey(v.getValor())) {
-                    ambientes.add_a_Ambiente(v.getValor(), new Valor("", ConstantesFs.TIPO_NULL));
+                    ambientes.add_a_Ambiente(v.getValor(), new Valor("", ConstantesFs.TIPO_INDEFINIDO));
                 } else {
                     detectarError("ya existe una variable con el nombre:" + v.getValor(), ambientes, v);
                 }
@@ -227,8 +227,9 @@ public class EjecutarFs {
     }
 
     int a = 0;
+
     public Valor ejecutarRetornar(NodoArbol raiz, TablaAmbientes ambientes) {
-        
+
         if (!raiz.isVaciaH()) {
             Valor v = evaluarExp(raiz.getElemento(0), ambientes);
             v.setProveniente(ConstantesFs.RETORNO_VALOR);
@@ -734,6 +735,7 @@ public class EjecutarFs {
     public Valor evaluarElemento(NodoArbol raizOperacion, TablaAmbientes ambientes) {
 
         switch (raizOperacion.getConstTipo()) {
+            case ConstantesFs.TIPO_NULL:
             case ConstantesFs.TIPO_BOOLEANO:
             case ConstantesFs.TIPO_CADENA:
             case ConstantesFs.TIPO_NUMERO:
@@ -742,11 +744,17 @@ public class EjecutarFs {
                 for (int i = ambientes.getNumeroAmbientes() - 1; i >= 0; i--) {
                     if (ambientes.getElemento(i).variables.containsKey(raizOperacion.getValor())) {
                         if (raizOperacion.getTamañoH() == 0) {
-
+                            return ambientes.getElemento(i).variables.get(raizOperacion.getValor());
                         } else if (raizOperacion.getTamañoH() == 1) {
+                            Valor val = ambientes.getElemento(i).variables.get(raizOperacion.getValor());
+                            if (val.getValor() instanceof ComponenteGenerico) {
 
+                            } else if (raizOperacion.getElemento(0).isEtiquetaIgual(ConstantesFs.LISTA_PUNTO)) {
+
+                                Valor valPunto = evaluarPunto(raizOperacion.getElemento(0), ambientes, val);
+                                return valPunto;
+                            }
                         }
-                        return ambientes.getElemento(i).variables.get(raizOperacion.getValor());
                     }
                 }
                 return detectarError("la variable \"" + raizOperacion.getValor() + "\" no ha sido declarada", ambientes, raizOperacion);
@@ -763,11 +771,16 @@ public class EjecutarFs {
                                     ArrayList vectorCons = v.getVector();
                                     int numIndice = (int) indice.getNumber();
                                     Valor indiceVector = (Valor) vectorCons.get(numIndice);
+                                    if (raizOperacion.getTamañoH() == 1) {
+                                        return indiceVector;
+                                    } else if (raizOperacion.getTamañoH() == 2) {
+                                        if (raizOperacion.getElemento(1).isEtiquetaIgual(ConstantesFs.LISTA_PUNTO)) {
 
-                                    if (raizOperacion.getTamañoH() == 2) {
-
+                                            Valor valPunto = evaluarPunto(raizOperacion.getElemento(0), ambientes, indiceVector);
+                                            return valPunto;
+                                        }
                                     }
-                                    return indiceVector;
+
                                 } catch (Exception e) {
                                     return detectarError("se tubo un problema con el indice \"" + raizOperacion.getValor() + "\" no es un numero", ambientes, raizOperacion);
                                 }
@@ -783,35 +796,51 @@ public class EjecutarFs {
             }
         }
         switch (raizOperacion.getConstEtiqueta()) {
-
             case ConstantesFs.LLAMADAS_METODOS_NATIVOS: {
+                //creardesdearchivo
+                //lleergxml
 
                 break;
             }
             case ConstantesFs.LLAMADA_METODO: {
-                Valor retornoMetodo = ejecutarMetodo(raizOperacion, ambientes);
-                if (!retornoMetodo.isTipoIgual(ConstantesFs.RETORNO_METODO)) {
-                    return retornoMetodo;
-                } else {
-                    return detectarError("el metodo \"" + raizOperacion.getValor() + "\" no retorna ningun valor", ambientes, raizOperacion);
-                }
+                switch (raizOperacion.getValor()) {
+                    case "crearventana": {
 
+                        break;
+                    }
+                    case "leergxml": {
+
+                        break;
+                    }
+                    case "creardesdearchivo": {
+
+                        break;
+                    }
+                    default: {
+                        Valor retornoMetodo = ejecutarMetodo(raizOperacion, ambientes, null);
+                        if (!retornoMetodo.isTipoIgual(ConstantesFs.RETORNO_METODO)) {
+                            return retornoMetodo;
+                        } else {
+                            return detectarError("el metodo \"" + raizOperacion.getValor() + "\" no retorna ningun valor", ambientes, raizOperacion);
+                        }
+                    }
+                }
             }
         }
         return new Valor("", ConstantesFs.TIPO_NULL);
 
     }
 
-    public Valor evaluarPunto(NodoArbol raizOperacion, TablaAmbientes ambientes, Valor vAnterior) {
+    public Valor evaluarPunto(NodoArbol raizOperacion, TablaAmbientes ambientes, Valor primerValor) {
         int tamTotal = raizOperacion.getTamañoH();
         NodoArbol actual;
+        Valor vAnterior = primerValor.getCopia();
         for (int i = 0; i < tamTotal; i++) {
             actual = raizOperacion.getElemento(i);
             if (vAnterior.isTipoIgual(ConstantesFs.TIPO_OBJETO)) {
                 if (actual.isEtiquetaIgual(ConstantesFs.ID)) {
                     Objeto ob = (Objeto) vAnterior.valor;
-                    vAnterior = ob.getValor(actual.valor);
-
+                    vAnterior.copiarValor(ob.getValor(actual.valor));
                 }
             } else if (vAnterior.isTipoIgual(ConstantesFs.VECTOR_HOMOGENEO)) {
                 if (actual.isEtiquetaIgual(ConstantesFs.LLAMADAS_METODOS_NATIVOS)) {
@@ -826,6 +855,7 @@ public class EjecutarFs {
                                     }
                                 });
                                 vAnterior.setValor(var);
+
                             } else if (vAnterior.isVectorHomogeneo(ConstantesFs.TIPO_BOOLEANO)) {
                                 ArrayList<Valor> var = vAnterior.getVector();
                                 Collections.sort(var, new Comparator<Valor>() {
@@ -835,7 +865,11 @@ public class EjecutarFs {
                                     }
                                 });
                                 vAnterior.setValor(var);
+                            } else {
+                                //error
+                                return detectarError("El Vector No Valido Para La Operacion Nativa \"" + actual.getTextoConst(actual.constTipo) + "\" Para La Variable \"" + raizOperacion.valor + "\"", ambientes, raizOperacion);
                             }
+
                             break;
                         }
                         case ConstantesFs.ASCENDENTE: {
@@ -857,6 +891,8 @@ public class EjecutarFs {
                                     }
                                 });
                                 vAnterior.setValor(var);
+                            } else {
+                                return detectarError("El Vector No Valido Para La Operacion Nativa \"" + actual.getTextoConst(actual.constTipo) + "\" Para La Variable \"" + raizOperacion.valor + "\"", ambientes, raizOperacion);
                             }
                             break;
                         }
@@ -871,7 +907,6 @@ public class EjecutarFs {
                             break;
                         }
                         case ConstantesFs.MAXIMO: {
-
                             ArrayList<Valor> var = vAnterior.getVector();
                             if (vAnterior.isVectorHomogeneo(ConstantesFs.TIPO_NUMERO)) {
 
@@ -883,11 +918,12 @@ public class EjecutarFs {
                                         numSalida = (numSalida < var.get(j).getNumber()) ? var.get(j).getNumber() : numSalida;
                                     }
                                     vAnterior.setValor(numSalida);
-                                } else {
-                                    vAnterior = new Valor("", ConstantesFs.TIPO_NULL);
+                                    vAnterior.setEtqTipo(ConstantesFs.TIPO_NUMERO);
+                                    break;
                                 }
+                            } else {
+                                return detectarError("El Vector No Valido Para La Operacion Nativa \"" + actual.getTextoConst(actual.constTipo) + "\" Para La Variable \"" + raizOperacion.valor + "\"", ambientes, raizOperacion);
                             }
-                            vAnterior = new Valor("", ConstantesFs.TIPO_NULL);
                             break;
                         }
                         case ConstantesFs.MINIMO: {
@@ -902,33 +938,230 @@ public class EjecutarFs {
                                         numSalida = (numSalida > var.get(j).getNumber()) ? var.get(j).getNumber() : numSalida;
                                     }
                                     vAnterior.setValor(numSalida);
-                                } else {
-                                    vAnterior = new Valor("", ConstantesFs.TIPO_NULL);
+                                    vAnterior.setEtqTipo(ConstantesFs.TIPO_NUMERO);
+                                    break;
                                 }
+                            } else {
+                                return detectarError("El Vector No Valido Para La Operacion Nativa \"" + actual.getTextoConst(actual.constTipo) + "\" Para La Variable \"" + raizOperacion.valor + "\"", ambientes, raizOperacion);
                             }
-                            vAnterior = new Valor("", ConstantesFs.TIPO_NULL);
                             break;
                         }
                         case ConstantesFs.FILTER: {
+
+                            if (metodos.containsKey("fun_" + actual.getValor())) {
+                                NodoArbol metodoA = metodos.get("fun_" + actual.getValor());
+                                if (metodoA.getTamañoH() == 1) {
+                                    ArrayList<Valor> var = vAnterior.getVector();
+                                    ArrayList<Valor> resultado = new ArrayList();
+                                    ArrayList<Valor> valoresV = new ArrayList();
+                                    valoresV.add(null);
+                                    for (Valor item : var) {
+                                        valoresV.set(0, item);
+                                        Valor v = ejecutarMetodo(metodoA, ambientes, valoresV);
+                                        if (v.isTipoIgual(ConstantesFs.TIPO_BOOLEANO)) {
+                                            if (v.getBoolean()) {
+                                                resultado.add(item);
+                                            }
+                                        } else {
+                                            return detectarError("El Metodo Que Se Quiere Ejecutar Para FILTER, retorna algo diferente a Booleano", ambientes, raizOperacion);
+                                        }
+                                    }
+                                    vAnterior.setValorTipo(resultado, ConstantesFs.VECTOR_HOMOGENEO);
+
+                                } else {
+                                    return detectarError("El Metodo Que Se Quiere Ejecutar Para FILTER, no tiene el numero de parametros correctos", ambientes, raizOperacion);
+                                }
+                            } else {
+                                //el metodo no existe
+                                return detectarError("El Metodo Que Se Quiere Ejecutar Para FILTER, no existe", ambientes, raizOperacion);
+                            }
                             break;
                         }
                         case ConstantesFs.BUSCAR: {
+                            if (metodos.containsKey("fun_" + actual.getValor())) {
+                                NodoArbol metodoA = metodos.get("fun_" + actual.getValor());
+                                if (metodoA.getTamañoH() == 1) {
+                                    ArrayList<Valor> var = vAnterior.getVector();
+                                    Valor resultado = null;
+                                    ArrayList<Valor> valoresV = new ArrayList();
+                                    valoresV.add(null);
+                                    for (Valor item : var) {
+                                        valoresV.set(0, item);
+                                        Valor v = ejecutarMetodo(metodoA, ambientes, valoresV);
+                                        if (v.isTipoIgual(ConstantesFs.TIPO_BOOLEANO)) {
+                                            if (v.getBoolean()) {
+                                                resultado = item;
+                                                break;
+                                            }
+                                        } else {
+                                            return detectarError("El Metodo Que Se Quiere Ejecutar Para BUSCAR, retorna algo diferente a Booleano", ambientes, raizOperacion);
+                                        }
+                                    }
+                                    if (resultado != null) {
+                                        vAnterior.setValorTipo(resultado, resultado.etqTipo);
+                                    } else {
+                                        return detectarError("El Metodo Que Se Quiere Ejecutar Para BUSCAR, No encontro ninguna coincidencia, indefinido", ambientes, raizOperacion);
+                                    }
+                                } else {
+                                    return detectarError("El Metodo Que Se Quiere Ejecutar Para BUSCAR, el metodo no tiene el numero de parametros correctos", ambientes, raizOperacion);
+                                }
+                            } else {
+                                return detectarError("El Metodo Que Se Quiere Ejecutar Para BUSCAR, No Existe", ambientes, raizOperacion);
+                            }
                             break;
                         }
                         case ConstantesFs.MAP: {
+                            if (metodos.containsKey("fun_" + actual.getValor())) {
+                                NodoArbol metodoA = metodos.get("fun_" + actual.getValor());
+                                if (metodoA.getTamañoH() == 1) {
+                                    ArrayList<Valor> var = vAnterior.getVector();
+                                    ArrayList<Valor> resultado = new ArrayList();
+                                    ArrayList<Valor> valoresV = new ArrayList();
+                                    valoresV.add(null);
+                                    for (Valor item : var) {
+                                        valoresV.set(0, item);
+                                        Valor v = ejecutarMetodo(metodoA, ambientes, valoresV);
+                                        resultado.add(v);
+                                    }
+                                    vAnterior.setValorTipo(resultado, ConstantesFs.VECTOR_HOMOGENEO);
+                                } else {
+                                    return detectarError("El Metodo Que Se Quiere Ejecutar Para MAP, el metodo no tiene el numero de parametros correctos", ambientes, raizOperacion);
+                                }
+                            } else {
+                                return detectarError("El Metodo Que Se Quiere Ejecutar Para MAP, No Existe", ambientes, raizOperacion);
+                            }
                             break;
                         }
                         case ConstantesFs.REDUCE: {
+                            if (vAnterior.isVectorHomogeneo(ConstantesFs.TIPO_NUMERO)) {
+
+                                if (metodos.containsKey("fun_" + actual.getValor())) {
+                                    NodoArbol metodoA = metodos.get("fun_" + actual.getValor());
+                                    if (metodoA.getTamañoH() == 2) {
+                                        ArrayList<Valor> var = vAnterior.getVector();
+                                        double resultado = 0;
+                                        ArrayList<Valor> valoresV = new ArrayList();
+                                        Object obN = 0;
+                                        valoresV.add(new Valor(obN, ConstantesFs.TIPO_NUMERO));
+                                        valoresV.add(null);
+                                        for (Valor item : var) {
+                                            valoresV.set(1, item);
+                                            Valor v = ejecutarMetodo(metodoA, ambientes, valoresV);
+                                            if (v.isTipoIgual(ConstantesFs.TIPO_NUMERO)) {
+                                                resultado = v.getNumber();
+                                                valoresV.set(0, new Valor(resultado, ConstantesFs.TIPO_NUMERO));
+                                            } else {
+                                                return detectarError("El Metodo Que Se Quiere Ejecutar Para REDUCE, Retorna Algo invalido", ambientes, raizOperacion);
+                                            }
+                                        }
+                                        vAnterior.setValorTipo(resultado, ConstantesFs.TIPO_NUMERO);
+                                    } else {
+                                        return detectarError("El Metodo Que Se Quiere Ejecutar Para REDUCE, no tiene el numero de parametros correctos", ambientes, raizOperacion);
+                                    }
+                                } else {
+                                    return detectarError("El Metodo Que Se Quiere Ejecutar Para REDUCE, No Existe", ambientes, raizOperacion);
+                                }
+
+                            } else if (vAnterior.isVectorHomogeneo(ConstantesFs.TIPO_CADENA)) {
+                                if (metodos.containsKey("fun_" + actual.getValor())) {
+                                    NodoArbol metodoA = metodos.get("fun_" + actual.getValor());
+                                    if (metodoA.getTamañoH() == 2) {
+                                        ArrayList<Valor> var = vAnterior.getVector();
+                                        double resultado = 0;
+                                        ArrayList<Valor> valoresV = new ArrayList();
+                                        Object obN = "";
+                                        valoresV.add(new Valor(obN, ConstantesFs.TIPO_CADENA));
+                                        valoresV.add(null);
+                                        for (Valor item : var) {
+                                            valoresV.set(1, item);
+                                            Valor v = ejecutarMetodo(metodoA, ambientes, valoresV);
+                                            if (v.isTipoIgual(ConstantesFs.TIPO_CADENA)) {
+                                                resultado = v.getNumber();
+                                                valoresV.set(0, new Valor(resultado, ConstantesFs.TIPO_CADENA));
+                                            } else {
+                                                return detectarError("El Metodo Que Se Quiere Ejecutar Para REDUCE, Retorna Algo invalido", ambientes, raizOperacion);
+                                            }
+                                        }
+                                        vAnterior.setValorTipo(resultado, ConstantesFs.TIPO_CADENA);
+                                    } else {
+                                        return detectarError("El Metodo Que Se Quiere Ejecutar Para REDUCE, no tiene el numero de parametros correctos", ambientes, raizOperacion);
+                                    }
+                                } else {
+                                    return detectarError("El Metodo Que Se Quiere Ejecutar Para REDUCE, No Existe", ambientes, raizOperacion);
+                                }
+                            }
                             break;
                         }
                         case ConstantesFs.TODOS: {
+                            if (metodos.containsKey("fun_" + actual.getValor())) {
+                                NodoArbol metodoA = metodos.get("fun_" + actual.getValor());
+                                if (metodoA.getTamañoH() == 1) {
+                                    ArrayList<Valor> var = vAnterior.getVector();
+                                    Valor resultado = null;
+                                    ArrayList<Valor> valoresV = new ArrayList();
+                                    valoresV.add(null);
+                                    for (Valor item : var) {
+                                        valoresV.set(0, item);
+                                        Valor v = ejecutarMetodo(metodoA, ambientes, valoresV);
+                                        if (v.isTipoIgual(ConstantesFs.TIPO_BOOLEANO)) {
+                                            if (!v.getBoolean()) {
+                                                resultado = item;
+                                                break;
+                                            }
+                                        } else {
+                                            return detectarError("El Metodo Que Se Quiere Ejecutar Para TODOS, Retorna algo invalido", ambientes, raizOperacion);
+                                        }
+                                    }
+                                    if (resultado != null) {
+                                        vAnterior.setValorTipo(false, ConstantesFs.TIPO_BOOLEANO);
+                                    } else {
+                                        vAnterior.setValorTipo(true, ConstantesFs.TIPO_BOOLEANO);
+                                    }
+                                } else {
+                                    return detectarError("El Metodo Que Se Quiere Ejecutar Para TODOS, Numero de Parametros invalidos", ambientes, raizOperacion);
+                                }
+                            } else {
+                                return detectarError("El Metodo Que Se Quiere Ejecutar Para TODOS, No Existe", ambientes, raizOperacion);
+                            }
                             break;
                         }
                         case ConstantesFs.ALGUNO: {
+                            if (metodos.containsKey("fun_" + actual.getValor())) {
+                                NodoArbol metodoA = metodos.get("fun_" + actual.getValor());
+                                if (metodoA.getTamañoH() == 1) {
+                                    ArrayList<Valor> var = vAnterior.getVector();
+                                    Valor resultado = null;
+                                    ArrayList<Valor> valoresV = new ArrayList();
+                                    valoresV.add(null);
+                                    for (Valor item : var) {
+                                        valoresV.set(0, item);
+                                        Valor v = ejecutarMetodo(metodoA, ambientes, valoresV);
+                                        if (v.isTipoIgual(ConstantesFs.TIPO_BOOLEANO)) {
+                                            if (v.getBoolean()) {
+                                                resultado = item;
+                                                break;
+                                            }
+                                        } else {
+                                            return detectarError("El Metodo Que Se Quiere Ejecutar Para ALGUNO, Retorno algo invalido", ambientes, raizOperacion);
+                                        }
+                                    }
+                                    if (resultado != null) {
+                                        vAnterior.setValorTipo(false, ConstantesFs.TIPO_BOOLEANO);
+                                    } else {
+                                        vAnterior.setValorTipo(true, ConstantesFs.TIPO_BOOLEANO);
+                                    }
+                                } else {
+                                    return detectarError("El Metodo Que Se Quiere Ejecutar Para ALGUNO, Numero de Parametros invalidos", ambientes, raizOperacion);
+                                }
+                            } else {
+                                return detectarError("El Metodo Que Se Quiere Ejecutar Para ALGUNO, No Existe", ambientes, raizOperacion);
+                            }
                             break;
                         }
                     }
                 }
+            } else if (vAnterior.isTipoIgual(ConstantesFs.LLAMADA_METODO)) {
+
             }
 
         }

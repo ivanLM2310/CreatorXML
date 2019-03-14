@@ -89,6 +89,7 @@ public class ConstantesFs {
     public static final int TIPO_NUMERO = 1553;
     public static final int TIPO_NULL = 1554;
     public static final int TIPO_VECTOR = 1555;
+    //tipo vector solo sirve para el arbol, despues se convierte en vector homogeneo o heterogenneo
     public static final int TIPO_OBJETO = 1556;
     public static final int RETORNO_VALOR = 1557;
     public static final int RETORNO_BREAK = 1558;
@@ -98,6 +99,23 @@ public class ConstantesFs {
     public static final int BOOLEANO_FALSE = 1562;
     
     public static final int VECTOR_HOMOGENEO = 1563;
-    public static final int VECTOR_HETEROGENEO= 156;
+    public static final int VECTOR_HETEROGENEO= 1564;
+    public static final int TIPO_INDEFINIDO= 1565;
+    public static final int TIPO_GXML= 1566;
+    
+    public static final int INTERFAZ_VENTANA= 1566;
+    public static final int INTERFAZ_CONTENEDOR= 1566;
+    public static final int INTERFAZ_TEXTO= 1566;
+    public static final int INTERFAZ_CAJATEXTO= 1566;
+    public static final int INTERFAZ_AREATEXTO= 1566;
+    public static final int INTERFAZ_CONTROLNUM= 1566;
+    public static final int INTERFAZ_DESPLEGABLE= 1566;
+    public static final int INTERFAZ_BOTON= 1566;
+    public static final int INTERFAZ_IMAGEN= 1566;
+    public static final int INTERFAZ_REPRODUCTOR= 1566;
+    public static final int INTERFAZ_VIDEO= 1566;
+    public static final int INTERFAZ_ALCLIC= 1566;
+    public static final int INTERFAZ_ALCARGAR= 1566;
+    
 
 }

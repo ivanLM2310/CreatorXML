@@ -7,6 +7,7 @@ package AnalizadorFs.Estructura;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Set;
 
 /**
  *
@@ -18,6 +19,10 @@ public class Objeto {
 
     public Objeto() {
         valores = new LinkedHashMap();
+    }
+    
+    public Objeto(Map<String, Valor> val) {
+        valores = val;
     }
     
     public void addAtributoValor(String clave, Valor val){
@@ -32,5 +37,14 @@ public class Objeto {
             return valores.get(clave);
         }
         return new Valor("", ConstantesFs.TIPO_NULL);
+    }
+    
+    public Valor getCopia(){
+        Set<String> keys = valores.keySet();
+        Map<String, Valor> valNuevo = new LinkedHashMap();
+        for(String k:keys){
+            valNuevo.put(k, valores.get(k).getCopia());
+        }
+        return new Valor(new Objeto(valNuevo),ConstantesFs.TIPO_OBJETO);
     }
 }

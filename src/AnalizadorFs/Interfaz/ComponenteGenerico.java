@@ -3,29 +3,26 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package AnalizadorFs.Estructura;
+package AnalizadorFs.Interfaz;
 
 import java.awt.Component;
+
+
 
 /**
  *
  * @author ivanl
  */
-public class ObjInterfaz {
+public abstract class ComponenteGenerico {
 
-    Component elemento;
     int x;
     int y;
     int alto;
     int ancho;
+    String  id= "";
+    
 
-    public Component get() {
-        return elemento;
-    }
-
-    public void set(Component elemento) {
-        this.elemento = elemento;
-    }
+    public abstract Component get();
 
     public int getX() {
         return x;
@@ -59,9 +56,14 @@ public class ObjInterfaz {
         this.ancho = ancho;
     }
     
-    public void crearContenedor(){
-    
+    public String getId() {
+        return id;
     }
+
+    public void setId(String id) {
+        this.id = id;
+    }
+
     
 
 }

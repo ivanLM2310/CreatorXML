@@ -6,6 +6,8 @@
 package AnalizadorFs.Estructura;
 
 import AnalizadorFs.Interfaz.ComponenteGenerico;
+import AnalizadorFs.Interfaz.InterfazContenedor;
+import AnalizadorFs.Interfaz.InterfazVentana;
 import AnalizadorGxml.ErrorEjecucion;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -225,8 +227,6 @@ public class EjecutarFs {
         }
         return detectarError("la variable a la que le intenta asignar no existe:" + raiz.getValor(), ambientes, raiz);
     }
-
-    int a = 0;
 
     public Valor ejecutarRetornar(NodoArbol raiz, TablaAmbientes ambientes) {
 
@@ -748,7 +748,12 @@ public class EjecutarFs {
                         } else if (raizOperacion.getTamañoH() == 1) {
                             Valor val = ambientes.getElemento(i).variables.get(raizOperacion.getValor());
                             if (val.getValor() instanceof ComponenteGenerico) {
-
+                                NodoArbol nodoLlamada = raizOperacion.getElemento(0);
+                                //
+                                ///
+                                /*
+                                
+                                 */
                             } else if (raizOperacion.getElemento(0).isEtiquetaIgual(ConstantesFs.LISTA_PUNTO)) {
 
                                 Valor valPunto = evaluarPunto(raizOperacion.getElemento(0), ambientes, val);
@@ -805,7 +810,25 @@ public class EjecutarFs {
             case ConstantesFs.LLAMADA_METODO: {
                 switch (raizOperacion.getValor()) {
                     case "crearventana": {
-
+                        if (raizOperacion.getElemento(0).getTamañoH() == 4) {
+                            ArrayList<Valor> parametrosLlamada = new ArrayList();
+                            for (NodoArbol parametro : raizOperacion.getElemento(0).getHijosNodo()) {
+                                //valores que tiene  cada parametro
+                                parametrosLlamada.add(evaluarExp(parametro, ambientes));
+                            }
+                            if (parametrosLlamada.get(0).isTipoIgual(ConstantesFs.TIPO_CADENA)
+                                    && parametrosLlamada.get(1).isTipoIgual(ConstantesFs.TIPO_NUMERO)
+                                    && parametrosLlamada.get(2).isTipoIgual(ConstantesFs.TIPO_NUMERO)
+                                    && parametrosLlamada.get(3).isTipoIgual(ConstantesFs.TIPO_CADENA)) {
+                                /////////////////////////////////////////////////////////
+                                InterfazVentana vent = new InterfazVentana(parametrosLlamada.get(0).getString(), (int) parametrosLlamada.get(1).getNumber(), (int) parametrosLlamada.get(2).getNumber(), parametrosLlamada.get(3).getString());
+                                vent.show();
+                                Object oVent = vent;
+                                return new Valor(oVent, ConstantesFs.INTERFAZ_VENTANA);
+                            } else {
+                                //error
+                            }
+                        }
                         break;
                     }
                     case "leergxml": {
@@ -828,6 +851,55 @@ public class EjecutarFs {
             }
         }
         return new Valor("", ConstantesFs.TIPO_NULL);
+
+    }
+
+    public Valor evaluarFunInterfaz(NodoArbol lista, TablaAmbientes ambientes, Valor primerValor) {
+
+        NodoArbol actual;
+        int tamTotal = lista.getTamañoH();
+        for (int i = 0; i < tamTotal; i++) {
+            actual = lista.getElemento(i);
+            if (primerValor.isTipoIgual(ConstantesFs.INTERFAZ_VENTANA)) {
+                if (actual.getValor().equals("crearcontenedor")&&actual.getTamañoH() == 6 ) {
+                    ArrayList<Valor> parametrosLlamada = new ArrayList();
+                    for (NodoArbol parametro : actual.getHijosNodo()) {
+                        //valores que tiene  cada parametro
+                        parametrosLlamada.add(evaluarExp(parametro, ambientes));
+                    }
+                    if (parametrosLlamada.get(0).isTipoIgual(ConstantesFs.TIPO_NUMERO)
+                            && parametrosLlamada.get(1).isTipoIgual(ConstantesFs.TIPO_NUMERO)
+                            && parametrosLlamada.get(2).isTipoIgual(ConstantesFs.TIPO_CADENA)
+                            && parametrosLlamada.get(3).isTipoIgual(ConstantesFs.TIPO_BOOLEANO)
+                            && parametrosLlamada.get(4).isTipoIgual(ConstantesFs.TIPO_NUMERO)
+                            && parametrosLlamada.get(5).isTipoIgual(ConstantesFs.TIPO_NUMERO)) {
+                        /////////////////////////////////////////////////////////
+                        InterfazContenedor cont = new InterfazContenedor(
+                                (int) parametrosLlamada.get(0).getNumber(),
+                                (int) parametrosLlamada.get(1).getNumber(),
+                                parametrosLlamada.get(2).getString(),
+                                parametrosLlamada.get(3).getBoolean(),
+                                (int) parametrosLlamada.get(4).getNumber(),
+                                (int) parametrosLlamada.get(5).getNumber()
+                        );
+
+                        Object oVent = cont;
+                        return new Valor(oVent, ConstantesFs.INTERFAZ_CONTENEDOR);
+                    } else {
+                        //error
+                    }
+                }
+            } else if (primerValor.isTipoIgual(ConstantesFs.INTERFAZ_CONTENEDOR)) {
+                if (actual.) {
+
+                }
+            } else {
+                //error
+            }
+
+            
+
+        }
 
     }
 

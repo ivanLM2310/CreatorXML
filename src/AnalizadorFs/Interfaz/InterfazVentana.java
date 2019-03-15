@@ -23,6 +23,7 @@ public class InterfazVentana extends ComponenteGenerico  {
     ArrayList<InterfazContenedor> contenido;
     JPanel panelPrincipal ;
     
+    
     public InterfazVentana(String color, int alto, int ancho, String id) {
         contenido = new ArrayList();
         this.alto = alto;
@@ -57,6 +58,9 @@ public class InterfazVentana extends ComponenteGenerico  {
         
     }
     
+    public void show(){
+        elemento.setVisible(true);
+    }
     
     public void redimencionar(){
         int xMax = 0;

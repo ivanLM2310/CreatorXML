@@ -7,23 +7,34 @@ package AnalizadorFs.Interfaz;
 
 import java.awt.Component;
 
-
-
 /**
  *
  * @author ivanl
  */
 public abstract class ComponenteGenerico {
-
+    
+    int etiquetaTipo;
+    Component elemento;
     int x;
     int y;
     int alto;
     int ancho;
-    String  id= "";
+    String id = "";
+
+    public Component get(){
+        return elemento;
+    }
+
+    public int getEtiquetaTipo() {
+        return etiquetaTipo;
+    }
+
+    public void setEtiquetaTipo(int etiquetaTipo) {
+        this.etiquetaTipo = etiquetaTipo;
+    }
     
-
-    public abstract Component get();
-
+    
+    
     public int getX() {
         return x;
     }
@@ -55,7 +66,7 @@ public abstract class ComponenteGenerico {
     public void setAncho(int ancho) {
         this.ancho = ancho;
     }
-    
+
     public String getId() {
         return id;
     }
@@ -63,7 +74,5 @@ public abstract class ComponenteGenerico {
     public void setId(String id) {
         this.id = id;
     }
-
-    
 
 }

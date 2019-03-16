@@ -25,6 +25,7 @@ public class InterfazContenedor extends ComponenteGenerico {
     boolean borde;
 
     public InterfazContenedor(int ancho,int alto, String color, boolean borde, int x, int y) {
+        contenido = new ArrayList();
         this.alto = alto;
         this.ancho = ancho;
         this.color = color;
@@ -52,8 +53,20 @@ public class InterfazContenedor extends ComponenteGenerico {
     
     public void add(ObjInterfaz item){
         contenido.add(item);
-        panelPrincipal.add(item.get());
+        Component c = item.get();
+        panelPrincipal.add(c);
         //arreglar tamaños
+        Component[] lista = panelPrincipal.getComponents();
+        int xMax = 0;
+        int yMax = 0;
+        for(Component itemC: lista){
+            int xtam = itemC.getX()+ itemC.getWidth()+10;
+            int ytam = itemC.getY()+ itemC.getHeight()+10;
+            xMax = (xtam > xMax)?xtam:xMax; 
+            yMax = (ytam > yMax)?ytam:yMax; 
+        }
+        panelPrincipal.setPreferredSize(new Dimension(xMax, yMax));
+        
     }
     
     

@@ -914,13 +914,16 @@ public class EjecutarFs {
                         //valores que tiene  cada parametro
                         parametrosLlamada.add(evaluarExp(parametro, ambientes));
                     }
-                    if (actual.getValor().equals("creartexto") && actual.getElemento(0).getTamañoH() == 8) {
-                        if (parametrosLlamada.get(0).isTipoIgual(ConstantesFs.TIPO_NUMERO)
+                    if (actual.getValor().equals("creartexto") 
+                            && actual.getElemento(0).getTamañoH() == 8) {
+                        if (parametrosLlamada.get(0).isTipoIgual(ConstantesFs.TIPO_CADENA)
                                 && parametrosLlamada.get(1).isTipoIgual(ConstantesFs.TIPO_NUMERO)
                                 && parametrosLlamada.get(2).isTipoIgual(ConstantesFs.TIPO_CADENA)
-                                && parametrosLlamada.get(3).isTipoIgual(ConstantesFs.TIPO_BOOLEANO)
+                                && parametrosLlamada.get(3).isTipoIgual(ConstantesFs.TIPO_NUMERO)
                                 && parametrosLlamada.get(4).isTipoIgual(ConstantesFs.TIPO_NUMERO)
-                                && parametrosLlamada.get(5).isTipoIgual(ConstantesFs.TIPO_NUMERO)) {
+                                && parametrosLlamada.get(5).isTipoIgual(ConstantesFs.TIPO_BOOLEANO)
+                                && parametrosLlamada.get(6).isTipoIgual(ConstantesFs.TIPO_BOOLEANO)
+                                && parametrosLlamada.get(7).isTipoIgual(ConstantesFs.TIPO_CADENA)) {
                             /////////////////////////////////////////////////////////
 
                             ob.crearTexto(parametrosLlamada.get(0).getString(),
@@ -943,9 +946,14 @@ public class EjecutarFs {
                         if (parametrosLlamada.get(0).isTipoIgual(ConstantesFs.TIPO_NUMERO)
                                 && parametrosLlamada.get(1).isTipoIgual(ConstantesFs.TIPO_NUMERO)
                                 && parametrosLlamada.get(2).isTipoIgual(ConstantesFs.TIPO_CADENA)
-                                && parametrosLlamada.get(3).isTipoIgual(ConstantesFs.TIPO_BOOLEANO)
-                                && parametrosLlamada.get(4).isTipoIgual(ConstantesFs.TIPO_NUMERO)
-                                && parametrosLlamada.get(5).isTipoIgual(ConstantesFs.TIPO_NUMERO)) {
+                                && parametrosLlamada.get(3).isTipoIgual(ConstantesFs.TIPO_NUMERO)
+                                && parametrosLlamada.get(4).isTipoIgual(ConstantesFs.TIPO_CADENA)
+                                && parametrosLlamada.get(5).isTipoIgual(ConstantesFs.TIPO_NUMERO)
+                                && parametrosLlamada.get(6).isTipoIgual(ConstantesFs.TIPO_NUMERO)
+                                && parametrosLlamada.get(7).isTipoIgual(ConstantesFs.TIPO_BOOLEANO)
+                                && parametrosLlamada.get(8).isTipoIgual(ConstantesFs.TIPO_BOOLEANO)
+                                && parametrosLlamada.get(9).isTipoIgual(ConstantesFs.TIPO_CADENA)
+                                && parametrosLlamada.get(10).isTipoIgual(ConstantesFs.TIPO_CADENA)) {
                             /////////////////////////////////////////////////////////
 
                             ob.crearCajaTexto(
@@ -972,9 +980,14 @@ public class EjecutarFs {
                         if (parametrosLlamada.get(0).isTipoIgual(ConstantesFs.TIPO_NUMERO)
                                 && parametrosLlamada.get(1).isTipoIgual(ConstantesFs.TIPO_NUMERO)
                                 && parametrosLlamada.get(2).isTipoIgual(ConstantesFs.TIPO_CADENA)
-                                && parametrosLlamada.get(3).isTipoIgual(ConstantesFs.TIPO_BOOLEANO)
-                                && parametrosLlamada.get(4).isTipoIgual(ConstantesFs.TIPO_NUMERO)
-                                && parametrosLlamada.get(5).isTipoIgual(ConstantesFs.TIPO_NUMERO)) {
+                                && parametrosLlamada.get(3).isTipoIgual(ConstantesFs.TIPO_NUMERO)
+                                && parametrosLlamada.get(4).isTipoIgual(ConstantesFs.TIPO_CADENA)
+                                && parametrosLlamada.get(5).isTipoIgual(ConstantesFs.TIPO_NUMERO)
+                                && parametrosLlamada.get(6).isTipoIgual(ConstantesFs.TIPO_NUMERO)
+                                && parametrosLlamada.get(7).isTipoIgual(ConstantesFs.TIPO_BOOLEANO)
+                                && parametrosLlamada.get(8).isTipoIgual(ConstantesFs.TIPO_BOOLEANO)
+                                && parametrosLlamada.get(9).isTipoIgual(ConstantesFs.TIPO_CADENA)
+                                && parametrosLlamada.get(10).isTipoIgual(ConstantesFs.TIPO_CADENA)) {
                             /////////////////////////////////////////////////////////
 
                             ob.crearAreaTexto(
@@ -1000,10 +1013,12 @@ public class EjecutarFs {
                     } else if (actual.getValor().equals("crearcontrolnumerico") && actual.getElemento(0).getTamañoH() == 8) {
                         if (parametrosLlamada.get(0).isTipoIgual(ConstantesFs.TIPO_NUMERO)
                                 && parametrosLlamada.get(1).isTipoIgual(ConstantesFs.TIPO_NUMERO)
-                                && parametrosLlamada.get(2).isTipoIgual(ConstantesFs.TIPO_CADENA)
-                                && parametrosLlamada.get(3).isTipoIgual(ConstantesFs.TIPO_BOOLEANO)
+                                && parametrosLlamada.get(2).isTipoIgual(ConstantesFs.TIPO_NUMERO)
+                                && parametrosLlamada.get(3).isTipoIgual(ConstantesFs.TIPO_NUMERO)
                                 && parametrosLlamada.get(4).isTipoIgual(ConstantesFs.TIPO_NUMERO)
-                                && parametrosLlamada.get(5).isTipoIgual(ConstantesFs.TIPO_NUMERO)) {
+                                && parametrosLlamada.get(5).isTipoIgual(ConstantesFs.TIPO_NUMERO)
+                                && parametrosLlamada.get(6).isTipoIgual(ConstantesFs.TIPO_NUMERO)
+                                && parametrosLlamada.get(7).isTipoIgual(ConstantesFs.TIPO_CADENA)) {
                             /////////////////////////////////////////////////////////
 
                             ob.crearControNumerico(

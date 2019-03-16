@@ -55,7 +55,7 @@ public class InterfazVentana extends ComponenteGenerico  {
     public void add(InterfazContenedor item){
         contenido.add(item);
         panelPrincipal.add(item.get());
-        
+        redimencionar();
     }
     
     public void show(){
@@ -65,9 +65,10 @@ public class InterfazVentana extends ComponenteGenerico  {
     public void redimencionar(){
         int xMax = 0;
         int yMax = 0;
-        for(InterfazContenedor item: contenido){
-            int xtam = item.elemento.getX()+ item.elemento.getWidth()+10;
-            int ytam = item.elemento.getY()+ item.elemento.getHeight()+10;
+        Component[] lista = panelPrincipal.getComponents();
+        for(Component item: lista){
+            int xtam = item.getX()+ item.getWidth()+10;
+            int ytam = item.getY()+ item.getHeight()+10;
             xMax = (xtam > xMax)?xtam:xMax; 
             yMax = (ytam > yMax)?ytam:yMax; 
         }

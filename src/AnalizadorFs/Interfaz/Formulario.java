@@ -53,6 +53,7 @@ public class Formulario extends javax.swing.JFrame {
         });
 
         jLabel1.setFont(new java.awt.Font("Tahoma", 3, 13)); // NOI18N
+        jLabel1.setForeground(new java.awt.Color(51, 51, 255));
         jLabel1.setText("jLabel1");
 
         jTextField1.setText("jTextField1");
@@ -136,14 +137,14 @@ public class Formulario extends javax.swing.JFrame {
          scrollP.setPreferredSize(new Dimension(1000, 1000));
         scrollP.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED); //SETTING SCHEME FOR HORIZONTAL BAR
         scrollP.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
-        //panelP.add(scrollP);
+        panelP.add(scrollP);
 
         JTextArea textArea = new JTextArea();
         JScrollPane scroll1 = new JScrollPane(textArea);
         textArea.setBounds(10, 10, 100, 100);
         scroll1.setBounds(10, 10, 100, 100);
 //this.add(textArea); // get rid of this
-        panelP.add(scroll1);
+        p.add(scroll1);
 
         JLabel l = new JLabel();
         l.setText("HOLA MUNDO");

@@ -48,11 +48,12 @@ public class ObjInterfaz extends ComponenteGenerico {
 
         Font fuente = new Font(strFuente, valTip, tamaño);
         l.setFont(fuente);
-        l.setBackground(Color.decode(color));
+        l.setForeground(Color.decode(color));
         Dimension dimL = l.getPreferredSize();
         this.alto = dimL.height;
         this.ancho = dimL.width;
         l.setBounds(x, y, dimL.width, dimL.height);
+        elemento = l;
         return l;
     }
 
@@ -80,6 +81,7 @@ public class ObjInterfaz extends ComponenteGenerico {
         this.alto = alto;
         this.ancho = ancho;
         l.setBounds(x, y, ancho, alto);
+        elemento = l;
         return l;
     }
 
@@ -112,7 +114,7 @@ public class ObjInterfaz extends ComponenteGenerico {
         l.setFont(fuente);
         this.alto = alto;
         this.ancho = ancho;
-
+        elemento = l;
         return l;
     }
 
@@ -127,7 +129,7 @@ public class ObjInterfaz extends ComponenteGenerico {
         this.alto = alto;
         this.ancho = ancho;
         l.setBounds(x, y, ancho, alto);
-
+        elemento = l;
         return l;
     }
 
@@ -150,6 +152,7 @@ public class ObjInterfaz extends ComponenteGenerico {
         this.alto = alto;
         this.ancho = ancho;
         l.setBounds(x, y, ancho, alto);
+        elemento = l;
         return l;
     }
 
@@ -172,6 +175,7 @@ public class ObjInterfaz extends ComponenteGenerico {
                 //jButton1ActionPerformed(evt);
             }
         });
+        elemento = l;
         return l;
     }
 

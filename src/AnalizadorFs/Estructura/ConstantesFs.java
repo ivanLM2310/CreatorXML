@@ -79,6 +79,7 @@ public class ConstantesFs {
     public static final int IGUAL = 1542;
     public static final int MINIMO = 1543;
     public static final int RETORNO_CICLO = 1544;
+    public static final int LLAMADA_ID = 1545;
     
     
     
@@ -103,19 +104,19 @@ public class ConstantesFs {
     public static final int TIPO_INDEFINIDO= 1565;
     public static final int TIPO_GXML= 1566;
     
-    public static final int INTERFAZ_VENTANA= 1566;
-    public static final int INTERFAZ_CONTENEDOR= 1566;
-    public static final int INTERFAZ_TEXTO= 1566;
-    public static final int INTERFAZ_CAJATEXTO= 1566;
-    public static final int INTERFAZ_AREATEXTO= 1566;
-    public static final int INTERFAZ_CONTROLNUM= 1566;
-    public static final int INTERFAZ_DESPLEGABLE= 1566;
-    public static final int INTERFAZ_BOTON= 1566;
-    public static final int INTERFAZ_IMAGEN= 1566;
-    public static final int INTERFAZ_REPRODUCTOR= 1566;
-    public static final int INTERFAZ_VIDEO= 1566;
-    public static final int INTERFAZ_ALCLIC= 1566;
-    public static final int INTERFAZ_ALCARGAR= 1566;
+    public static final int INTERFAZ_VENTANA= 1567;
+    public static final int INTERFAZ_CONTENEDOR= 1568;
+    public static final int INTERFAZ_TEXTO= 1569;
+    public static final int INTERFAZ_CAJATEXTO= 1570;
+    public static final int INTERFAZ_AREATEXTO= 1571;
+    public static final int INTERFAZ_CONTROLNUM= 1572;
+    public static final int INTERFAZ_DESPLEGABLE= 1573;
+    public static final int INTERFAZ_BOTON= 1574;
+    public static final int INTERFAZ_IMAGEN= 1575;
+    public static final int INTERFAZ_REPRODUCTOR= 1576;
+    public static final int INTERFAZ_VIDEO= 1577;
+    public static final int INTERFAZ_ALCLIC= 1578;
+    public static final int INTERFAZ_ALCARGAR= 1579;
     
 
 }

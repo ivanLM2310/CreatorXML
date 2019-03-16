@@ -22,7 +22,7 @@ import creatorxml.Main;
            ErrorEjecucion err = new ErrorEjecucion("Lexico Fs",error,"lexico","lexico",linea,columna);
            Main.errores.add(err);
         }
-	public String contenidoActual;
+    public String contenidoActual;
 
 %}
 
@@ -39,19 +39,23 @@ import creatorxml.Main;
 
 digito=[0-9]
 
-numero 	= {digito}+("\."{digito}+)*
+numero  = {digito}+("\."{digito}+)*
 
-letra 	= [a-zA-ZñÑ]
-exp_id 		= {letra}+({letra}|{digito}|"_")*
+letra   = [a-zA-ZñÑ]
+exp_id      = {letra}+({letra}|{digito}|"_")*
 
 
-cadenat        	= "\""([^"\""])* "\""
+cadenat         = "\""([^"\""])* "\""
 
 
 SPACE   = [\ \r\t\f\t]
 ENTER   = [\ \n]
 
+Comment = {TraditionalComment} | {EndOfLineComment} 
 
+TraditionalComment = "/*" [^*] ~"*/" | "/*" "*"+ "/"
+
+EndOfLineComment = "//" ([^\r\n])* (\r|\n|\r\n)?
   
 
 %%
@@ -82,6 +86,7 @@ ENTER   = [\ \n]
     "todos" { System.out.println("Token1:|"+yytext() + "|"); return new Symbol(symFs.todos, yyline, yycolumn, yytext()); } 
     "defecto" { System.out.println("Token1:|"+yytext() + "|"); return new Symbol(symFs.defecto, yyline, yycolumn, yytext()); } 
     "alguno" { System.out.println("Token1:|"+yytext() + "|"); return new Symbol(symFs.alguno, yyline, yycolumn, yytext()); } 
+    "nulo" { System.out.println("Token1:|"+yytext() + "|"); return new Symbol(symFs.nulo, yyline, yycolumn, yytext()); } 
     "+=" { System.out.println("Token1:|"+yytext() + "|"); return new Symbol(symFs.masigual, yyline, yycolumn, yytext()); } 
     "-=" { System.out.println("Token1:|"+yytext() + "|"); return new Symbol(symFs.menosigual, yyline, yycolumn, yytext()); } 
     "*=" { System.out.println("Token1:|"+yytext() + "|"); return new Symbol(symFs.porigual, yyline, yycolumn, yytext()); } 
@@ -128,6 +133,7 @@ ENTER   = [\ \n]
 }
 
 [\t]            { yycolumn+=4;}
+{Comment}       { }
 {SPACE}         { /*Espacios en blanco, ignorados*/ }
 {ENTER}         { /*Saltos de linea, ignorados*/}
 

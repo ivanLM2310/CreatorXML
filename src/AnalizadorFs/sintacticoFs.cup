@@ -39,7 +39,7 @@ terminal String importar,parentesisa,parentesisc,puntoycoma,var,igual
 	,ascendente,maximo,invertir
 	,filter,buscar,map,reduce,todos,defecto,cadena,alguno
 	,ternario,funcion,corchetea,corchetec
-	,masigual,menosigual,porigual,divigual,minimo;
+	,masigual,menosigual,porigual,divigual,minimo,nulo;
 
 
 non terminal INICIA;
@@ -508,6 +508,12 @@ SENTENCIA::= S_DECLARACION:t
 			|METODO:t
 			{:
 				RESULT = t;
+			:}
+			|OP_LOGICAS:t puntoycoma
+			{:
+				NodoArbol a = new NodoArbol(ConstantesFs.LLAMADA_ID);
+				a.addHijos(t);
+				RESULT = a;
 			:};
 
 OP_LOGICAS::= OP_LOGICAS:n1 or OP_LOGICAS:n2
@@ -732,7 +738,13 @@ TERMINALES_PUNTUALES::= cadena:t
 			{:
 				RESULT = new NodoArbol(ConstantesFs.NUMERO,t,ConstantesFs.TIPO_NUMERO);
 				RESULT.setPosicion(tleft, tright);
-			:};
+			:}
+			|nulo:t
+			{:
+				RESULT = new NodoArbol(ConstantesFs.TIPO_NULL,"nulo",ConstantesFs.TIPO_NULL);
+				RESULT.setPosicion(tleft, tright);
+			:}
+			;
 
 LISTA_OPCIONESID::= LISTA_OPCIONESID:l punto OPCIONES_ID:t
 				   {:

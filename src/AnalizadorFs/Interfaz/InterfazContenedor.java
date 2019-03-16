@@ -36,7 +36,7 @@ public class InterfazContenedor extends ComponenteGenerico {
     private Component crearElemento(){
         JPanel p = new JPanel(null);
         panelPrincipal = p;
-        p.setBackground(Color.red);
+        p.setBackground(Color.decode(color));
         p.setBounds(0, 0, ancho, alto);
         p.setPreferredSize(new Dimension(10, 10));
         JScrollPane scrollP = new JScrollPane();

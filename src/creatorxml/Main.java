@@ -373,6 +373,7 @@ public class Main extends javax.swing.JFrame {
 
         menuArchivo.setText("Archivo");
 
+        itemAbrir.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_A, java.awt.event.InputEvent.CTRL_MASK));
         itemAbrir.setIcon(new javax.swing.ImageIcon(getClass().getResource("/imgs/menu/abrir.png"))); // NOI18N
         itemAbrir.setText("Abrir Archivo");
         itemAbrir.addActionListener(new java.awt.event.ActionListener() {
@@ -382,6 +383,7 @@ public class Main extends javax.swing.JFrame {
         });
         menuArchivo.add(itemAbrir);
 
+        itemNuevo.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_N, java.awt.event.InputEvent.CTRL_MASK));
         itemNuevo.setIcon(new javax.swing.ImageIcon(getClass().getResource("/imgs/menu/nuevo.png"))); // NOI18N
         itemNuevo.setText("Nuevo Archivo");
         itemNuevo.addActionListener(new java.awt.event.ActionListener() {
@@ -391,6 +393,7 @@ public class Main extends javax.swing.JFrame {
         });
         menuArchivo.add(itemNuevo);
 
+        itemGuardar.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_G, java.awt.event.InputEvent.CTRL_MASK));
         itemGuardar.setIcon(new javax.swing.ImageIcon(getClass().getResource("/imgs/menu/guardar.png"))); // NOI18N
         itemGuardar.setText("Guardar Archivo");
         itemGuardar.addActionListener(new java.awt.event.ActionListener() {

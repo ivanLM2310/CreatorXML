@@ -14,6 +14,7 @@ import java.util.ArrayList;
 public class DocumentoFs {
     
     ArrayList<NodoArbol> documentos = new ArrayList();
+    String direccion = "";
     
     public DocumentoFs(NodoArbol raiz){
         this.documentos.add(raiz);
@@ -27,12 +28,16 @@ public class DocumentoFs {
     }
     
     public void ejecutarDocumento(){
-        EjecutarFs e = new EjecutarFs(this);
+        EjecutarFs e = new EjecutarFs(this,direccion);
         e.iniciarEjecucion();
     }
     
     public void addDocumento(NodoArbol nodo){
         
+    }
+    
+    public void setDireccionDocumento(String dir){
+        this.direccion = dir;
     }
     
     

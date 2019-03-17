@@ -156,7 +156,7 @@ public class ObjInterfaz extends ComponenteGenerico {
         return l;
     }
 
-    public Component crearCrearBoton( String strFuente, int tamaño, String color, int x, int y,String referencia, String valor , int alto, int ancho) {
+    public Component crearBoton( String strFuente, int tamaño, String color, int x, int y,String referencia, String valor , int alto, int ancho) {
         
         this.x = x;
         this.y = y;
@@ -179,16 +179,28 @@ public class ObjInterfaz extends ComponenteGenerico {
         return l;
     }
 
-    public Component crearImagen() {
-        return null;
+    public Component crearImagen(String ruta, int x, int y , int ancho, int alto) {
+        PantallaVideo panelVideo = new PantallaVideo();
+        //Dimension b = new Dimension(250, 250);
+        panelVideo.setBounds(new java.awt.Rectangle(x, y, ancho, alto));
+        panelVideo.setDireccion(ruta);
+        return panelVideo;
     }
 
-    public Component crearReproductor() {
-        return null;
+    public Component crearReproductor(String ruta, int x, int y , boolean auto, int ancho, int alto) {
+        PantallaVideo panelVideo = new PantallaVideo();
+        //Dimension b = new Dimension(250, 250);
+        panelVideo.setBounds(new java.awt.Rectangle(x, y, ancho, alto));
+        panelVideo.setDireccion(ruta);
+        return panelVideo;
     }
 
-    public Component crearVideo() {
-        return null;
+    public Component crearVideo(String ruta, int x, int y , boolean auto,int ancho, int alto) {
+        PantallaVideo panelVideo = new PantallaVideo();
+        //Dimension b = new Dimension(250, 250);
+        panelVideo.setBounds(new java.awt.Rectangle(x, y, ancho, alto));
+        panelVideo.setDireccion(ruta);
+        return panelVideo;
     }
 
     public void set(Component elemento) {

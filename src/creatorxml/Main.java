@@ -85,11 +85,11 @@ public class Main extends javax.swing.JFrame {
                 sintactico.parse();
                 NodoArbol doc = sintactico.getNodoRaiz();
                 DocumentoFs fs = new DocumentoFs(doc);
-                
+                fs.setDireccionDocumento(listaPestañas.get(contentPane.getSelectedIndex()).dirProyecto);
                 //doc.setDireccionDocumento(listaPestañas.get(contentPane.getSelectedIndex()).dirProyecto);
                 //doc.compilar();
                 fs.ejecutarDocumento();
-                
+
                 err.printTablaSimbolos(Main.errores);
                 Main.errores = new ArrayList<>();
             } catch (Exception ex) {

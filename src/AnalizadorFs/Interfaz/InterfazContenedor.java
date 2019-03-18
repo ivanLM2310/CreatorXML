@@ -51,10 +51,9 @@ public class InterfazContenedor extends ComponenteGenerico {
         return scrollP;
     }
     
-    public void add(ObjInterfaz item){
+    public void add(ObjInterfaz item,Component comp){
         contenido.add(item);
-        Component c = item.get();
-        panelPrincipal.add(c);
+        panelPrincipal.add(comp);
         //arreglar tamaños
         Component[] lista = panelPrincipal.getComponents();
         int xMax = 0;

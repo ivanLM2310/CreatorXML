@@ -80,7 +80,7 @@ public class ConstantesFs {
     public static final int MINIMO = 1543;
     public static final int RETORNO_CICLO = 1544;
     public static final int LLAMADA_ID = 1545;
-    
+    public static final int ELEMENENTO_OBJETO = 1545;
     
     
     

@@ -126,7 +126,7 @@ public class Formulario extends javax.swing.JFrame {
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
        
-        
+        /*
          JFrame formulario = new JFrame();
         Dimension a = new Dimension(500, 500);
         formulario.setPreferredSize(a);
@@ -139,17 +139,17 @@ public class Formulario extends javax.swing.JFrame {
         JScrollPane scroll = new JScrollPane();
         scroll.setViewportView(panelP);
         formulario.add(scroll);
-        
-        PantallaVideo panelVideo = new PantallaVideo();
+        */
+        //PantallaVideo panelVideo = new PantallaVideo();
         //Dimension b = new Dimension(250, 250);
-        panelVideo.setBounds(new java.awt.Rectangle(150, 150, 200, 300));
+        //panelVideo.setBounds(new java.awt.Rectangle(150, 150, 200, 300));
         //panelVideo.setSize(b);
-        panelP.add(panelVideo);
+        //panelP.add(panelVideo);
         
-        panelVideo.start();
+        //panelVideo.start();
         
         
-        /*
+        
         JFrame formulario = new JFrame();
         Dimension a = new Dimension(500, 500);
         formulario.setPreferredSize(a);
@@ -180,8 +180,8 @@ public class Formulario extends javax.swing.JFrame {
 
         JTextArea textArea = new JTextArea();
         JScrollPane scroll1 = new JScrollPane(textArea);
-        textArea.setBounds(10, 10, 100, 100);
-        scroll1.setBounds(10, 10, 100, 100);
+       //textArea.setBounds(10, 10, 200, 200);
+        scroll1.setBounds(10, 10, 300, 100);
 //this.add(textArea); // get rid of this
         p.add(scroll1);
 
@@ -196,7 +196,7 @@ public class Formulario extends javax.swing.JFrame {
         p.setPreferredSize(new Dimension(dimL.width, dimL.height));
         p.add(l);
 
-        */
+        
     }//GEN-LAST:event_jButton1ActionPerformed
 
     /**

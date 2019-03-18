@@ -31,7 +31,7 @@ public class PantallaVideo extends javax.swing.JPanel {
     private int x = 0;
 
     private EmbeddedMediaPlayerComponent player = new EmbeddedMediaPlayerComponent();
-    private File file;
+
 
     String ruta;
 
@@ -44,12 +44,10 @@ public class PantallaVideo extends javax.swing.JPanel {
         //fileChooser.addChoosableFileFilter(filter);
         // if (fileChooser.showOpenDialog(null) == JFileChooser.APPROVE_OPTION) {
         //file = fileChooser.getSelectedFile();
-        if (file != null) {
-            String salida = file.getAbsolutePath();
+        if (new File(ruta).isFile()) {
 
-            if (new File(ruta).isFile()) {
-                player.getMediaPlayer().playMedia(ruta);
-            }
+            player.getMediaPlayer().playMedia(ruta);
+
             player.getMediaPlayer().setVolume(vol);
 
             //jSlider_progreso.setValue(0);

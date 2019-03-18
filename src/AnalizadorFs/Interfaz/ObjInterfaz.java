@@ -115,7 +115,7 @@ public class ObjInterfaz extends ComponenteGenerico {
         this.alto = alto;
         this.ancho = ancho;
         elemento = l;
-        return l;
+        return scroll1;
     }
 
     public Component crearControNumerico(int alto, int ancho, int maximo, int minimo, int x, int y, int defecto, String nombre) {
@@ -156,12 +156,12 @@ public class ObjInterfaz extends ComponenteGenerico {
         return l;
     }
 
-    public Component crearBoton( String strFuente, int tamaño, String color, int x, int y,String referencia, String valor , int alto, int ancho) {
-        
+    public Component crearBoton(String strFuente, int tamaño, String color, int x, int y, String referencia, String valor, int alto, int ancho) {
+
         this.x = x;
         this.y = y;
         this.etiquetaTipo = ConstantesFs.INTERFAZ_BOTON;
-        JButton l  = new JButton();
+        JButton l = new JButton();
         Font fuente = new Font(strFuente, 0, tamaño);
         l.setFont(fuente);
         l.setText(valor);
@@ -179,27 +179,43 @@ public class ObjInterfaz extends ComponenteGenerico {
         return l;
     }
 
-    public Component crearImagen(String ruta, int x, int y , int ancho, int alto) {
+    public PantallaVideo crearImagen(String ruta, int x, int y, int ancho, int alto) {
+        this.x = x;
+        this.y = y;
+        this.alto = alto;
+        this.ancho = ancho;
         PantallaVideo panelVideo = new PantallaVideo();
         //Dimension b = new Dimension(250, 250);
         panelVideo.setBounds(new java.awt.Rectangle(x, y, ancho, alto));
         panelVideo.setDireccion(ruta);
+        elemento = panelVideo;
         return panelVideo;
     }
 
-    public Component crearReproductor(String ruta, int x, int y , boolean auto, int ancho, int alto) {
+    public PantallaVideo crearReproductor(String ruta, int x, int y, boolean auto, int ancho, int alto) {
+        this.x = x;
+        this.y = y;
+        this.alto = alto;
+        this.ancho = ancho;
+
         PantallaVideo panelVideo = new PantallaVideo();
         //Dimension b = new Dimension(250, 250);
         panelVideo.setBounds(new java.awt.Rectangle(x, y, ancho, alto));
         panelVideo.setDireccion(ruta);
+        elemento = panelVideo;
         return panelVideo;
     }
 
-    public Component crearVideo(String ruta, int x, int y , boolean auto,int ancho, int alto) {
+    public PantallaVideo crearVideo(String ruta, int x, int y, boolean auto, int ancho, int alto) {
+        this.x = x;
+        this.y = y;
+        this.alto = alto;
+        this.ancho = ancho;
         PantallaVideo panelVideo = new PantallaVideo();
         //Dimension b = new Dimension(250, 250);
         panelVideo.setBounds(new java.awt.Rectangle(x, y, ancho, alto));
         panelVideo.setDireccion(ruta);
+        elemento = panelVideo;
         return panelVideo;
     }
 

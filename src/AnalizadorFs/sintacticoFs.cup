@@ -75,7 +75,7 @@ non terminal NodoArbol TERMINALES_PUNTUALES;
 non terminal NodoArbol LISTA_OPCIONESID;
 non terminal NodoArbol OPCIONES_ID;
 non terminal NodoArbol LISTA_PARAMETROS ;
-non terminal NodoArbol S_LLAMADA_METODO;
+non terminal NodoArbol S_LLAMADA_METODO,CONT_OBJETO;
 
 precedence right ternario;
 precedence left or;
@@ -197,7 +197,6 @@ DECLA_VECTOR::= corchetea:w corchetec
 				{:
 					RESULT = e;
 					RESULT.setConstEtiqueta(ConstantesFs.VECTOR_DECLARAR);
-					RESULT.addHijos(e);
 					RESULT.setPosicion(wleft, wright);
 				:};
 
@@ -206,12 +205,28 @@ DECLA_OBJETO::= llavea:w llavec
 					RESULT = new NodoArbol(ConstantesFs.OBJETO_DECLARAR);
 					RESULT.setPosicion(wleft, wright);
 				:}
-				|llavea:w LISTA_PARAMETROS:e llavec
+				|llavea:w CONT_OBJETO:e llavec
 				{:
 					RESULT = e;
 					RESULT.setConstEtiqueta(ConstantesFs.OBJETO_DECLARAR);
-					RESULT.addHijos(e);
 					RESULT.setPosicion(wleft, wright);
+				:};
+
+CONT_OBJETO::= CONT_OBJETO:l coma id:i dospuntos OP_LOGICAS:op
+				{:
+					RESULT = l;
+					NodoArbol elObj = new NodoArbol(ConstantesFs.ELEMENENTO_OBJETO,i);
+					elObj.setPosicion(ileft, iright);
+					elObj.addHijos(op);
+						RESULT.addHijos(elObj);
+				:}
+				|id:i dospuntos OP_LOGICAS:op
+				{:
+					RESULT = new NodoArbol(ConstantesFs.LISTA_PARAMETROS);
+					NodoArbol elObj = new NodoArbol(ConstantesFs.ELEMENENTO_OBJETO,i);
+					elObj.setPosicion(ileft, iright);
+					elObj.addHijos(op);
+						RESULT.addHijos(elObj);
 				:};
 
 S_ASIGNACION::= id:w TIPO_ASIGNACION:ta OP_LOGICAS:e puntoycoma

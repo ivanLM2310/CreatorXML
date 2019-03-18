@@ -222,4 +222,27 @@ public class ObjInterfaz extends ComponenteGenerico {
     public void set(Component elemento) {
         this.elemento = elemento;
     }
+
+    public String getInfoDato() {
+        String textoCont = "";
+        switch (etiquetaTipo) {
+            case ConstantesFs.INTERFAZ_CAJATEXTO:
+                textoCont = "\"" +  ((JTextField)elemento).getText()+ "\"";
+                break;
+            case ConstantesFs.INTERFAZ_AREATEXTO:
+                textoCont = "\"" +((JTextArea)elemento).getText()+"\"";
+                break;
+            case ConstantesFs.INTERFAZ_CONTROLNUM:
+                textoCont =String.valueOf((Integer) ((JSpinner)elemento).getValue());
+                break;
+            case ConstantesFs.INTERFAZ_DESPLEGABLE:
+                textoCont = "\""+  (String) ((JComboBox)elemento).getSelectedItem()+"\"";
+                break;
+                
+        }
+        if(!textoCont.isEmpty()){
+            return "<"+id+">"+ textoCont + "</"+id+">";
+        }
+        return "";
+    }
 }

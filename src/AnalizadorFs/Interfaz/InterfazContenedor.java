@@ -5,6 +5,7 @@
  */
 package AnalizadorFs.Interfaz;
 
+import AnalizadorFs.Estructura.ConstantesFs;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
@@ -24,7 +25,7 @@ public class InterfazContenedor extends ComponenteGenerico {
     JPanel panelPrincipal;
     boolean borde;
 
-    public InterfazContenedor(int ancho,int alto, String color, boolean borde, int x, int y) {
+    public InterfazContenedor(int ancho, int alto, String color, boolean borde, int x, int y) {
         contenido = new ArrayList();
         this.alto = alto;
         this.ancho = ancho;
@@ -34,7 +35,8 @@ public class InterfazContenedor extends ComponenteGenerico {
         this.y = y;
         this.elemento = crearElemento();
     }
-    private Component crearElemento(){
+
+    private Component crearElemento() {
         JPanel p = new JPanel(null);
         panelPrincipal = p;
         p.setBackground(Color.decode(color));
@@ -47,27 +49,35 @@ public class InterfazContenedor extends ComponenteGenerico {
         scrollP.setPreferredSize(new Dimension(1000, 1000));
         scrollP.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED); //SETTING SCHEME FOR HORIZONTAL BAR
         scrollP.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
-        
+
         return scrollP;
     }
-    
-    public void add(ObjInterfaz item,Component comp){
+
+    public void add(ObjInterfaz item, Component comp) {
         contenido.add(item);
         panelPrincipal.add(comp);
         //arreglar tamaños
         Component[] lista = panelPrincipal.getComponents();
         int xMax = 0;
         int yMax = 0;
-        for(Component itemC: lista){
-            int xtam = itemC.getX()+ itemC.getWidth()+10;
-            int ytam = itemC.getY()+ itemC.getHeight()+10;
-            xMax = (xtam > xMax)?xtam:xMax; 
-            yMax = (ytam > yMax)?ytam:yMax; 
+        for (Component itemC : lista) {
+            int xtam = itemC.getX() + itemC.getWidth() + 10;
+            int ytam = itemC.getY() + itemC.getHeight() + 10;
+            xMax = (xtam > xMax) ? xtam : xMax;
+            yMax = (ytam > yMax) ? ytam : yMax;
         }
         panelPrincipal.setPreferredSize(new Dimension(xMax, yMax));
-        
+
     }
-    
-    
+
+    public String getGdato() {
+        String cad = "";
+        int tam = contenido.size();
+        for (int i = 0; i < tam; i++) {
+            cad += (i > 0) ? "\n" + contenido.get(i).getInfoDato() : contenido.get(i).getInfoDato();
+        }
+        return cad;
+
+    }
 
 }

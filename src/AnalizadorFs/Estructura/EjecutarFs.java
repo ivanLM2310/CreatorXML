@@ -36,9 +36,11 @@ public class EjecutarFs {
     public DocumentoFs documentoFinal;
 
     String direccionE = "";
+    Gdato gDato = new Gdato();
 
     public EjecutarFs(DocumentoFs doc, String direccionE) {
         this.direccionE = direccionE;
+        gDato.setDirI(direccionE);
         ambienteGlobal = new TablaAmbientes();
         ambienteGlobal.addAmbiente(new TablaEjecucion("global"));
         strAmbito = "main";
@@ -177,6 +179,13 @@ public class EjecutarFs {
     public void ejecutarLlamadaId(NodoArbol raiz, TablaAmbientes ambientes) {
 
         if (raiz.getElemento(0).isTipoIgual(ConstantesFs.ID)) {
+            if (raiz.getElemento(0).getTamañoH() == 1
+                    && raiz.getElemento(0).getElemento(0).isEtiquetaIgual(ConstantesFs.LISTA_PUNTO)) {
+                Valor v = evaluarElemento(raiz.getElemento(0), ambientes);
+            } else {
+                //error
+            }
+        } else if (raiz.getElemento(0).isTipoIgual(ConstantesFs.LLAMADA_METODO)) {
             if (raiz.getElemento(0).getTamañoH() == 1
                     && raiz.getElemento(0).getElemento(0).isEtiquetaIgual(ConstantesFs.LISTA_PUNTO)) {
                 Valor v = evaluarElemento(raiz.getElemento(0), ambientes);
@@ -772,8 +781,6 @@ public class EjecutarFs {
                             Valor val = ambientes.getElemento(i).variables.get(raizOperacion.getValor());
                             if (val.getValor() instanceof ComponenteGenerico) {
                                 NodoArbol nodoLlamada = raizOperacion.getElemento(0);
-                                //
-                                ///
                                 return evaluarFunInterfaz(nodoLlamada, ambientes, val);
                             } else if (raizOperacion.getElemento(0).isEtiquetaIgual(ConstantesFs.LISTA_PUNTO)) {
 
@@ -801,7 +808,6 @@ public class EjecutarFs {
                                         return indiceVector;
                                     } else if (raizOperacion.getTamañoH() == 2) {
                                         if (raizOperacion.getElemento(1).isEtiquetaIgual(ConstantesFs.LISTA_PUNTO)) {
-
                                             Valor valPunto = evaluarPunto(raizOperacion.getElemento(0), ambientes, indiceVector);
                                             return valPunto;
                                         }
@@ -825,22 +831,22 @@ public class EjecutarFs {
             case ConstantesFs.VECTOR_DECLARAR: {
                 ArrayList<Valor> o = new ArrayList();
                 int totalO = raizOperacion.getTamañoH();
-                for(int num = 0; num < totalO ; num++){
+                for (int num = 0; num < totalO; num++) {
                     o.add(evaluarExp(raizOperacion.getElemento(num), ambientes));
                 }
-                Valor v = new Valor(o,ConstantesFs.TIPO_OBJETO);
-                int tipoA = (v.isVectorHomogeneo())?ConstantesFs.VECTOR_HOMOGENEO:ConstantesFs.VECTOR_HETEROGENEO;
+                Valor v = new Valor(o, ConstantesFs.TIPO_OBJETO);
+                int tipoA = (v.isVectorHomogeneo()) ? ConstantesFs.VECTOR_HOMOGENEO : ConstantesFs.VECTOR_HETEROGENEO;
                 v.setEtqTipo(tipoA);
-                
+
                 return v;
             }
             case ConstantesFs.OBJETO_DECLARAR: {
                 Objeto o = new Objeto();
                 int totalO = raizOperacion.getTamañoH();
-                for(int num = 0; num < totalO ; num++){
+                for (int num = 0; num < totalO; num++) {
                     o.addAtributoValor(raizOperacion.getElemento(num).valor, evaluarExp(raizOperacion.getElemento(num).getElemento(0), ambientes));
                 }
-                return new Valor(o,ConstantesFs.TIPO_OBJETO);
+                return new Valor(o, ConstantesFs.TIPO_OBJETO);
             }
             case ConstantesFs.LLAMADAS_METODOS_NATIVOS: {
                 //creardesdearchivo
@@ -873,11 +879,23 @@ public class EjecutarFs {
                         break;
                     }
                     case "leergxml": {
+                        if (raizOperacion.getElemento(0).getTamañoH() == 1) {
 
+                        }
                         break;
                     }
                     case "creardesdearchivo": {
-
+                        if (raizOperacion.getElemento(0).getTamañoH() == 1) {
+                            Valor valorN = evaluarExp(raizOperacion.getElemento(0).getElemento(0), ambientes);
+                            if (valorN.isTipoIgual(ConstantesFs.TIPO_CADENA)) {
+                                Object vect = gDato.getVectorGdato(valorN.getString());
+                                if (vect != null) {
+                                    return new Valor(vect, ConstantesFs.VECTOR_HOMOGENEO);
+                                } else {
+                                    //error
+                                }
+                            }
+                        } 
                         break;
                     }
                     default: {
@@ -931,6 +949,10 @@ public class EjecutarFs {
                     } else {
                         //error
                     }
+                }else if(actual.getValor().equals("creararraydesdearchivo") && actual.getElemento(0).getTamañoH() == 0){
+                    InterfazVentana contenedor = (InterfazVentana)valorSalida.valor;
+                    String salidaGdato = contenedor.getGdato();
+                    abc
                 }
             } else if (valorSalida.isTipoIgual(ConstantesFs.INTERFAZ_CONTENEDOR)) {
                 if (actual.getTamañoH() == 1) {

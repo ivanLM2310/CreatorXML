@@ -18,8 +18,6 @@ public class Valor {
     int etqTipo;
 
     int proveniente;
-    
-   
 
     public Valor(Object val, int etq) {
         this.valor = val;
@@ -77,7 +75,7 @@ public class Valor {
                 return Integer.toString(i);
             }
         }
-        
+
         return valor.toString();
     }
 
@@ -103,8 +101,8 @@ public class Valor {
         Object vNuevo;
         switch (etqTipo) {
             case ConstantesFs.VECTOR_HETEROGENEO:
-            case ConstantesFs.VECTOR_HOMOGENEO:{
-                ArrayList<Valor> vector =getVector();
+            case ConstantesFs.VECTOR_HOMOGENEO: {
+                ArrayList<Valor> vector = getVector();
                 ArrayList<Valor> vectorN = new ArrayList();
                 int tam = vector.size();
                 for (int i = 0; i < tam; i++) {
@@ -114,22 +112,22 @@ public class Valor {
                 break;
             }
             case ConstantesFs.TIPO_OBJETO: {
-                vNuevo = ((Objeto)valor).getCopia();
+                vNuevo = ((Objeto) valor).getCopia();
                 break;
             }
             default: {
-                 vNuevo = valor;
+                vNuevo = valor;
                 break;
             }
         }
-        return new Valor(vNuevo,etqTipo);
+        return new Valor(vNuevo, etqTipo);
     }
-    
-    public void setValorTipo(Object objeto, int tipo){
+
+    public void setValorTipo(Object objeto, int tipo) {
         this.etqTipo = tipo;
         valor = objeto;
     }
-    
+
     public void copiarValor(Valor v) {
         this.etqTipo = v.etqTipo;
         this.valor = v.valor;
@@ -160,4 +158,23 @@ public class Valor {
         return false;
     }
 
+    public boolean isVectorHomogeneo() {
+
+        if (valor instanceof ArrayList) {
+            ArrayList<Valor> temp = (ArrayList<Valor>) valor;
+            int t = temp.size();
+            if (t > 0) {
+                int tipoI = temp.get(0).getEtqTipo();
+                for (int i = 1; i < t; i++) {
+                    if (!temp.get(i).isTipoIgual(tipoI)) {
+                        return false;
+                    }
+                }
+            }else{
+                return false;
+            }
+            return true;
+        }
+        return false;
+    }
 }

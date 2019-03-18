@@ -823,12 +823,24 @@ public class EjecutarFs {
         }
         switch (raizOperacion.getConstEtiqueta()) {
             case ConstantesFs.VECTOR_DECLARAR: {
+                ArrayList<Valor> o = new ArrayList();
+                int totalO = raizOperacion.getTamañoH();
+                for(int num = 0; num < totalO ; num++){
+                    o.add(evaluarExp(raizOperacion.getElemento(num), ambientes));
+                }
+                Valor v = new Valor(o,ConstantesFs.TIPO_OBJETO);
+                int tipoA = (v.isVectorHomogeneo())?ConstantesFs.VECTOR_HOMOGENEO:ConstantesFs.VECTOR_HETEROGENEO;
+                v.setEtqTipo(tipoA);
                 
-                break;
+                return v;
             }
             case ConstantesFs.OBJETO_DECLARAR: {
-                
-                break;
+                Objeto o = new Objeto();
+                int totalO = raizOperacion.getTamañoH();
+                for(int num = 0; num < totalO ; num++){
+                    o.addAtributoValor(raizOperacion.getElemento(num).valor, evaluarExp(raizOperacion.getElemento(num).getElemento(0), ambientes));
+                }
+                return new Valor(o,ConstantesFs.TIPO_OBJETO);
             }
             case ConstantesFs.LLAMADAS_METODOS_NATIVOS: {
                 //creardesdearchivo

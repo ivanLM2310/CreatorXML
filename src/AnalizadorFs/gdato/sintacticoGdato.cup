@@ -1,0 +1,117 @@
+package AnalizadorFs.gdato;
+
+import AnalizadorFs.Estructura.Objeto;
+import AnalizadorFs.Estructura.ConstantesFs;
+import AnalizadorFs.Estructura.Valor;
+import AnalizadorGxml.ErrorEjecucion;
+import AnalizadorGxml.Estructura.*;
+import java_cup.runtime.*;
+import java.util.ArrayList;
+import creatorxml.Main;
+
+
+parser code
+{: 
+
+	/*---------------Metodo que se llamara cuando sea encontrado algun error-----------------------------*/
+
+	public void syntax_error(Symbol s){
+	   	System.out.println("Error Sintactico -> lexema: |" + s.value +  "| " + "  Columna: "+  s.right + "linea:  "+  (s.left + 1) );
+	   	String error = "el token \"" + s.value + "\" no es valida ";
+                ErrorEjecucion err = new ErrorEjecucion("Sintactico Gxml",error,"sintactico","sintactico",(s.left + 1),s.right);
+                Main.errores.add(err);
+								
+	}
+
+	/*-----------------------------metodo para cuando ya no se pueda recuperar los errores-------------------*/
+
+	public void unrecovered_syntax_error(Symbol s) throws java.lang.Exception{
+	    System.out.println("Error Sintactico No Recuperable-> lexema: |" + s.value + "| Linea: " + s.right + " Columna: " + s.left);
+	}
+
+	public ArrayList<Valor> getVector(){
+
+		return this.action_obj.raiz;
+	}
+
+
+
+:}
+action code
+{:
+	ArrayList<Valor> raiz;
+:}
+
+
+terminal String abrir;  
+terminal String abrird;  
+terminal String etq_lista;
+terminal String etq_principal;
+terminal String cadenaXml;       
+terminal String cerrar;         
+terminal String numero;
+terminal String exp_id;
+
+
+non terminal INICIA;
+non terminal ArrayList<Valor> LISTA;
+non terminal ArrayList<Valor> LISTA_PRINCIPAL;
+non terminal Objeto PRINCIPAL;
+non terminal Objeto LISTA_ELEMENTO;
+non terminal Valor  CONT_ELEMENTO;
+
+
+/*Inicio de la gramatica*/
+start with INICIA;
+
+
+INICIA::= LISTA:doc
+		{:
+			raiz=doc;
+		:};
+
+
+LISTA::= abrir etq_lista  cerrar LISTA_PRINCIPAL:cont abrird etq_lista cerrar
+				{:
+					RESULT = cont;
+
+				:};
+
+LISTA_PRINCIPAL::= LISTA_PRINCIPAL:l PRINCIPAL:p
+				{:
+					RESULT =l;
+					RESULT.add(new Valor(p,ConstantesFs.TIPO_OBJETO));
+				:}
+				|PRINCIPAL:p
+				{:
+					RESULT = new ArrayList();
+					RESULT.add(new Valor(p,ConstantesFs.TIPO_OBJETO));
+				:};
+
+PRINCIPAL::= abrir etq_principal  cerrar LISTA_ELEMENTO:cont abrird etq_principal cerrar
+				{:
+					RESULT = cont;
+				:};
+
+LISTA_ELEMENTO::= LISTA_ELEMENTO:l abrir exp_id:n  cerrar CONT_ELEMENTO:cont abrird exp_id cerrar
+				{:
+					RESULT = l;
+					RESULT.addAtributoValor(n,cont);
+				:}
+				|abrir exp_id:n  cerrar CONT_ELEMENTO:cont abrird exp_id cerrar
+				{:
+					RESULT = new Objeto();
+					RESULT.addAtributoValor(n,cont);
+				:};
+
+CONT_ELEMENTO::= cadenaXml:n
+				{:
+					RESULT = new Valor(n,ConstantesFs.TIPO_CADENA);
+				:}
+				|numero:n
+				{:
+					RESULT = new Valor(n,ConstantesFs.TIPO_NUMERO);
+				:};
+
+
+

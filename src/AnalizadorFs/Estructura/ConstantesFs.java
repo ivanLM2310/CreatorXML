@@ -64,8 +64,8 @@ public class ConstantesFs {
     public static final int REDUCE = 1527;
     public static final int TODOS = 1528;
     public static final int ALGUNO = 1529;
-    public static final int LISTA_PUNTO= 1530;
-    public static final int LISTA_IDS= 1531;
+    public static final int LISTA_PUNTO = 1530;
+    public static final int LISTA_IDS = 1531;
     public static final int OBJETO_DECLARAR = 1532;
     public static final int NUMERO = 1533;
     public static final int TERNARIO = 1534;
@@ -81,10 +81,7 @@ public class ConstantesFs {
     public static final int RETORNO_CICLO = 1544;
     public static final int LLAMADA_ID = 1545;
     public static final int ELEMENENTO_OBJETO = 1545;
-    
-    
-    
-    
+
     public static final int TIPO_CADENA = 1551;
     public static final int TIPO_BOOLEANO = 1552;
     public static final int TIPO_NUMERO = 1553;
@@ -98,25 +95,24 @@ public class ConstantesFs {
     public static final int RETORNO_SI = 1560;
     public static final int BOOLEANO_TRUE = 1561;
     public static final int BOOLEANO_FALSE = 1562;
-    
-    public static final int VECTOR_HOMOGENEO = 1563;
-    public static final int VECTOR_HETEROGENEO= 1564;
-    public static final int TIPO_INDEFINIDO= 1565;
-    public static final int TIPO_GXML= 1566;
-    
-    public static final int INTERFAZ_VENTANA= 1567;
-    public static final int INTERFAZ_CONTENEDOR= 1568;
-    public static final int INTERFAZ_TEXTO= 1569;
-    public static final int INTERFAZ_CAJATEXTO= 1570;
-    public static final int INTERFAZ_AREATEXTO= 1571;
-    public static final int INTERFAZ_CONTROLNUM= 1572;
-    public static final int INTERFAZ_DESPLEGABLE= 1573;
-    public static final int INTERFAZ_BOTON= 1574;
-    public static final int INTERFAZ_IMAGEN= 1575;
-    public static final int INTERFAZ_REPRODUCTOR= 1576;
-    public static final int INTERFAZ_VIDEO= 1577;
-    public static final int INTERFAZ_ALCLIC= 1578;
-    public static final int INTERFAZ_ALCARGAR= 1579;
-    
 
+    public static final int VECTOR_HOMOGENEO = 1563;
+    public static final int VECTOR_HETEROGENEO = 1564;
+    public static final int TIPO_INDEFINIDO = 1565;
+    public static final int TIPO_GXML = 1566;
+
+    public static final int INTERFAZ_VENTANA = 1567;
+    public static final int INTERFAZ_CONTENEDOR = 1568;
+    public static final int INTERFAZ_TEXTO = 1569;
+    public static final int INTERFAZ_CAJATEXTO = 1570;
+    public static final int INTERFAZ_AREATEXTO = 1571;
+    public static final int INTERFAZ_CONTROLNUM = 1572;
+    public static final int INTERFAZ_DESPLEGABLE = 1573;
+    public static final int INTERFAZ_BOTON = 1574;
+    public static final int INTERFAZ_IMAGEN = 1575;
+    public static final int INTERFAZ_REPRODUCTOR = 1576;
+    public static final int INTERFAZ_VIDEO = 1577;
+    public static final int INTERFAZ_ALCLIC = 1578;
+    public static final int INTERFAZ_ALCARGAR = 1579;
+    public static final int INTERFAZ_ALCERRAR = 1580;
 }

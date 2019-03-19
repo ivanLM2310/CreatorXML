@@ -895,7 +895,7 @@ public class EjecutarFs {
                                     //error
                                 }
                             }
-                        } 
+                        }
                         break;
                     }
                     default: {
@@ -949,10 +949,13 @@ public class EjecutarFs {
                     } else {
                         //error
                     }
-                }else if(actual.getValor().equals("creararraydesdearchivo") && actual.getElemento(0).getTamañoH() == 0){
-                    InterfazVentana contenedor = (InterfazVentana)valorSalida.valor;
-                    String salidaGdato = contenedor.getGdato();
-                    abc
+                } else if (actual.getValor().equals("creararraydesdearchivo") && actual.getElemento(0).getTamañoH() == 0) {
+                    InterfazVentana contenedor = (InterfazVentana) valorSalida.valor;
+                    contenedor.escribirGdato();
+                } else if (actual.getValor().equals("alcargar") && actual.getElemento(0).getTamañoH() == 1) {
+                    
+                } else if (actual.getValor().equals("alcerrar") && actual.getElemento(0).getTamañoH() == 1) {
+                    
                 }
             } else if (valorSalida.isTipoIgual(ConstantesFs.INTERFAZ_CONTENEDOR)) {
                 if (actual.getTamañoH() == 1) {
@@ -1151,7 +1154,7 @@ public class EjecutarFs {
                                 && parametrosLlamada.get(2).isTipoIgual(ConstantesFs.TIPO_NUMERO)
                                 && parametrosLlamada.get(3).isTipoIgual(ConstantesFs.TIPO_NUMERO)
                                 && parametrosLlamada.get(4).isTipoIgual(ConstantesFs.TIPO_NUMERO)) {
-                            /////////////////////////////////////////////////////////
+                            ///////////////////////////////////////////////////////
                             String dirRelativa = parametrosLlamada.get(0).getString();
                             if (dirRelativa.length() > 0) {
                                 dirRelativa = (dirRelativa.charAt(0) != '\\' || dirRelativa.charAt(0) != '/') ? "\\" + dirRelativa : dirRelativa;

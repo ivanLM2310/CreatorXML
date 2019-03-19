@@ -6,6 +6,9 @@
 package AnalizadorFs.Interfaz;
 
 import AnalizadorFs.Estructura.ConstantesFs;
+import AnalizadorFs.Estructura.EjecutarFs;
+import AnalizadorFs.Estructura.NodoArbol;
+import AnalizadorFs.Estructura.TablaAmbientes;
 import AnalizadorFs.Estructura.Valor;
 import java.awt.Color;
 import java.awt.Component;
@@ -156,6 +159,23 @@ public class ObjInterfaz extends ComponenteGenerico {
         return l;
     }
 
+    NodoArbol alClic = null;
+    NodoArbol alReferencia = null;
+    EjecutarFs instanciaFs = null;
+    TablaAmbientes ambientes = null;
+
+    public void eventoClic(EjecutarFs instanciaFs, TablaAmbientes ambientes, NodoArbol raiz) {
+        this.alClic = raiz;
+        this.instanciaFs = instanciaFs;
+        this.ambientes = ambientes;
+    }
+    
+     public void aeventoReferencia(EjecutarFs instanciaFs, TablaAmbientes ambientes, NodoArbol raiz) {
+        this.alReferencia = raiz;
+        this.instanciaFs = instanciaFs;
+        this.ambientes = ambientes;
+    }
+
     public Component crearBoton(String strFuente, int tamaño, String color, int x, int y, String referencia, String valor, int alto, int ancho) {
 
         this.x = x;
@@ -172,7 +192,14 @@ public class ObjInterfaz extends ComponenteGenerico {
         l.addActionListener(new java.awt.event.ActionListener() {
             @Override
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                //jButton1ActionPerformed(evt);
+                if (instanciaFs != null && ambientes != null) {
+                    if (alClic != null) {
+                        instanciaFs.evaluarExp(alClic, ambientes);
+                    }
+                    if (alReferencia != null) {
+                        instanciaFs.evaluarExp(alReferencia, ambientes);
+                    }
+                }
             }
         });
         elemento = l;
@@ -227,21 +254,21 @@ public class ObjInterfaz extends ComponenteGenerico {
         String textoCont = "";
         switch (etiquetaTipo) {
             case ConstantesFs.INTERFAZ_CAJATEXTO:
-                textoCont = "\"" +  ((JTextField)elemento).getText()+ "\"";
+                textoCont = "\"" + ((JTextField) elemento).getText() + "\"";
                 break;
             case ConstantesFs.INTERFAZ_AREATEXTO:
-                textoCont = "\"" +((JTextArea)elemento).getText()+"\"";
+                textoCont = "\"" + ((JTextArea) elemento).getText() + "\"";
                 break;
             case ConstantesFs.INTERFAZ_CONTROLNUM:
-                textoCont =String.valueOf((Integer) ((JSpinner)elemento).getValue());
+                textoCont = String.valueOf((Integer) ((JSpinner) elemento).getValue());
                 break;
             case ConstantesFs.INTERFAZ_DESPLEGABLE:
-                textoCont = "\""+  (String) ((JComboBox)elemento).getSelectedItem()+"\"";
+                textoCont = "\"" + (String) ((JComboBox) elemento).getSelectedItem() + "\"";
                 break;
-                
+
         }
-        if(!textoCont.isEmpty()){
-            return "<"+id+">"+ textoCont + "</"+id+">";
+        if (!textoCont.isEmpty()) {
+            return "<" + id + ">" + textoCont + "</" + id + ">";
         }
         return "";
     }

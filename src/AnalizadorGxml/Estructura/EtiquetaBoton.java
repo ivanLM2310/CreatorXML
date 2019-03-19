@@ -86,7 +86,6 @@ public class EtiquetaBoton extends Etiqueta {
 
         String parametros = concatenarComas(fuente, tamaño, color, x, y, referencia, "\"" + textoEtiqueta + "\"", alto, ancho);
         return concatenar("Var", id + "_" + textoVentana, "=", idPadre + "_" + textoVentana + ".CrearBoton(" + parametros + ");\n");
-
     }
 
 }

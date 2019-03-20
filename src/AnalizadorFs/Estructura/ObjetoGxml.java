@@ -154,28 +154,49 @@ public class ObjetoGxml {
         }
     }
 
-    public Valor obtenerPorId(ArrayList<Valor> lista, String etiqueta) {
+    public Valor obtenerPorId( String etiqueta) {
         if (objAtributos.isTipoIgual(ConstantesFs.TIPO_OBJETO)) {
             Objeto objGxml = (Objeto) objAtributos.valor;
             Valor val = objGxml.getValor("id");
             if (!val.isTipoIgual(ConstantesFs.TIPO_NULL)) {
                 if(val.isTipoIgual(ConstantesFs.TIPO_CADENA)){
                     if(val.getString().equals(etiqueta)){
-                        
+                        return val;
                     }
                 }
                 
             }
             int tamContenido = contenido.size();
             for (int i = 0; i < tamContenido; i++) {
-                contenido.get(i).obtenerPorEtiqueta(lista, etiqueta);
+                Valor valRet = contenido.get(i).obtenerPorId(etiqueta);
+                if(!valRet.isNull()){
+                    return valRet;
+                }
             }
         }
-
+        return new Valor("",ConstantesFs.TIPO_NULL);
     }
 
-    public void obtenerPorNombre(ArrayList<Valor> lista, String etiqueta) {
-
+    public Valor obtenerPorNombre( String etiqueta) {
+         if (objAtributos.isTipoIgual(ConstantesFs.TIPO_OBJETO)) {
+            Objeto objGxml = (Objeto) objAtributos.valor;
+            Valor val = objGxml.getValor("nombre");
+            if (!val.isTipoIgual(ConstantesFs.TIPO_NULL)) {
+                if(val.isTipoIgual(ConstantesFs.TIPO_CADENA)){
+                    if(val.getString().equals(etiqueta)){
+                        return val;
+                    }
+                }
+            }
+            int tamContenido = contenido.size();
+            for (int i = 0; i < tamContenido; i++) {
+                Valor valRet = contenido.get(i).obtenerPorId(etiqueta);
+                if(!valRet.isNull()){
+                    return valRet;
+                }
+            }
+        }
+        return new Valor("",ConstantesFs.TIPO_NULL);
     }
 
 }

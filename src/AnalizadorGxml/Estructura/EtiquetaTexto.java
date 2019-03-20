@@ -109,19 +109,19 @@ public class EtiquetaTexto extends Etiqueta {
 
     @Override
     public String generarCodigo(String textoVentana) {
-        //fuente, tamaño, color, x, y , negrita, cursiva,texto
+        //fuente, tamanio, color, x, y , negrita, cursiva,texto
         String id = salidaConversion(Constantes.atb_nombre, "");
         String idPadre = padre.salidaConversion(Constantes.atb_id, "");
 
         String fuente = salidaConversion(Constantes.atb_fuente, "500");
-        String tamaño = salidaConversion(Constantes.atb_tam, "500");
+        String tamanio = salidaConversion(Constantes.atb_tam, "500");
         String color = salidaConversion(Constantes.atb_color, "#F3EEED");
         String x = salidaConversion(Constantes.atb_x, "0");
         String y = salidaConversion(Constantes.atb_y, "0");
         String cursiva = salidaConversion(Constantes.atb_cursiva, "falso");
         String negrita = salidaConversion(Constantes.atb_negrita, "falso");
 
-        String parametros = concatenarComas(fuente, tamaño, color, x, y, negrita, cursiva, "\"" + textoEtiqueta + "\"");
+        String parametros = concatenarComas(fuente, tamanio, color, x, y, negrita, cursiva, "\"" + textoEtiqueta + "\"");
         return concatenar(idPadre + "_" + textoVentana + ".CrearTexto(" + parametros + ");\n");
     }
 

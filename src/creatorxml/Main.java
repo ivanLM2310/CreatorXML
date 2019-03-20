@@ -40,9 +40,9 @@ public class Main extends javax.swing.JFrame {
     public static ArrayList<ErrorEjecucion> errores = new ArrayList();
 
     /* representa un documento abierto */
-    pestaña pestaña = new pestaña();
+    pestania pestania = new pestania();
     /* Metodo para abrir archivos */
-    ArrayList<pestaña> listaPestañas = new ArrayList();
+    ArrayList<pestania> listaPestanias = new ArrayList();
     //public String dirProyecto = "";
     Thread HiloEjecucion;
 
@@ -51,7 +51,7 @@ public class Main extends javax.swing.JFrame {
         initComponents();
         /* cargamos el editor */
         cargar_editor();
-        listaPestañas.add(pestaña);
+        listaPestanias.add(pestania);
     }
 
     /* crea y muestra los componentes del editor  */
@@ -59,39 +59,42 @@ public class Main extends javax.swing.JFrame {
         /* llamada a la libreria que da estilo a los archivos */
         DefaultSyntaxKit.initKit();
         /* creamos un archivo por default */
-        pestaña.textPane = new JEditorPane();
+        pestania.textPane = new JEditorPane();
         /* Mostramos el primer elemento de la lista */
-        JScrollPane scrollPane = new JScrollPane(pestaña.textPane);
+        JScrollPane scrollPane = new JScrollPane(pestania.textPane);
         /* Agregamos el panel al contenedor */
         contentPane.add(scrollPane, "Archvio Gxml");
         /* asignamos estilo a nuestro aarchvo abierto */
-        pestaña.textPane.setContentType("text/xml");
-        pestaña.dirProyecto = new File("").getAbsolutePath();
-        pestaña.tipoArchivo = "Gxml";
+        pestania.textPane.setContentType("text/xml");
+        pestania.dirProyecto = new File("").getAbsolutePath();
+        pestania.tipoArchivo = "Gxml";
 
         /* creacion de todos los efectos del editor */
         CaretMonitor caretMonitor
-                = new jsyntaxpane.actions.CaretMonitor(pestaña.textPane, lblCaretPos);
+                = new jsyntaxpane.actions.CaretMonitor(pestania.textPane, lblCaretPos);
 
     }
 
     public void compilarFs() {
         System.out.println("tam:" + contentPane.getSelectedIndex());
-        if (!"".equals(listaPestañas.get(contentPane.getSelectedIndex()).textPane.getText())) {
+        if (!"".equals(listaPestanias.get(contentPane.getSelectedIndex()).textPane.getText())) {
             try {
-                scannerFs lexicoG = new scannerFs(new BufferedReader(new StringReader(listaPestañas.get(contentPane.getSelectedIndex()).textPane.getText())));
+                scannerFs lexicoG = new scannerFs(new BufferedReader(new StringReader(listaPestanias.get(contentPane.getSelectedIndex()).textPane.getText())));
                 sintacticoFs sintactico = new sintacticoFs(lexicoG);
                 ErrorEjecucion err = new ErrorEjecucion();
                 sintactico.parse();
                 NodoArbol doc = sintactico.getNodoRaiz();
-                DocumentoFs fs = new DocumentoFs(doc);
-                fs.setDireccionDocumento(listaPestañas.get(contentPane.getSelectedIndex()).dirProyecto);
-                //doc.setDireccionDocumento(listaPestañas.get(contentPane.getSelectedIndex()).dirProyecto);
-                //doc.compilar();
-                fs.ejecutarDocumento();
+                if (doc != null) {
+                    DocumentoFs fs = new DocumentoFs(doc);
+                    fs.setDireccionDocumento(listaPestanias.get(contentPane.getSelectedIndex()).dirProyecto);
+                    //doc.setDireccionDocumento(listaPestañas.get(contentPane.getSelectedIndex()).dirProyecto);
+                    //doc.compilar();
+                    fs.ejecutarDocumento();
+                } else {
+                    err.printTablaSimbolos(Main.errores);
+                    Main.errores = new ArrayList<>();
+                }
 
-                err.printTablaSimbolos(Main.errores);
-                Main.errores = new ArrayList<>();
             } catch (Exception ex) {
                 Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
             }
@@ -107,17 +110,17 @@ public class Main extends javax.swing.JFrame {
     public void compilar() {
         /* inicio del analisis */
         System.out.println("tam:" + contentPane.getSelectedIndex());
-        System.out.println(listaPestañas.get(contentPane.getSelectedIndex()).dirProyecto);
+        System.out.println(listaPestanias.get(contentPane.getSelectedIndex()).dirProyecto);
 
-        if (!"".equals(listaPestañas.get(contentPane.getSelectedIndex()).textPane.getText())) {
+        if (!"".equals(listaPestanias.get(contentPane.getSelectedIndex()).textPane.getText())) {
             try {
 
-                scannerGxml lexicoG = new scannerGxml(new BufferedReader(new StringReader(listaPestañas.get(contentPane.getSelectedIndex()).textPane.getText())));
+                scannerGxml lexicoG = new scannerGxml(new BufferedReader(new StringReader(listaPestanias.get(contentPane.getSelectedIndex()).textPane.getText())));
                 sintacticoGxml sintactico = new sintacticoGxml(lexicoG);
                 ErrorEjecucion err = new ErrorEjecucion();
                 sintactico.parse();
                 Documento doc = sintactico.getDocumento();
-                doc.setDireccionDocumento(listaPestañas.get(contentPane.getSelectedIndex()).dirProyecto);
+                doc.setDireccionDocumento(listaPestanias.get(contentPane.getSelectedIndex()).dirProyecto);
                 doc.compilar();
 
                 if (Main.errores.isEmpty()) {
@@ -152,9 +155,9 @@ public class Main extends javax.swing.JFrame {
         }
         File name = fileChooser.getSelectedFile();
 
-        listaPestañas.get(contentPane.getSelectedIndex()).archivo = name;
-        contentPane.setSelectedIndex(listaPestañas.size() - 1);
-        listaPestañas.get(contentPane.getSelectedIndex()).dirProyecto = fileChooser.getCurrentDirectory().getAbsolutePath();
+        listaPestanias.get(contentPane.getSelectedIndex()).archivo = name;
+        contentPane.setSelectedIndex(listaPestanias.size() - 1);
+        listaPestanias.get(contentPane.getSelectedIndex()).dirProyecto = fileChooser.getCurrentDirectory().getAbsolutePath();
         if (name.exists()) {
             if (name.isFile()) {
                 try {
@@ -162,11 +165,11 @@ public class Main extends javax.swing.JFrame {
                     input = new BufferedReader(new FileReader(name));
                     StringBuilder buffer = new StringBuilder();
                     String text;
-                    listaPestañas.get(contentPane.getSelectedIndex()).textPane.setText("");
+                    listaPestanias.get(contentPane.getSelectedIndex()).textPane.setText("");
                     while ((text = input.readLine()) != null) {
                         buffer.append(text).append("\n");
                     }
-                    listaPestañas.get(contentPane.getSelectedIndex()).textPane.setText(buffer.toString());
+                    listaPestanias.get(contentPane.getSelectedIndex()).textPane.setText(buffer.toString());
 
                 } catch (IOException e) {
                     JOptionPane.showMessageDialog(null,
@@ -176,9 +179,9 @@ public class Main extends javax.swing.JFrame {
                 }
             } else if (name.isDirectory()) {
                 String directory[] = name.list();
-                listaPestañas.get(contentPane.getSelectedIndex()).textPane.setText("\n\nContenido del directorio:\n");
+                listaPestanias.get(contentPane.getSelectedIndex()).textPane.setText("\n\nContenido del directorio:\n");
                 for (String directory1 : directory) {
-                    listaPestañas.get(contentPane.getSelectedIndex()).textPane.setText(directory1 + "\n");
+                    listaPestanias.get(contentPane.getSelectedIndex()).textPane.setText(directory1 + "\n");
                 }
             } else {
                 JOptionPane.showMessageDialog(null,
@@ -203,7 +206,7 @@ public class Main extends javax.swing.JFrame {
             }
             System.out.println(selectedString);
 
-            pestaña p = new pestaña();
+            pestania p = new pestania();
             p.dirProyecto = new File("").getAbsolutePath();
             p.textPane = new JEditorPane();
             JScrollPane scrollPane = new JScrollPane(p.textPane);
@@ -212,9 +215,9 @@ public class Main extends javax.swing.JFrame {
             CaretMonitor caretMonitor
                     = new jsyntaxpane.actions.CaretMonitor(p.textPane, lblCaretPos);
             p.tipoArchivo = selectedString;
-            listaPestañas.add(p);
+            listaPestanias.add(p);
 
-            contentPane.setSelectedIndex(listaPestañas.size() - 1);
+            contentPane.setSelectedIndex(listaPestanias.size() - 1);
         } else {
             System.out.println("User cancelled");
         }
@@ -229,10 +232,10 @@ public class Main extends javax.swing.JFrame {
             return;
         }
         File name = fileChooser.getSelectedFile();
-        listaPestañas.get(contentPane.getSelectedIndex()).archivo = name;
+        listaPestanias.get(contentPane.getSelectedIndex()).archivo = name;
         try {
             try (PrintWriter output = new PrintWriter(new FileWriter(name))) {
-                output.write(listaPestañas.get(contentPane.getSelectedIndex()).textPane.getText());
+                output.write(listaPestanias.get(contentPane.getSelectedIndex()).textPane.getText());
             }
         } catch (IOException ioException) {
             JOptionPane.showMessageDialog(null,
@@ -243,13 +246,13 @@ public class Main extends javax.swing.JFrame {
 
     /* Metodo que gurda los cambios de un archvio */
     private void guardar() {
-        if (listaPestañas.get(contentPane.getSelectedIndex()).archivo == null) {
+        if (listaPestanias.get(contentPane.getSelectedIndex()).archivo == null) {
             guardarComo();
         } else {
             try {
                 try (PrintWriter output = new PrintWriter(
-                        new FileWriter(listaPestañas.get(contentPane.getSelectedIndex()).archivo.getName()))) {
-                    output.write(listaPestañas.get(contentPane.getSelectedIndex()).textPane.getText());
+                        new FileWriter(listaPestanias.get(contentPane.getSelectedIndex()).archivo.getName()))) {
+                    output.write(listaPestanias.get(contentPane.getSelectedIndex()).textPane.getText());
                 }
             } catch (IOException ioException) {
                 JOptionPane.showMessageDialog(null,
@@ -506,21 +509,21 @@ public class Main extends javax.swing.JFrame {
     }//GEN-LAST:event_itemSalirActionPerformed
 
     private void itemCopiarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_itemCopiarActionPerformed
-        listaPestañas.get(contentPane.getSelectedIndex()).textPane.copy();
+        listaPestanias.get(contentPane.getSelectedIndex()).textPane.copy();
     }//GEN-LAST:event_itemCopiarActionPerformed
 
     private void itemCortarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_itemCortarActionPerformed
-        listaPestañas.get(contentPane.getSelectedIndex()).textPane.cut();
+        listaPestanias.get(contentPane.getSelectedIndex()).textPane.cut();
     }//GEN-LAST:event_itemCortarActionPerformed
 
     private void itemPegarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_itemPegarActionPerformed
-        listaPestañas.get(contentPane.getSelectedIndex()).textPane.paste();
+        listaPestanias.get(contentPane.getSelectedIndex()).textPane.paste();
     }//GEN-LAST:event_itemPegarActionPerformed
 
     private void btnRunWithTableActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnRunWithTableActionPerformed
-        if (listaPestañas.get(contentPane.getSelectedIndex()).tipoArchivo.equals("Gxml")) {
+        if (listaPestanias.get(contentPane.getSelectedIndex()).tipoArchivo.equals("Gxml")) {
             compilar();
-        } else if (listaPestañas.get(contentPane.getSelectedIndex()).tipoArchivo.equals("FucionScript")) {
+        } else if (listaPestanias.get(contentPane.getSelectedIndex()).tipoArchivo.equals("FucionScript")) {
             compilarFs();
         }
     }//GEN-LAST:event_btnRunWithTableActionPerformed

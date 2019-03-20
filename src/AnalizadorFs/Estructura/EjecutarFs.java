@@ -86,7 +86,7 @@ public class EjecutarFs {
         //ver que tipo de parametros son los que se van a valuar
 
         ArrayList<Valor> parametros = null;
-        if (paramValor != null) {
+        if (paramValor == null) {
             parametros = new ArrayList();
             for (NodoArbol parametro : raizMetodo.getElemento(0).getHijosNodo()) {
                 //valores que tiene  cada parametro
@@ -106,7 +106,7 @@ public class EjecutarFs {
             met = metodos.get("fun_" + raizMetodo.getValor());
             TablaEjecucion tablaMetodo = new TablaEjecucion();
 
-            for (int i = 0; i < met.getElemento(0).getTamañoH(); i++) {
+            for (int i = 0; i < met.getElemento(0).getTamanioH(); i++) {
                 //aqui creo una nueva tabla Ejecucion solo del metodo para apilarla
                 tablaMetodo.variables.put(met.getElemento(0).getElemento(i).getValor(), parametros.get(i));
             }
@@ -181,14 +181,14 @@ public class EjecutarFs {
     public void ejecutarLlamadaId(NodoArbol raiz, TablaAmbientes ambientes) {
 
         if (raiz.getElemento(0).isTipoIgual(ConstantesFs.ID)) {
-            if (raiz.getElemento(0).getTamañoH() == 1
+            if (raiz.getElemento(0).getTamanioH() == 1
                     && raiz.getElemento(0).getElemento(0).isEtiquetaIgual(ConstantesFs.LISTA_PUNTO)) {
                 Valor v = evaluarElemento(raiz.getElemento(0), ambientes);
             } else {
                 //error
             }
         } else if (raiz.getElemento(0).isTipoIgual(ConstantesFs.LLAMADA_METODO)) {
-            if (raiz.getElemento(0).getTamañoH() == 1
+            if (raiz.getElemento(0).getTamanioH() == 1
                     && raiz.getElemento(0).getElemento(0).isEtiquetaIgual(ConstantesFs.LISTA_PUNTO)) {
                 Valor v = evaluarElemento(raiz.getElemento(0), ambientes);
             } else {
@@ -213,7 +213,7 @@ public class EjecutarFs {
 
     public void ejecutarDeclaracion(NodoArbol raiz, TablaAmbientes ambientes) {
 
-        if (raiz.getTamañoH() == 1) {
+        if (raiz.getTamanioH() == 1) {
             //solo declaracion sin valor al final
             for (NodoArbol v : raiz.getElemento(0).getHijosNodo()) {
                 if (!ambientes.getUltimo().variables.containsKey(v.getValor())) {
@@ -222,11 +222,11 @@ public class EjecutarFs {
                     detectarError("ya existe una variable con el nombre:" + v.getValor(), ambientes, v);
                 }
             }
-        } else if (raiz.getTamañoH() == 2) {
+        } else if (raiz.getTamanioH() == 2) {
             //declaracion con una asignacion final
             NodoArbol ultimo = null;
             int i = 0;
-            for (i = 0; i < raiz.getElemento(0).getTamañoH() - 1; i++) {
+            for (i = 0; i < raiz.getElemento(0).getTamanioH() - 1; i++) {
                 NodoArbol v = raiz.getElemento(0).getElemento(i);
                 if (!ambientes.getUltimo().variables.containsKey(v.getValor())) {
                     ambientes.add_a_Ambiente(v.getValor(), new Valor("", ConstantesFs.TIPO_INDEFINIDO));
@@ -777,9 +777,9 @@ public class EjecutarFs {
             case ConstantesFs.ID: {
                 for (int i = ambientes.getNumeroAmbientes() - 1; i >= 0; i--) {
                     if (ambientes.getElemento(i).variables.containsKey(raizOperacion.getValor())) {
-                        if (raizOperacion.getTamañoH() == 0) {
+                        if (raizOperacion.getTamanioH() == 0) {
                             return ambientes.getElemento(i).variables.get(raizOperacion.getValor());
-                        } else if (raizOperacion.getTamañoH() == 1) {
+                        } else if (raizOperacion.getTamanioH() == 1) {
                             Valor val = ambientes.getElemento(i).variables.get(raizOperacion.getValor());
                             if (val.getValor() instanceof ComponenteGenerico) {
                                 NodoArbol nodoLlamada = raizOperacion.getElemento(0);
@@ -806,9 +806,9 @@ public class EjecutarFs {
                                     ArrayList vectorCons = v.getVector();
                                     int numIndice = (int) indice.getNumber();
                                     Valor indiceVector = (Valor) vectorCons.get(numIndice);
-                                    if (raizOperacion.getTamañoH() == 1) {
+                                    if (raizOperacion.getTamanioH() == 1) {
                                         return indiceVector;
-                                    } else if (raizOperacion.getTamañoH() == 2) {
+                                    } else if (raizOperacion.getTamanioH() == 2) {
                                         if (raizOperacion.getElemento(1).isEtiquetaIgual(ConstantesFs.LISTA_PUNTO)) {
                                             Valor valPunto = evaluarPunto(raizOperacion.getElemento(0), ambientes, indiceVector);
                                             return valPunto;
@@ -832,7 +832,7 @@ public class EjecutarFs {
         switch (raizOperacion.getConstEtiqueta()) {
             case ConstantesFs.VECTOR_DECLARAR: {
                 ArrayList<Valor> o = new ArrayList();
-                int totalO = raizOperacion.getTamañoH();
+                int totalO = raizOperacion.getTamanioH();
                 for (int num = 0; num < totalO; num++) {
                     o.add(evaluarExp(raizOperacion.getElemento(num), ambientes));
                 }
@@ -844,7 +844,7 @@ public class EjecutarFs {
             }
             case ConstantesFs.OBJETO_DECLARAR: {
                 Objeto o = new Objeto();
-                int totalO = raizOperacion.getTamañoH();
+                int totalO = raizOperacion.getTamanioH();
                 for (int num = 0; num < totalO; num++) {
                     o.addAtributoValor(raizOperacion.getElemento(num).valor, evaluarExp(raizOperacion.getElemento(num).getElemento(0), ambientes));
                 }
@@ -859,7 +859,7 @@ public class EjecutarFs {
             case ConstantesFs.LLAMADA_METODO: {
                 switch (raizOperacion.getValor()) {
                     case "crearventana": {
-                        if (raizOperacion.getElemento(0).getTamañoH() == 4) {
+                        if (raizOperacion.getElemento(0).getTamanioH() == 4) {
                             ArrayList<Valor> parametrosLlamada = new ArrayList();
                             for (NodoArbol parametro : raizOperacion.getElemento(0).getHijosNodo()) {
                                 //valores que tiene  cada parametro
@@ -881,7 +881,7 @@ public class EjecutarFs {
                         break;
                     }
                     case "leergxml": {
-                        if (raizOperacion.getElemento(0).getTamañoH() == 1) {
+                        if (raizOperacion.getElemento(0).getTamanioH() == 1) {
                             Valor param = evaluarExp(raizOperacion.getElemento(0).getElemento(0), ambientes);
                             if (param.isTipoIgual(ConstantesFs.TIPO_CADENA)) {
                                 String ruta = param.getString();
@@ -906,7 +906,7 @@ public class EjecutarFs {
                         break;
                     }
                     case "creardesdearchivo": {
-                        if (raizOperacion.getElemento(0).getTamañoH() == 1) {
+                        if (raizOperacion.getElemento(0).getTamanioH() == 1) {
                             Valor valorN = evaluarExp(raizOperacion.getElemento(0).getElemento(0), ambientes);
                             if (valorN.isTipoIgual(ConstantesFs.TIPO_CADENA)) {
                                 Object vect = gDato.getVectorGdato(valorN.getString());
@@ -937,11 +937,11 @@ public class EjecutarFs {
     public Valor evaluarFunInterfaz(NodoArbol lista, TablaAmbientes ambientes, Valor primerValor) {
         NodoArbol actual;
         Valor valorSalida = primerValor;
-        int tamTotal = lista.getTamañoH();
+        int tamTotal = lista.getTamanioH();
         for (int i = 0; i < tamTotal; i++) {
             actual = lista.getElemento(i);
             if (valorSalida.isTipoIgual(ConstantesFs.INTERFAZ_VENTANA)) {
-                if (actual.getValor().equals("crearcontenedor") && actual.getElemento(0).getTamañoH() == 6) {
+                if (actual.getValor().equals("crearcontenedor") && actual.getElemento(0).getTamanioH() == 6) {
                     ArrayList<Valor> parametrosLlamada = new ArrayList();
                     for (NodoArbol parametro : actual.getElemento(0).getHijosNodo()) {
                         //valores que tiene  cada parametro
@@ -969,28 +969,28 @@ public class EjecutarFs {
                     } else {
                         //error
                     }
-                } else if (actual.getValor().equals("creararraydesdearchivo") && actual.getElemento(0).getTamañoH() == 0) {
+                } else if (actual.getValor().equals("creararraydesdearchivo") && actual.getElemento(0).getTamanioH() == 0) {
                     InterfazVentana contenedor = (InterfazVentana) valorSalida.valor;
                     contenedor.escribirGdato();
-                } else if (actual.getValor().equals("alcargar") && actual.getElemento(0).getTamañoH() == 1) {
+                } else if (actual.getValor().equals("alcargar") && actual.getElemento(0).getTamanioH() == 1) {
                     InterfazVentana vent = (InterfazVentana) valorSalida.valor;
                     vent.alCargar(this, ambientes, actual.getElemento(0).getElemento(0));
-                } else if (actual.getValor().equals("alcerrar") && actual.getElemento(0).getTamañoH() == 1) {
+                } else if (actual.getValor().equals("alcerrar") && actual.getElemento(0).getTamanioH() == 1) {
                     InterfazVentana vent = (InterfazVentana) valorSalida.valor;
                     vent.alCerrar(this, ambientes, actual.getElemento(0).getElemento(0));
-                } else if (actual.getValor().equals("alcargar") && actual.getElemento(0).getTamañoH() == 0) {
+                } else if (actual.getValor().equals("alcargar") && actual.getElemento(0).getTamanioH() == 0) {
                     InterfazVentana vent = (InterfazVentana) valorSalida.valor;
                     vent.alCargar();
-                } else if (actual.getValor().equals("alcerrar") && actual.getElemento(0).getTamañoH() == 0) {
+                } else if (actual.getValor().equals("alcerrar") && actual.getElemento(0).getTamanioH() == 0) {
                     InterfazVentana vent = (InterfazVentana) valorSalida.valor;
                     vent.alCerrar();
                 }
             } else if (valorSalida.isTipoIgual(ConstantesFs.INTERFAZ_CONTENEDOR)) {
-                if (actual.getTamañoH() == 1) {
+                if (actual.getTamanioH() == 1) {
                     ObjInterfaz ob = new ObjInterfaz();
                     ArrayList<Valor> parametrosLlamada = new ArrayList();
 
-                    for (int n = 0; n < actual.getElemento(0).getTamañoH(); n++) {
+                    for (int n = 0; n < actual.getElemento(0).getTamanioH(); n++) {
                         //valores que tiene  cada parametro
 
                         if (actual.getValor().equals("crearboton") && n == 5 && actual.getElemento(0).getElemento(n).isEtiquetaIgual(ConstantesFs.LLAMADA_METODO)) {
@@ -1001,7 +1001,7 @@ public class EjecutarFs {
                     }
 
                     if (actual.getValor().equals("creartexto")
-                            && actual.getElemento(0).getTamañoH() == 8) {
+                            && actual.getElemento(0).getTamanioH() == 8) {
                         if (parametrosLlamada.get(0).isTipoIgual(ConstantesFs.TIPO_CADENA)
                                 && parametrosLlamada.get(1).isTipoIgual(ConstantesFs.TIPO_NUMERO)
                                 && parametrosLlamada.get(2).isTipoIgual(ConstantesFs.TIPO_CADENA)
@@ -1027,7 +1027,7 @@ public class EjecutarFs {
                         } else {
                             //error
                         }
-                    } else if (actual.getValor().equals("crearcajatexto") && actual.getElemento(0).getTamañoH() == 11) {
+                    } else if (actual.getValor().equals("crearcajatexto") && actual.getElemento(0).getTamanioH() == 11) {
                         if (parametrosLlamada.get(0).isTipoIgual(ConstantesFs.TIPO_NUMERO)
                                 && parametrosLlamada.get(1).isTipoIgual(ConstantesFs.TIPO_NUMERO)
                                 && parametrosLlamada.get(2).isTipoIgual(ConstantesFs.TIPO_CADENA)
@@ -1060,7 +1060,7 @@ public class EjecutarFs {
                         } else {
                             //error
                         }
-                    } else if (actual.getValor().equals("crearareatexto") && actual.getElemento(0).getTamañoH() == 11) {
+                    } else if (actual.getValor().equals("crearareatexto") && actual.getElemento(0).getTamanioH() == 11) {
                         if (parametrosLlamada.get(0).isTipoIgual(ConstantesFs.TIPO_NUMERO)
                                 && parametrosLlamada.get(1).isTipoIgual(ConstantesFs.TIPO_NUMERO)
                                 && parametrosLlamada.get(2).isTipoIgual(ConstantesFs.TIPO_CADENA)
@@ -1093,7 +1093,7 @@ public class EjecutarFs {
                         } else {
                             //error
                         }
-                    } else if (actual.getValor().equals("crearcontrolnumerico") && actual.getElemento(0).getTamañoH() == 8) {
+                    } else if (actual.getValor().equals("crearcontrolnumerico") && actual.getElemento(0).getTamanioH() == 8) {
                         if (parametrosLlamada.get(0).isTipoIgual(ConstantesFs.TIPO_NUMERO)
                                 && parametrosLlamada.get(1).isTipoIgual(ConstantesFs.TIPO_NUMERO)
                                 && parametrosLlamada.get(2).isTipoIgual(ConstantesFs.TIPO_NUMERO)
@@ -1121,7 +1121,7 @@ public class EjecutarFs {
                         } else {
                             //error
                         }
-                    } else if (actual.getValor().equals("creardesplegable") && actual.getElemento(0).getTamañoH() == 7) {
+                    } else if (actual.getValor().equals("creardesplegable") && actual.getElemento(0).getTamanioH() == 7) {
                         if (parametrosLlamada.get(0).isTipoIgual(ConstantesFs.TIPO_NUMERO)
                                 && parametrosLlamada.get(1).isTipoIgual(ConstantesFs.TIPO_NUMERO)
                                 && parametrosLlamada.get(2).isTipoIgual(ConstantesFs.VECTOR_HOMOGENEO)
@@ -1147,7 +1147,7 @@ public class EjecutarFs {
                         } else {
                             //error
                         }
-                    } else if (actual.getValor().equals("crearboton") && actual.getElemento(0).getTamañoH() == 9) {
+                    } else if (actual.getValor().equals("crearboton") && actual.getElemento(0).getTamanioH() == 9) {
                         if (parametrosLlamada.get(0).isTipoIgual(ConstantesFs.TIPO_CADENA)
                                 && parametrosLlamada.get(1).isTipoIgual(ConstantesFs.TIPO_NUMERO)
                                 && parametrosLlamada.get(2).isTipoIgual(ConstantesFs.TIPO_CADENA)
@@ -1179,7 +1179,7 @@ public class EjecutarFs {
                         } else {
                             //error
                         }
-                    } else if (actual.getValor().equals("crearimagen") && actual.getElemento(0).getTamañoH() == 5) {
+                    } else if (actual.getValor().equals("crearimagen") && actual.getElemento(0).getTamanioH() == 5) {
                         if (parametrosLlamada.get(0).isTipoIgual(ConstantesFs.TIPO_CADENA)
                                 && parametrosLlamada.get(1).isTipoIgual(ConstantesFs.TIPO_NUMERO)
                                 && parametrosLlamada.get(2).isTipoIgual(ConstantesFs.TIPO_NUMERO)
@@ -1203,7 +1203,7 @@ public class EjecutarFs {
                         } else {
                             //error
                         }
-                    } else if (actual.getValor().equals("crearreproductor") && actual.getElemento(0).getTamañoH() == 6) {
+                    } else if (actual.getValor().equals("crearreproductor") && actual.getElemento(0).getTamanioH() == 6) {
                         if (parametrosLlamada.get(0).isTipoIgual(ConstantesFs.TIPO_CADENA)
                                 && parametrosLlamada.get(1).isTipoIgual(ConstantesFs.TIPO_NUMERO)
                                 && parametrosLlamada.get(2).isTipoIgual(ConstantesFs.TIPO_NUMERO)
@@ -1230,7 +1230,7 @@ public class EjecutarFs {
                         } else {
                             //error
                         }
-                    } else if (actual.getValor().equals("crearvideo") && actual.getElemento(0).getTamañoH() == 6) {
+                    } else if (actual.getValor().equals("crearvideo") && actual.getElemento(0).getTamanioH() == 6) {
                         if (parametrosLlamada.get(0).isTipoIgual(ConstantesFs.TIPO_CADENA)
                                 && parametrosLlamada.get(1).isTipoIgual(ConstantesFs.TIPO_NUMERO)
                                 && parametrosLlamada.get(2).isTipoIgual(ConstantesFs.TIPO_NUMERO)
@@ -1259,7 +1259,7 @@ public class EjecutarFs {
                     }
                 }
             } else if (valorSalida.isTipoIgual(ConstantesFs.INTERFAZ_BOTON)) {
-                if (actual.getValor().equals("alclic") && actual.getElemento(0).getTamañoH() == 1) {
+                if (actual.getValor().equals("alclic") && actual.getElemento(0).getTamanioH() == 1) {
                     if (actual.getElemento(0).getElemento(0).isEtiquetaIgual(ConstantesFs.LLAMADA_METODO)) {
                         ((ObjInterfaz) valorSalida.valor).eventoClic(this, ambientes, actual.getElemento(0).getElemento(0));
                     } else {
@@ -1267,7 +1267,7 @@ public class EjecutarFs {
                     }
                 }
             } else if (valorSalida.isTipoIgual(ConstantesFs.TIPO_GXML)) {
-                if (actual.getValor().equals("obtenerporetiqueta") && actual.getElemento(0).getTamañoH() == 1) {
+                if (actual.getValor().equals("obtenerporetiqueta") && actual.getElemento(0).getTamanioH() == 1) {
                     Valor v = evaluarExp(actual.getElemento(0).getElemento(0), ambientes);
                     if (v.isTipoIgual(ConstantesFs.TIPO_CADENA)) {
                         ArrayList<Valor> listaGxml = new ArrayList();
@@ -1279,13 +1279,13 @@ public class EjecutarFs {
                     } else {
                         //error
                     }
-                } else if (actual.getValor().equals("obtenerporid") && actual.getElemento(0).getTamañoH() == 1) {
+                } else if (actual.getValor().equals("obtenerporid") && actual.getElemento(0).getTamanioH() == 1) {
                     if (actual.getElemento(0).getElemento(0).isEtiquetaIgual(ConstantesFs.LLAMADA_METODO)) {
                         
                     } else {
                         //error
                     }
-                } else if (actual.getValor().equals("obtenerpornombre") && actual.getElemento(0).getTamañoH() == 1) {
+                } else if (actual.getValor().equals("obtenerpornombre") && actual.getElemento(0).getTamanioH() == 1) {
                     if (actual.getElemento(0).getElemento(0).isEtiquetaIgual(ConstantesFs.LLAMADA_METODO)) {
                         
                     } else {
@@ -1300,7 +1300,7 @@ public class EjecutarFs {
     }
 
     public Valor evaluarPunto(NodoArbol raizOperacion, TablaAmbientes ambientes, Valor primerValor) {
-        int tamTotal = raizOperacion.getTamañoH();
+        int tamTotal = raizOperacion.getTamanioH();
         NodoArbol actual;
         Valor vAnterior = primerValor.getCopia();
         for (int i = 0; i < tamTotal; i++) {
@@ -1322,9 +1322,9 @@ public class EjecutarFs {
                                         return v2.getString().compareTo(v1.getString());
                                     }
                                 });
-                                vAnterior.setValor(var);
+                                primerValor.setValor(var);
 
-                            } else if (vAnterior.isVectorHomogeneo(ConstantesFs.TIPO_BOOLEANO)) {
+                            } else if (vAnterior.isVectorHomogeneo(ConstantesFs.TIPO_NUMERO)) {
                                 ArrayList<Valor> var = vAnterior.getVector();
                                 Collections.sort(var, new Comparator<Valor>() {
                                     @Override
@@ -1332,7 +1332,7 @@ public class EjecutarFs {
                                         return new Integer((int) v2.getNumber()).compareTo((int) v1.getNumber());
                                     }
                                 });
-                                vAnterior.setValor(var);
+                                primerValor.setValor(var);
                             } else {
                                 //error
                                 return detectarError("El Vector No Valido Para La Operacion Nativa \"" + actual.getTextoConst(actual.constTipo) + "\" Para La Variable \"" + raizOperacion.valor + "\"", ambientes, raizOperacion);
@@ -1349,7 +1349,7 @@ public class EjecutarFs {
                                         return v1.getString().compareTo(v2.getString());
                                     }
                                 });
-                                vAnterior.setValor(var);
+                                primerValor.setValor(var);
                             } else if (vAnterior.isVectorHomogeneo(ConstantesFs.TIPO_NUMERO)) {
                                 ArrayList<Valor> var = vAnterior.getVector();
                                 Collections.sort(var, new Comparator<Valor>() {
@@ -1358,7 +1358,7 @@ public class EjecutarFs {
                                         return new Integer((int) v1.getNumber()).compareTo((int) v2.getNumber());
                                     }
                                 });
-                                vAnterior.setValor(var);
+                                primerValor.setValor(var);
                             } else {
                                 return detectarError("El Vector No Valido Para La Operacion Nativa \"" + actual.getTextoConst(actual.constTipo) + "\" Para La Variable \"" + raizOperacion.valor + "\"", ambientes, raizOperacion);
                             }
@@ -1371,7 +1371,7 @@ public class EjecutarFs {
                             for (int j = 0; j < tamV; j++) {
                                 nuevo.add(0, vAnterior);
                             }
-                            vAnterior.setValor(nuevo);
+                            primerValor.setValor(nuevo);
                             break;
                         }
                         case ConstantesFs.MAXIMO: {
@@ -1418,7 +1418,7 @@ public class EjecutarFs {
 
                             if (metodos.containsKey("fun_" + actual.getValor())) {
                                 NodoArbol metodoA = metodos.get("fun_" + actual.getValor());
-                                if (metodoA.getTamañoH() == 1) {
+                                if (metodoA.BuscarNodo(ConstantesFs.LISTA_PARAMETROS) != null && metodoA.BuscarNodo(ConstantesFs.LISTA_PARAMETROS).getTamanioH() == 1) {
                                     ArrayList<Valor> var = vAnterior.getVector();
                                     ArrayList<Valor> resultado = new ArrayList();
                                     ArrayList<Valor> valoresV = new ArrayList();
@@ -1448,7 +1448,7 @@ public class EjecutarFs {
                         case ConstantesFs.BUSCAR: {
                             if (metodos.containsKey("fun_" + actual.getValor())) {
                                 NodoArbol metodoA = metodos.get("fun_" + actual.getValor());
-                                if (metodoA.getTamañoH() == 1) {
+                                if (metodoA.BuscarNodo(ConstantesFs.LISTA_PARAMETROS) != null && metodoA.BuscarNodo(ConstantesFs.LISTA_PARAMETROS).getTamanioH() == 1) {
                                     ArrayList<Valor> var = vAnterior.getVector();
                                     Valor resultado = null;
                                     ArrayList<Valor> valoresV = new ArrayList();
@@ -1481,7 +1481,7 @@ public class EjecutarFs {
                         case ConstantesFs.MAP: {
                             if (metodos.containsKey("fun_" + actual.getValor())) {
                                 NodoArbol metodoA = metodos.get("fun_" + actual.getValor());
-                                if (metodoA.getTamañoH() == 1) {
+                                if (metodoA.BuscarNodo(ConstantesFs.LISTA_PARAMETROS) != null && metodoA.BuscarNodo(ConstantesFs.LISTA_PARAMETROS).getTamanioH() == 1) {
                                     ArrayList<Valor> var = vAnterior.getVector();
                                     ArrayList<Valor> resultado = new ArrayList();
                                     ArrayList<Valor> valoresV = new ArrayList();
@@ -1505,7 +1505,7 @@ public class EjecutarFs {
 
                                 if (metodos.containsKey("fun_" + actual.getValor())) {
                                     NodoArbol metodoA = metodos.get("fun_" + actual.getValor());
-                                    if (metodoA.getTamañoH() == 2) {
+                                    if (metodoA.BuscarNodo(ConstantesFs.LISTA_PARAMETROS) != null && metodoA.BuscarNodo(ConstantesFs.LISTA_PARAMETROS).getTamanioH() == 2) {
                                         ArrayList<Valor> var = vAnterior.getVector();
                                         double resultado = 0;
                                         ArrayList<Valor> valoresV = new ArrayList();
@@ -1533,7 +1533,7 @@ public class EjecutarFs {
                             } else if (vAnterior.isVectorHomogeneo(ConstantesFs.TIPO_CADENA)) {
                                 if (metodos.containsKey("fun_" + actual.getValor())) {
                                     NodoArbol metodoA = metodos.get("fun_" + actual.getValor());
-                                    if (metodoA.getTamañoH() == 2) {
+                                    if (metodoA.BuscarNodo(ConstantesFs.LISTA_PARAMETROS) != null && metodoA.BuscarNodo(ConstantesFs.LISTA_PARAMETROS).getTamanioH() == 2) {
                                         ArrayList<Valor> var = vAnterior.getVector();
                                         double resultado = 0;
                                         ArrayList<Valor> valoresV = new ArrayList();
@@ -1563,7 +1563,7 @@ public class EjecutarFs {
                         case ConstantesFs.TODOS: {
                             if (metodos.containsKey("fun_" + actual.getValor())) {
                                 NodoArbol metodoA = metodos.get("fun_" + actual.getValor());
-                                if (metodoA.getTamañoH() == 1) {
+                                if (metodoA.BuscarNodo(ConstantesFs.LISTA_PARAMETROS) != null && metodoA.BuscarNodo(ConstantesFs.LISTA_PARAMETROS).getTamanioH() == 1) {
                                     ArrayList<Valor> var = vAnterior.getVector();
                                     Valor resultado = null;
                                     ArrayList<Valor> valoresV = new ArrayList();
@@ -1596,7 +1596,7 @@ public class EjecutarFs {
                         case ConstantesFs.ALGUNO: {
                             if (metodos.containsKey("fun_" + actual.getValor())) {
                                 NodoArbol metodoA = metodos.get("fun_" + actual.getValor());
-                                if (metodoA.getTamañoH() == 1) {
+                                if (metodoA.BuscarNodo(ConstantesFs.LISTA_PARAMETROS) != null && metodoA.BuscarNodo(ConstantesFs.LISTA_PARAMETROS).getTamanioH() == 1) {
                                     ArrayList<Valor> var = vAnterior.getVector();
                                     Valor resultado = null;
                                     ArrayList<Valor> valoresV = new ArrayList();

@@ -174,7 +174,7 @@ public class NodoArbol {
         return salida;
     }
 
-    public int getTamañoH() {
+    public int getTamanioH() {
         return this.hijosNodo.size();
     }
 

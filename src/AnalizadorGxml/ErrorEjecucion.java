@@ -56,7 +56,7 @@ public class ErrorEjecucion {
         String tablasimboloshtml = "";
 
         Calendar fecha = Calendar.getInstance();
-        int año = fecha.get(Calendar.YEAR);
+        int anio = fecha.get(Calendar.YEAR);
         int mes = fecha.get(Calendar.MONTH) + 1;
         int dia = fecha.get(Calendar.DAY_OF_MONTH);
         int hora = fecha.get(Calendar.HOUR_OF_DAY);
@@ -68,7 +68,7 @@ public class ErrorEjecucion {
                 + "\"" + ">\n\t</head>\n\t<body>"
                 + "\n\t\t<div style=" + "\"" + "text-align:left;" + "\"" + ">"
                 + "\n\t\t\t<h1>TABLA DE SIMBOLOS</h1>"
-                + "\n\t\t\t<h2>Dia de ejecución:" + dia + " de " + getMes(mes) + " de " + año + "</h2>"
+                + "\n\t\t\t<h2>Dia de ejecución:" + dia + " de " + getMes(mes) + " de " + anio + "</h2>"
                 + "\n\t\t\t<h2>Hora de ejecución:" + hora + ":" + minuto + ":" + segundo + " " + getHora(hora) + "</h2>"
                 + "\n\t\t\t<table style=\"margin: margin: 5 auto;\" border=\"2\">\n";
         tablasimboloshtml += "\t\t\t\t<TR>\n\t\t\t\t\t<TH>Clase Ejecucion</TH> <TH>Tipo</TH> <TH>ambito</TH> <TH>error</TH> <TH>linea</TH><TH>columna</TH>\n\t\t\t\t</TR>";

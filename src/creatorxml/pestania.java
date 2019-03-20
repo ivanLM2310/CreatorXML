@@ -13,7 +13,7 @@ import javax.swing.JEditorPane;
  *
  * @author IvanAlfonso
  */
-public class pestaña {
+public class pestania {
     
     public JEditorPane textPane;
     public String nombre;

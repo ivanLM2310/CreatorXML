@@ -56,7 +56,7 @@ public class InterfazContenedor extends ComponenteGenerico {
     public void add(ObjInterfaz item, Component comp) {
         contenido.add(item);
         panelPrincipal.add(comp);
-        //arreglar tamaños
+        //arreglar tamanios
         Component[] lista = panelPrincipal.getComponents();
         int xMax = 0;
         int yMax = 0;

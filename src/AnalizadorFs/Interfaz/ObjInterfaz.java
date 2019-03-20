@@ -33,7 +33,7 @@ public class ObjInterfaz extends ComponenteGenerico {
 
     }
 
-    public Component crearTexto(String strFuente, int tamaño, String color, int x, int y, boolean negrilla, boolean cursiva, String Valor) {
+    public Component crearTexto(String strFuente, int tamanio, String color, int x, int y, boolean negrilla, boolean cursiva, String Valor) {
         this.x = x;
         this.y = y;
         this.etiquetaTipo = ConstantesFs.INTERFAZ_TEXTO;
@@ -49,7 +49,7 @@ public class ObjInterfaz extends ComponenteGenerico {
             valTip = 2;
         }
 
-        Font fuente = new Font(strFuente, valTip, tamaño);
+        Font fuente = new Font(strFuente, valTip, tamanio);
         l.setFont(fuente);
         l.setForeground(Color.decode(color));
         Dimension dimL = l.getPreferredSize();
@@ -60,7 +60,7 @@ public class ObjInterfaz extends ComponenteGenerico {
         return l;
     }
 
-    public Component crearCajaTexto(int alto, int ancho, String strFuente, int tamaño, String color, int x, int y, boolean negrilla, boolean cursiva, String defecto, String nombre) {
+    public Component crearCajaTexto(int alto, int ancho, String strFuente, int tamanio, String color, int x, int y, boolean negrilla, boolean cursiva, String defecto, String nombre) {
         this.x = x;
         this.y = y;
         this.id = nombre;
@@ -77,7 +77,7 @@ public class ObjInterfaz extends ComponenteGenerico {
             valTip = 2;
         }
 
-        Font fuente = new Font(strFuente, valTip, tamaño);
+        Font fuente = new Font(strFuente, valTip, tamanio);
         l.setFont(fuente);
         l.setBackground(Color.decode(color));
         Dimension dimL = l.getPreferredSize();
@@ -88,7 +88,7 @@ public class ObjInterfaz extends ComponenteGenerico {
         return l;
     }
 
-    public Component crearAreaTexto(int alto, int ancho, String strFuente, int tamaño, String color, int x, int y, boolean negrilla, boolean cursiva, String defecto, String nombre) {
+    public Component crearAreaTexto(int alto, int ancho, String strFuente, int tamanio, String color, int x, int y, boolean negrilla, boolean cursiva, String defecto, String nombre) {
 
         this.x = x;
         this.y = y;
@@ -113,7 +113,7 @@ public class ObjInterfaz extends ComponenteGenerico {
             valTip = 2;
         }
 
-        Font fuente = new Font(strFuente, valTip, tamaño);
+        Font fuente = new Font(strFuente, valTip, tamanio);
         l.setFont(fuente);
         this.alto = alto;
         this.ancho = ancho;
@@ -176,13 +176,13 @@ public class ObjInterfaz extends ComponenteGenerico {
         this.ambientes = ambientes;
     }
 
-    public Component crearBoton(String strFuente, int tamaño, String color, int x, int y, String valor, int alto, int ancho) {
+    public Component crearBoton(String strFuente, int tamanio, String color, int x, int y, String valor, int alto, int ancho) {
 
         this.x = x;
         this.y = y;
         this.etiquetaTipo = ConstantesFs.INTERFAZ_BOTON;
         JButton l = new JButton();
-        Font fuente = new Font(strFuente, 0, tamaño);
+        Font fuente = new Font(strFuente, 0, tamanio);
         l.setFont(fuente);
         l.setText(valor);
         l.setBackground(Color.decode(color));

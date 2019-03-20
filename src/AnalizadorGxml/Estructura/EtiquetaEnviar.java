@@ -70,7 +70,7 @@ public class EtiquetaEnviar extends Etiqueta {
     @Override
     public String generarCodigo(String textoVentana) {
         /*
-        Var bot = Contenedor.CrearBoton(Fuente, Tamaño, Color, X, Y,Referencia, valor, Alto, Ancho) 4
+        Var bot = Contenedor.CrearBoton(Fuente, Tamanio, Color, X, Y,Referencia, valor, Alto, Ancho) 4
         Bot.AlClic(Metodo(12));
          */
 
@@ -78,7 +78,7 @@ public class EtiquetaEnviar extends Etiqueta {
         String idPadre = padre.salidaConversion(Constantes.atb_id, "");
 
         String fuente = salidaConversion(Constantes.atb_fuente, "500");
-        String tamaño = salidaConversion(Constantes.atb_tam, "500");
+        String tamanio = salidaConversion(Constantes.atb_tam, "500");
         String color = salidaConversion(Constantes.atb_color, "#F3EEED");
         String x = salidaConversion(Constantes.atb_x, "0");
         String y = salidaConversion(Constantes.atb_y, "0");
@@ -89,7 +89,7 @@ public class EtiquetaEnviar extends Etiqueta {
         String alto = salidaConversion(Constantes.atb_alto, "500");
         String ancho = salidaConversion(Constantes.atb_ancho, "500");
 
-        String parametros = concatenarComas(fuente, tamaño, color, x, y, referencia, "\"" + textoEtiqueta + "\"", alto, ancho);
+        String parametros = concatenarComas(fuente, tamanio, color, x, y, referencia, "\"" + textoEtiqueta + "\"", alto, ancho);
         String Salida = concatenar("Var", id + "_" + textoVentana, "=", idPadre + "_" + textoVentana + ".CrearBoton(" + parametros + ");\n");
         String Alclic = id + "_" + textoVentana + ".AlClic( guardar_" + textoVentana + "());\n";
         return Salida + Alclic;

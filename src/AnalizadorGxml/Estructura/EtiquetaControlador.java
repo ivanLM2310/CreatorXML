@@ -70,7 +70,7 @@ public class EtiquetaControlador extends Etiqueta {
         String alto = salidaConversion(Constantes.atb_alto, "50");
         String ancho = salidaConversion(Constantes.atb_ancho, "100");
         String fuente = salidaConversion(Constantes.atb_fuente, "");
-        String tamaño = salidaConversion(Constantes.atb_tam, "500");
+        String tamanio = salidaConversion(Constantes.atb_tam, "500");
         String color = salidaConversion(Constantes.atb_color, "F3EEED");
         String x = salidaConversion(Constantes.atb_x, "0");
         String y = salidaConversion(Constantes.atb_y, "0");
@@ -113,15 +113,15 @@ public class EtiquetaControlador extends Etiqueta {
 
             case "texto":
                 //cajaTexto
-                //alto,ancho,fuente,tamaño,color,x,y,negrita,cursiva,defecto,nombre
-                parametros = concatenarComas(alto, ancho, fuente, tamaño, color, x, y, negrita, cursiva, "\"" + defecto + "\"", "\"" + id + "\"");
+                //alto,ancho,fuente,tamanio,color,x,y,negrita,cursiva,defecto,nombre
+                parametros = concatenarComas(alto, ancho, fuente, tamanio, color, x, y, negrita, cursiva, "\"" + defecto + "\"", "\"" + id + "\"");
                 return concatenar( idPadre+"_"+textoVentana + ".CrearCajaTexto(" + parametros + ");\n");
 
             case "textoarea":
 
                 //areaTexto
-                //alto,ancho,fuente,tamaño,color,x,y,negrita,cursiva
-                parametros = concatenarComas(alto, ancho, fuente, tamaño, color, x, y, negrita, cursiva, "\"" + defecto + "\"", "\"" + id + "\"");
+                //alto,ancho,fuente,tamanio,color,x,y,negrita,cursiva
+                parametros = concatenarComas(alto, ancho, fuente, tamanio, color, x, y, negrita, cursiva, "\"" + defecto + "\"", "\"" + id + "\"");
                 return concatenar(idPadre+"_"+textoVentana+ ".CrearAreaTexto(" + parametros + ");\n");
             case "numerico":
                 //contro numerico

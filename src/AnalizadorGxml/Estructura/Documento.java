@@ -5,14 +5,11 @@
  */
 package AnalizadorGxml.Estructura;
 
-import AnalizadorFs.Estructura.ObjetoGxml;
 import AnalizadorGxml.ErrorEjecucion;
 import AnalizadorGxml.scannerGxml;
 import AnalizadorGxml.sintacticoGxml;
-import creatorxml.Main;
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -33,49 +30,17 @@ public class Documento {
     public ArrayList<Documento> documentosImportados;
     String direccionDocumento = "";
 
-    public Documento() {
-        archivosImportados = new ArrayList();
-        ventanas = new ArrayList();
-    }
-
-    public Documento(File archivo, String dirProyecto) {
-        archivosImportados = new ArrayList();
-        ventanas = new ArrayList();
-        leerGxml(archivo, dirProyecto);
-    }
-
-    private void leerGxml(File archivo, String dirProyecto) {
-        try {
-
-            scannerGxml lexicoG = new scannerGxml(new BufferedReader(new FileReader(archivo)));
-            sintacticoGxml sintactico = new sintacticoGxml(lexicoG);
-            ErrorEjecucion err = new ErrorEjecucion();
-            sintactico.parse();
-            Documento doc = sintactico.getDocumento();
-            doc.setDireccionDocumento(dirProyecto);
-            doc.compilar();
-
-            if (!Main.errores.isEmpty()) {
-                //doc.generarFS();
-                err.printTablaSimbolos(Main.errores);
-                Main.errores = new ArrayList<>();
-            }
-
-        } catch (FileNotFoundException ex) {
-            //cuando no existe el archivo
-            Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (Exception ex) {
-            //error del analizador
-            Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
-        }
-    }
-
     public String getDireccionDocumento() {
         return direccionDocumento;
     }
 
     public void setDireccionDocumento(String direccionDocumento) {
         this.direccionDocumento = direccionDocumento;
+    }
+
+    public Documento() {
+        archivosImportados = new ArrayList();
+        ventanas = new ArrayList();
     }
 
     public ArrayList<EtiquetaImportar> getArchivosImportados() {
@@ -157,7 +122,7 @@ public class Documento {
         String s1 = generarEncabezadoFs();
         s1 += generarCuerpoFs();
         try {
-            File archivo = new File(direccionDocumento+"\\ResultadoTraduccion.fs");
+            File archivo = new File("ResultadoTraduccion.fs");
             try (FileWriter escribir = new FileWriter(archivo, false)) {
                 escribir.write(s1);
             }

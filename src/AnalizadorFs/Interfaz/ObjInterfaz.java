@@ -170,13 +170,13 @@ public class ObjInterfaz extends ComponenteGenerico {
         this.ambientes = ambientes;
     }
     
-     public void eventoReferencia(EjecutarFs instanciaFs, TablaAmbientes ambientes, NodoArbol raiz) {
+     public void aeventoReferencia(EjecutarFs instanciaFs, TablaAmbientes ambientes, NodoArbol raiz) {
         this.alReferencia = raiz;
         this.instanciaFs = instanciaFs;
         this.ambientes = ambientes;
     }
 
-    public Component crearBoton(String strFuente, int tamaño, String color, int x, int y, String valor, int alto, int ancho) {
+    public Component crearBoton(String strFuente, int tamaño, String color, int x, int y, String referencia, String valor, int alto, int ancho) {
 
         this.x = x;
         this.y = y;

@@ -5,9 +5,10 @@
  */
 package AnalizadorGxml.Estructura;
 
-import AnalizadorFs.Estructura.Valor;
 import AnalizadorGxml.ErrorEjecucion;
+import java.util.ArrayList;
 import creatorxml.Main;
+
 
 /**
  *

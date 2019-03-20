@@ -5,12 +5,8 @@
  */
 package AnalizadorGxml.Estructura;
 
-import AnalizadorFs.Estructura.ConstantesFs;
-import AnalizadorFs.Estructura.Objeto;
-import AnalizadorFs.Estructura.Valor;
 import AnalizadorGxml.ErrorEjecucion;
 import creatorxml.Main;
-import java.util.ArrayList;
 
 /**
  *
@@ -63,17 +59,6 @@ public class EtiquetaListaDatos extends Etiqueta {
         }
         String idPadre = padre.salidaConversion(Constantes.atb_id, "");
         return concatenar("Var", idPadre + "_listaDatos", "=", "[" + elementosV + " ];");
-    }
-
-    @Override
-    public Valor generarObjeto() {
-        int tamDatos = this.contenido.size();
-        ArrayList<Valor> lista = new ArrayList();
-        for (int i = 0; i < tamDatos; i++) {
-            EtiquetaDato dato = (EtiquetaDato) contenido.get(0);
-            lista.add(new Valor(dato.textoEtiqueta,ConstantesFs.TIPO_CADENA));
-        }
-        return new Valor(lista, ConstantesFs.VECTOR_HETEROGENEO);
     }
 
 }

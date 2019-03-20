@@ -5,11 +5,9 @@
  */
 package AnalizadorGxml.Estructura;
 
-import AnalizadorFs.Estructura.ConstantesFs;
-import AnalizadorFs.Estructura.Objeto;
-import AnalizadorFs.Estructura.Valor;
 import AnalizadorGxml.ErrorEjecucion;
 import creatorxml.Main;
+
 
 /**
  *
@@ -88,19 +86,6 @@ public class EtiquetaBoton extends Etiqueta {
 
         String parametros = concatenarComas(fuente, tamaño, color, x, y, referencia, "\"" + textoEtiqueta + "\"", alto, ancho);
         return concatenar("Var", id + "_" + textoVentana, "=", idPadre + "_" + textoVentana + ".CrearBoton(" + parametros + ");\n");
-    }
-    
-    @Override
-    public Valor generarObjeto() {
-        Objeto objNuevo = new Objeto();
-        int tam = atributos.size();
-        for (int i = 0; i < tam; i++) {
-            objNuevo.addAtributoValor(atributos.get(i).textoAtributo, atributos.get(i).getObjValor());
-        }
-        if(contenido.isEmpty()){
-            objNuevo.addAtributoValor("valor",new Valor(textoEtiqueta,ConstantesFs.TIPO_CADENA));
-        }
-        return new Valor(objNuevo, ConstantesFs.TIPO_OBJETO);
     }
 
 }

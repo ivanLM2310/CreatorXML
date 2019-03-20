@@ -5,11 +5,8 @@
  */
 package AnalizadorGxml.Estructura;
 
-import AnalizadorFs.Estructura.ConstantesFs;
-import AnalizadorFs.Estructura.Valor;
 import AnalizadorGxml.ErrorEjecucion;
 import creatorxml.Main;
-import java.util.ArrayList;
 
 
 /**
@@ -62,11 +59,6 @@ public class EtiquetaDefecto extends Etiqueta {
     public String generarCodigo(String textoVentana) {
         //fuente,tam , color, x, y , referencia
         return textoEtiqueta;
-    }
-
-    @Override
-    public Valor generarObjeto() {
-        return new Valor(textoEtiqueta, ConstantesFs.TIPO_CADENA);
     }
 
 }

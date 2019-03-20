@@ -5,7 +5,6 @@
  */
 package AnalizadorGxml.Estructura;
 
-import AnalizadorFs.Estructura.Valor;
 import AnalizadorGxml.ErrorEjecucion;
 import creatorxml.Main;
 
@@ -92,6 +91,5 @@ public class EtiquetaMultimedia extends Etiqueta {
         }
         return "";
     }
-
 
 }

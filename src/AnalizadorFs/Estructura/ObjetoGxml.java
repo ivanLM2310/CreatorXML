@@ -154,7 +154,7 @@ public class ObjetoGxml {
         }
     }
 
-    public void obtenerPorId(ArrayList<Valor> lista, String etiqueta) {
+    public Valor obtenerPorId(ArrayList<Valor> lista, String etiqueta) {
         if (objAtributos.isTipoIgual(ConstantesFs.TIPO_OBJETO)) {
             Objeto objGxml = (Objeto) objAtributos.valor;
             Valor val = objGxml.getValor("id");
@@ -164,6 +164,7 @@ public class ObjetoGxml {
                         
                     }
                 }
+                
             }
             int tamContenido = contenido.size();
             for (int i = 0; i < tamContenido; i++) {

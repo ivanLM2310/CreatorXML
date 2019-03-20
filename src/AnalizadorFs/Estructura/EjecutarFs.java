@@ -11,6 +11,7 @@ import AnalizadorFs.Interfaz.InterfazVentana;
 import AnalizadorFs.Interfaz.ObjInterfaz;
 import AnalizadorFs.Interfaz.PantallaVideo;
 import AnalizadorGxml.ErrorEjecucion;
+import AnalizadorGxml.Estructura.Documento;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -20,6 +21,7 @@ import java.util.Map;
 import java.util.regex.Pattern;
 import creatorxml.Main;
 import java.awt.Component;
+import java.io.File;
 
 /**
  *
@@ -880,7 +882,26 @@ public class EjecutarFs {
                     }
                     case "leergxml": {
                         if (raizOperacion.getElemento(0).getTamañoH() == 1) {
-
+                            Valor param = evaluarExp(raizOperacion.getElemento(0).getElemento(0), ambientes);
+                            if (param.isTipoIgual(ConstantesFs.TIPO_CADENA)) {
+                                String ruta = param.getString();
+                                if (ruta.length() > 0) {
+                                    ruta = (ruta.charAt(0) != '\'' || ruta.charAt(0) != '/') ? "\\" + ruta : ruta;
+                                }
+                                File f = new File(direccionE + ruta);
+                                if (f.isFile()) {
+                                    Documento docGxml = new Documento(f, direccionE);
+                                    ObjetoGxml obj = new ObjetoGxml();
+                                    ArrayList<ObjetoGxml> lista=obj.getListaObjetos(docGxml);
+                                    return new Valor(lista, ConstantesFs.TIPO_GXML);
+                                } else {
+                                    //error
+                                }
+                            } else {
+                                //error
+                            }
+                        } else {
+                            //error
                         }
                         break;
                     }
@@ -914,7 +935,6 @@ public class EjecutarFs {
     }
 
     public Valor evaluarFunInterfaz(NodoArbol lista, TablaAmbientes ambientes, Valor primerValor) {
-
         NodoArbol actual;
         Valor valorSalida = primerValor;
         int tamTotal = lista.getTamañoH();
@@ -953,9 +973,17 @@ public class EjecutarFs {
                     InterfazVentana contenedor = (InterfazVentana) valorSalida.valor;
                     contenedor.escribirGdato();
                 } else if (actual.getValor().equals("alcargar") && actual.getElemento(0).getTamañoH() == 1) {
-                    
+                    InterfazVentana vent = (InterfazVentana) valorSalida.valor;
+                    vent.alCargar(this, ambientes, actual.getElemento(0).getElemento(0));
                 } else if (actual.getValor().equals("alcerrar") && actual.getElemento(0).getTamañoH() == 1) {
-                    
+                    InterfazVentana vent = (InterfazVentana) valorSalida.valor;
+                    vent.alCerrar(this, ambientes, actual.getElemento(0).getElemento(0));
+                } else if (actual.getValor().equals("alcargar") && actual.getElemento(0).getTamañoH() == 0) {
+                    InterfazVentana vent = (InterfazVentana) valorSalida.valor;
+                    vent.alCargar();
+                } else if (actual.getValor().equals("alcerrar") && actual.getElemento(0).getTamañoH() == 0) {
+                    InterfazVentana vent = (InterfazVentana) valorSalida.valor;
+                    vent.alCerrar();
                 }
             } else if (valorSalida.isTipoIgual(ConstantesFs.INTERFAZ_CONTENEDOR)) {
                 if (actual.getTamañoH() == 1) {
@@ -1125,26 +1153,29 @@ public class EjecutarFs {
                                 && parametrosLlamada.get(2).isTipoIgual(ConstantesFs.TIPO_CADENA)
                                 && parametrosLlamada.get(3).isTipoIgual(ConstantesFs.TIPO_NUMERO)
                                 && parametrosLlamada.get(4).isTipoIgual(ConstantesFs.TIPO_NUMERO)
-                                && parametrosLlamada.get(5).isTipoIgual(ConstantesFs.TIPO_CADENA)
+                                && (parametrosLlamada.get(5).isTipoIgual(ConstantesFs.TIPO_CADENA)
+                                || parametrosLlamada.get(5).isTipoIgual(ConstantesFs.TIPO_NULL))
                                 && parametrosLlamada.get(6).isTipoIgual(ConstantesFs.TIPO_CADENA)
                                 && parametrosLlamada.get(7).isTipoIgual(ConstantesFs.TIPO_NUMERO)
                                 && parametrosLlamada.get(8).isTipoIgual(ConstantesFs.TIPO_NUMERO)) {
                             /////////////////////////////////////////////////////////
+                            NodoArbol ref = null;
+                            if (actual.getElemento(0).getElemento(5).isEtiquetaIgual(ConstantesFs.LLAMADA_METODO)) {
+                                ref = actual.getElemento(0).getElemento(5);
+                            }
 
                             Object oVent = ob.crearBoton(parametrosLlamada.get(0).getString(),
                                     (int) parametrosLlamada.get(1).getNumber(),
                                     parametrosLlamada.get(2).getString(),
                                     (int) parametrosLlamada.get(3).getNumber(),
                                     (int) parametrosLlamada.get(4).getNumber(),
-                                    parametrosLlamada.get(5).getString(),
                                     parametrosLlamada.get(6).getString(),
                                     (int) parametrosLlamada.get(7).getNumber(),
                                     (int) parametrosLlamada.get(8).getNumber());
-
+                            ob.eventoReferencia(this, ambientes, ref);
                             InterfazContenedor vent = (InterfazContenedor) valorSalida.valor;
-
                             vent.add(ob, (Component) oVent);
-                            valorSalida = new Valor(oVent, ConstantesFs.INTERFAZ_BOTON);
+                            valorSalida = new Valor(ob, ConstantesFs.INTERFAZ_BOTON);
                         } else {
                             //error
                         }
@@ -1225,6 +1256,40 @@ public class EjecutarFs {
                         } else {
                             //error
                         }
+                    }
+                }
+            } else if (valorSalida.isTipoIgual(ConstantesFs.INTERFAZ_BOTON)) {
+                if (actual.getValor().equals("alclic") && actual.getElemento(0).getTamañoH() == 1) {
+                    if (actual.getElemento(0).getElemento(0).isEtiquetaIgual(ConstantesFs.LLAMADA_METODO)) {
+                        ((ObjInterfaz) valorSalida.valor).eventoClic(this, ambientes, actual.getElemento(0).getElemento(0));
+                    } else {
+                        //error
+                    }
+                }
+            } else if (valorSalida.isTipoIgual(ConstantesFs.TIPO_GXML)) {
+                if (actual.getValor().equals("obtenerporetiqueta") && actual.getElemento(0).getTamañoH() == 1) {
+                    Valor v = evaluarExp(actual.getElemento(0).getElemento(0), ambientes);
+                    if (v.isTipoIgual(ConstantesFs.TIPO_CADENA)) {
+                        ArrayList<Valor> listaGxml = new ArrayList();
+                        ArrayList<ObjetoGxml> objetoGuardado = (ArrayList<ObjetoGxml>) valorSalida.valor;
+                        for(ObjetoGxml o:objetoGuardado){
+                            o.obtenerPorEtiqueta(listaGxml, v.getString());
+                        }
+                        return new Valor(listaGxml,ConstantesFs.VECTOR_HOMOGENEO);
+                    } else {
+                        //error
+                    }
+                } else if (actual.getValor().equals("obtenerporid") && actual.getElemento(0).getTamañoH() == 1) {
+                    if (actual.getElemento(0).getElemento(0).isEtiquetaIgual(ConstantesFs.LLAMADA_METODO)) {
+                        
+                    } else {
+                        //error
+                    }
+                } else if (actual.getValor().equals("obtenerpornombre") && actual.getElemento(0).getTamañoH() == 1) {
+                    if (actual.getElemento(0).getElemento(0).isEtiquetaIgual(ConstantesFs.LLAMADA_METODO)) {
+                        
+                    } else {
+                        //error
                     }
                 }
             } else {
@@ -1564,7 +1629,8 @@ public class EjecutarFs {
                     }
                 }
             } else if (vAnterior.isTipoIgual(ConstantesFs.LLAMADA_METODO)) {
-
+                //error
+                //falta codigo
             }
 
         }

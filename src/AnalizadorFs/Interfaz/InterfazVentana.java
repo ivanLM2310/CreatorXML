@@ -142,6 +142,14 @@ public class InterfazVentana extends ComponenteGenerico {
         this.ambientes = ambientes;
         this.raiz = raiz;
     }
+    
+    public void alCargar() {
+        ((JFrame) elemento).setVisible(true);
+    }
+
+    public void alCerrar() {
+        ((JFrame) elemento).dispose();
+    }
 
     private void addEventosventana() {
 

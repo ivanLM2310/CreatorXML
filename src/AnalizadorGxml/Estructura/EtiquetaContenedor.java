@@ -5,6 +5,7 @@
  */
 package AnalizadorGxml.Estructura;
 
+import AnalizadorFs.Estructura.Valor;
 import AnalizadorGxml.ErrorEjecucion;
 import creatorxml.Main;
 
@@ -72,5 +73,7 @@ public class EtiquetaContenedor extends Etiqueta {
         return concatenar("Var", id + "_" + textoVentana, "=", "Ven_" + idPadre + ".CrearContenedor(" + alto + "," + ancho + "," + color + "," + borde + "," + x + "," + y, ");\n");
 
     }
+
+   
 
 }

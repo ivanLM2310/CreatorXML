@@ -5,6 +5,9 @@
  */
 package AnalizadorGxml.Estructura;
 
+import AnalizadorFs.Estructura.ConstantesFs;
+import AnalizadorFs.Estructura.Objeto;
+import AnalizadorFs.Estructura.Valor;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Objects;
@@ -19,6 +22,7 @@ public abstract class Etiqueta {
     int numeroObligatorios;
     ArrayList<Atributo> atributos;
     ArrayList<Etiqueta> contenido;
+    
 
     String cadenaObligatorios = "";
     String[] vectorTexto;
@@ -122,6 +126,15 @@ public abstract class Etiqueta {
         return salida;
     }
 
+    public Valor salidaObjeto(int Constante, String defecto) {
+        Valor v = null;
+        Atributo atb = getAtributoEsp(Constante);
+        if (atb != null) {
+            return atb.getObjValor();
+        }
+        return new Valor("",ConstantesFs.TIPO_NULL);
+    }
+
     public Atributo getAtributoEsp(int atributo) {
         int num = 0;
         while (num < this.atributos.size()) {
@@ -154,8 +167,18 @@ public abstract class Etiqueta {
         }
         return salida;
     }
+    
+    public Valor generarObjeto() {
+        Objeto objNuevo = new Objeto();
+        int tam = atributos.size();
+        for (int i = 0; i < tam; i++) {
+            objNuevo.addAtributoValor(atributos.get(i).textoAtributo, atributos.get(i).getObjValor());
+        }
+        return new Valor(objNuevo, ConstantesFs.TIPO_OBJETO);
+    }
 
     public abstract void addAtributo(Atributo atb);
 
     public abstract String generarCodigo(String textoVentana);
+
 }

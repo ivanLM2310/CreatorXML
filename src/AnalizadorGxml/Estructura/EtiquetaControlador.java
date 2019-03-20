@@ -5,6 +5,9 @@
  */
 package AnalizadorGxml.Estructura;
 
+import AnalizadorFs.Estructura.ConstantesFs;
+import AnalizadorFs.Estructura.Objeto;
+import AnalizadorFs.Estructura.Valor;
 import AnalizadorGxml.ErrorEjecucion;
 import creatorxml.Main;
 
@@ -136,6 +139,25 @@ public class EtiquetaControlador extends Etiqueta {
                 break;
         }
         return "";
+    }
+    
+     @Override
+    public Valor generarObjeto() {
+        Objeto objNuevo = new Objeto();
+        int tam = atributos.size();
+        for (int i = 0; i < tam; i++) {
+            objNuevo.addAtributoValor(atributos.get(i).textoAtributo, atributos.get(i).getObjValor());
+        }
+        int tamEtiq = this.contenido.size();
+        for(int i = 0; i < tamEtiq; i++){
+            if(contenido.get(i) instanceof EtiquetaListaDatos){
+                 objNuevo.addAtributoValor("lista", ((EtiquetaListaDatos) contenido.get(i)).generarObjeto());
+            }else if(contenido.get(i) instanceof EtiquetaDefecto){
+                 objNuevo.addAtributoValor("defecto", ((EtiquetaDefecto) contenido.get(i)).generarObjeto());
+            }
+        }
+        
+        return new Valor(objNuevo, ConstantesFs.TIPO_OBJETO);
     }
 
 }

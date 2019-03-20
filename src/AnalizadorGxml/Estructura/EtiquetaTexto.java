@@ -5,6 +5,7 @@
  */
 package AnalizadorGxml.Estructura;
 
+import AnalizadorFs.Estructura.Valor;
 import AnalizadorGxml.ErrorEjecucion;
 import creatorxml.Main;
 
@@ -123,5 +124,7 @@ public class EtiquetaTexto extends Etiqueta {
         String parametros = concatenarComas(fuente, tamaño, color, x, y, negrita, cursiva, "\"" + textoEtiqueta + "\"");
         return concatenar(idPadre + "_" + textoVentana + ".CrearTexto(" + parametros + ");\n");
     }
+
+
 
 }

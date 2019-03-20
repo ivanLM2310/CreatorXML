@@ -5,6 +5,7 @@
  */
 package AnalizadorGxml.Estructura;
 
+import AnalizadorFs.Estructura.Valor;
 import java.io.File;
 
 /**
@@ -59,5 +60,6 @@ public class EtiquetaImportar extends Etiqueta {
         }
         return "i";
     }
+
 
 }

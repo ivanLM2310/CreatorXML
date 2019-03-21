@@ -1039,7 +1039,7 @@ public class scannerGxml implements java_cup.runtime.Scanner {
       else {
         switch (zzAction < 0 ? zzAction : ZZ_ACTION[zzAction]) {
           case 1: 
-            { System.out.println("TEXTO1:"+ yytext()); return new Symbol(symGxml.textoXml, yyline, yycolumn, yytext().trim());
+            { System.out.println("TEXTO1:"+ yytext()); return new Symbol(symGxml.textoXml, yyline, yycolumn, yytext());
             }
           case 62: break;
           case 2: 

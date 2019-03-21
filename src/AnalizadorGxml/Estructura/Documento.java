@@ -36,11 +36,13 @@ public class Documento {
     public Documento() {
         archivosImportados = new ArrayList();
         ventanas = new ArrayList();
+        documentosImportados = new ArrayList();
     }
 
     public Documento(File archivo, String dirProyecto) {
         archivosImportados = new ArrayList();
         ventanas = new ArrayList();
+        documentosImportados = new ArrayList();
         leerGxml(archivo, dirProyecto);
     }
 
@@ -58,7 +60,6 @@ public class Documento {
             if (!Main.errores.isEmpty()) {
                 //doc.generarFS();
                 err.printTablaSimbolos(Main.errores);
-                Main.errores = new ArrayList<>();
             }
 
         } catch (FileNotFoundException ex) {
@@ -120,7 +121,7 @@ public class Documento {
     }
 
     private Documento compilarTodo(String dir) {
-
+         System.out.println("*********************************************************"+dir);
         String texto = "";
         boolean estado = true;
         try {
@@ -139,6 +140,7 @@ public class Documento {
             try {
                 scannerGxml lexicoG = new scannerGxml(new BufferedReader(new StringReader(texto)));
                 sintacticoGxml sintactico = new sintacticoGxml(lexicoG);
+                sintactico.setDireccion(dir);
                 ErrorEjecucion err = new ErrorEjecucion();
                 sintactico.parse();
                 doc = sintactico.getDocumento();
@@ -153,11 +155,22 @@ public class Documento {
     }
 
     public void generarFS() {
+        String s1 = "";
+        s1 += "//seccion 0 -------------------------------------\n";
+        s1 = generarEncabezadoFs();
+        s1 += "//seccion 1 -------------------------------------\n";
 
-        String s1 = generarEncabezadoFs();
         s1 += generarCuerpoFs();
+        s1 += "//seccion 2 -------------------------------------\n";
+        s1 += generarMetodosClic();
+        s1 += "//seccion 3 -------------------------------------\n";
+        s1 += genMetodosCargar();
+         s1 += "\n//alcargar -------------------------------------\n";
+        if(!alCargar.isEmpty()){
+            s1+= alCargar;
+        }
         try {
-            File archivo = new File(direccionDocumento+"\\ResultadoTraduccion.fs");
+            File archivo = new File(direccionDocumento + "\\ResultadoTraduccion.fs");
             try (FileWriter escribir = new FileWriter(archivo, false)) {
                 escribir.write(s1);
             }
@@ -172,9 +185,9 @@ public class Documento {
             String linea = ventana.generarCodigo("");
             String id = ventana.salidaConversion(Constantes.atb_id, "");
             String contenidoV = gen(id, ventana);
+
             s1 += linea + contenidoV;
         }
-
         for (Documento doc : documentosImportados) {
 
             s1 += doc.generarCuerpoFs();
@@ -196,6 +209,19 @@ public class Documento {
         return s1;
     }
 
+    private String generarMetodosClic() {
+        String s1 = "";
+        for (EtiquetaVentana ventana : ventanas) {
+            String metodosClic = genMetodoBotones(ventana);
+            s1 += metodosClic;
+        }
+        for (Documento doc : documentosImportados) {
+
+            s1 += doc.generarMetodosClic();
+        }
+        return s1;
+    }
+
     public void unirDocumentos(Documento doc) {
         for (EtiquetaVentana v : doc.ventanas) {
 
@@ -210,15 +236,80 @@ public class Documento {
             } else if (ventana instanceof EtiquetaListaDatos) {
             } else if (ventana instanceof EtiquetaDefecto) {
             } else {
-                String linea = ventana.generarCodigo(nombreV);
-                salida += linea;
-                String resultado = gen(nombreV, ventana);
-                if (!resultado.equals("")) {
-                    salida += resultado;
+
+                if (!(etq instanceof EtiquetaBoton && ventana instanceof EtiquetaTexto)) {
+                    String linea = ventana.generarCodigo(nombreV);
+                    salida += linea;
+                    String resultado = gen(nombreV, ventana);
+                    if (!resultado.equals("")) {
+                        salida += resultado;
+                    }
                 }
+
             }
         }
 
         return salida;
+    }
+
+    public String genMetodoBotones(Etiqueta etq) {
+        String salida = "";
+
+        for (Etiqueta ventana : etq.getContenido()) {
+            if (ventana instanceof EtiquetaBoton) {
+
+                String linea = ((EtiquetaBoton) ventana).codigoGenerado;
+                salida += linea;
+
+            } else if (ventana instanceof EtiquetaEnviar) {
+
+                String linea = ((EtiquetaEnviar) ventana).codigoGenerado;
+                salida += linea;
+            }
+            String resultado = genMetodoBotones(ventana);
+            if (!resultado.equals("")) {
+                salida += resultado;
+            }
+        }
+
+        return salida;
+    }
+    String alCargar = "";
+
+    public String genMetodosCargar() {
+        String salidaAccion = "";
+        String salidaMetodos = "";
+        for (EtiquetaVentana ventana : ventanas) {
+
+            
+
+            String id = ventana.salidaConversion(Constantes.atb_id, "");
+            String temp = "funcion CargarVentana_" + id + "()"
+                    + "{\n" + "Ven_" + id + ".AlCargar();" + "\n}";
+            salidaMetodos += (salidaMetodos.isEmpty()) ? temp : "\n\n" + temp;
+            String accionInicial = ventana.salidaConversion(Constantes.atb_accionInicial, "");
+            String accionFinal = ventana.salidaConversion(Constantes.atb_accionFinal, "");
+            if (!accionInicial.isEmpty()) {
+                salidaAccion += "Ven_" + id + ".AlCargar(" + accionInicial + ");\n";
+            }
+            if (!accionFinal.isEmpty()) {
+                salidaAccion += "Ven_" + id + ".AlCerrar(" + accionFinal + ");\n";
+            }
+            
+            if (alCargar.isEmpty()) {
+                String tipo = ventana.salidaConversion(Constantes.atb_tipo, "");
+                if (!tipo.isEmpty() && tipo.toLowerCase().trim().equals("principal")) {
+                    alCargar = "Ven_"+id +".AlCargar();\n";
+                }
+            }
+        }
+        String s1 = salidaAccion + salidaMetodos;
+        for (Documento doc : documentosImportados) {
+
+            s1 += "\n"+ doc.genMetodosCargar();
+        }
+
+        return s1;
+
     }
 }

@@ -53,7 +53,7 @@ public class InterfazVentana extends ComponenteGenerico {
         Dimension a = new Dimension(ancho, alto);
         formulario.setPreferredSize(a);
         formulario.setSize(a);
-        formulario.setVisible(true);
+        //formulario.setVisible(true);
 
         JPanel panelP = new JPanel(null);
         panelPrincipal = panelP;
@@ -99,16 +99,16 @@ public class InterfazVentana extends ComponenteGenerico {
         return cad;
     }
 
-    public void escribirGdato() {
+    public void escribirGdato(String Direccion) {
         String texto = "";
-        if (new File(id + ".gdato").exists()) {
+        if (new File(Direccion + "\\"+id + ".gdato").exists()) {
 
             try {
                 FileReader lector = new FileReader(id + ".gdato");
                 BufferedReader contenidoA = new BufferedReader(lector);
                 String temp = "";
                 while ((temp = contenidoA.readLine()) != null) {
-                    texto = (!texto.isEmpty()) ? "\n" + temp : temp;
+                    texto += (!texto.isEmpty()) ? "\n" + temp : temp;
                 }
             } catch (IOException e) {
                 System.out.println("Error al leer");
@@ -122,7 +122,7 @@ public class InterfazVentana extends ComponenteGenerico {
         }
 
         try {
-            File archivo = new File(id + ".gdato");
+            File archivo = new File(Direccion + "\\"+id + ".gdato");
             FileWriter escribir = new FileWriter(archivo, false);
             escribir.write(gdato);
             escribir.close();
@@ -142,9 +142,17 @@ public class InterfazVentana extends ComponenteGenerico {
         this.ambientes = ambientes;
         this.raiz = raiz;
     }
-    
+
     public void alCargar() {
         ((JFrame) elemento).setVisible(true);
+        for (InterfazContenedor cont : this.contenido) {
+            for (ObjInterfaz interfazComp : cont.contenido) {
+                if (interfazComp.elemento instanceof PantallaVideo) {
+
+                    ((PantallaVideo) interfazComp.elemento).start();
+                }
+            }
+        }
     }
 
     public void alCerrar() {

@@ -11,7 +11,7 @@ parser code
 	public void syntax_error(Symbol s){
 	   	System.out.println("Error Sintactico -> lexema: |" + s.value +  "| " + "  Columna: "+  s.right + "linea:  "+  (s.left + 1) );
 	   	String error = "el token \"" + s.value + "\" no es valida ";
-                ErrorEjecucion err = new ErrorEjecucion("Sintactico Gxml",error,"sintactico","sintactico",(s.left + 1),s.right);
+                ErrorEjecucion err = new ErrorEjecucion("Sintactico Fs:"+dir ,error,"sintactico","sintactico",(s.left + 1),s.right);
                 Main.errores.add(err);							
 	}
 	/*-----------------------------metodo para cuando ya no se pueda recuperar los errores-------------------*/
@@ -22,10 +22,16 @@ parser code
 	public NodoArbol getNodoRaiz(){
 		return this.action_obj.raiz;
 	}
+	String dir = "";
+	public void setDireccion(String dir1){
+
+		 this.dir = dir1;
+	}
 :}
 action code
 {:
 	NodoArbol raiz;
+	String direccion = "";
 :}
 
 
@@ -119,10 +125,9 @@ LISTA_IMPORTAR::=LISTA_IMPORTAR:l S_IMPORTAR:e
 					RESULT.addHijos(e);
 				:};
 
-S_IMPORTAR::= importar:w parentesisa OP_LOGICAS:e parentesisc puntoycoma
+S_IMPORTAR::= importar:w parentesisa cadena:e parentesisc puntoycoma
 				{:
-					RESULT = new NodoArbol(ConstantesFs.IMPORTAR);
-					RESULT.addHijos(e);
+					RESULT = new NodoArbol(ConstantesFs.IMPORTAR,e);
 					RESULT.setPosicion(wleft,wright);
 				:};
 
@@ -528,7 +533,9 @@ SENTENCIA::= S_DECLARACION:t
 			{:
 				NodoArbol a = new NodoArbol(ConstantesFs.LLAMADA_ID);
 				a.addHijos(t);
+
 				RESULT = a;
+				RESULT.setPosicion(tleft, tright);
 			:};
 
 OP_LOGICAS::= OP_LOGICAS:n1 or OP_LOGICAS:n2

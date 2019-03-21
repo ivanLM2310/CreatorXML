@@ -63,7 +63,7 @@ public class EtiquetaContenedor extends Etiqueta {
         String id = salidaConversion(Constantes.atb_id, "");
         String alto = salidaConversion(Constantes.atb_alto, "500");
         String ancho = salidaConversion(Constantes.atb_ancho, "500");
-        String color = salidaConversion(Constantes.atb_color, "#F3EEED");
+        String color = salidaConversion(Constantes.atb_color, padre.salidaConversion(Constantes.atb_color, "\"ffffff\""));
 
         String borde = salidaConversion(Constantes.atb_borde, "falso");
         String x = salidaConversion(Constantes.atb_x, "0");

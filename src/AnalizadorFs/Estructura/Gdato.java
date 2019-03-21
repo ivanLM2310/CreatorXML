@@ -40,8 +40,9 @@ public class Gdato {
     
 
     public ArrayList<Valor> getVectorGdato(String ruta) {
+        ruta = ruta.trim();
         if (ruta.length() > 0) {
-            ruta = (ruta.charAt(0) != '\'' || ruta.charAt(0) != '/') ? "\\" + ruta : ruta;
+            ruta = (ruta.charAt(0) != '\''&& ruta.charAt(0) != '/') ? "\\" + ruta : ruta;
         }
         
         try {

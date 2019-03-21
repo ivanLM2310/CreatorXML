@@ -55,13 +55,13 @@ public class EtiquetaListaDatos extends Etiqueta {
             EtiquetaDato dato = (EtiquetaDato) etq;
 
             if (i == 0) {
-                elementosV = dato.textoEtiqueta;
+                elementosV = "\""+dato.textoEtiqueta + "\"";
             } else {
-                elementosV = elementosV.concat("," + dato.textoEtiqueta);
+                elementosV = elementosV.concat("," + "\"" + dato.textoEtiqueta + "\"");
             }
             i += 1;
         }
-        String idPadre = padre.salidaConversion(Constantes.atb_id, "");
+        String idPadre = padre.salidaConversion(Constantes.atb_nombre, "");
         return concatenar("Var", idPadre + "_listaDatos", "=", "[" + elementosV + " ];");
     }
 
@@ -71,7 +71,7 @@ public class EtiquetaListaDatos extends Etiqueta {
         ArrayList<Valor> lista = new ArrayList();
         for (int i = 0; i < tamDatos; i++) {
             EtiquetaDato dato = (EtiquetaDato) contenido.get(0);
-            lista.add(new Valor(dato.textoEtiqueta,ConstantesFs.TIPO_CADENA));
+            lista.add(new Valor(dato.textoEtiqueta, ConstantesFs.TIPO_CADENA));
         }
         return new Valor(lista, ConstantesFs.VECTOR_HETEROGENEO);
     }

@@ -79,7 +79,7 @@ public class ObjInterfaz extends ComponenteGenerico {
 
         Font fuente = new Font(strFuente, valTip, tamanio);
         l.setFont(fuente);
-        l.setBackground(Color.decode(color));
+        l.setForeground(Color.decode(color));
         Dimension dimL = l.getPreferredSize();
         this.alto = alto;
         this.ancho = ancho;
@@ -101,7 +101,7 @@ public class ObjInterfaz extends ComponenteGenerico {
         l.setBounds(x, y, ancho, alto);
         scroll1.setBounds(x, y, ancho, alto);
         l.setText(defecto);
-        l.setBackground(Color.decode(color));
+        l.setForeground(Color.decode(color));
         //l.setColumns(20);
         //l.setRows(5);
         int valTip = 0;

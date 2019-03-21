@@ -136,6 +136,8 @@ public class ErrorEjecucion {
     }
 
     public void printTablaSimbolos(ArrayList<ErrorEjecucion> listaErrores) {
+       
+        /*
         FileWriter writer = null;
         PrintWriter pw = null;
 
@@ -159,7 +161,8 @@ public class ErrorEjecucion {
                     Logger.getLogger(Etiqueta.class.getName()).log(Level.SEVERE, null, ex);
                 }
             }
-        }
+        }*/
+        Main.erroresGrafico.setText(GraficarTabla(listaErrores));
     }
     
      public void envio() {

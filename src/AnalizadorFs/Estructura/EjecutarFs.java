@@ -40,9 +40,9 @@ public class EjecutarFs {
     String direccionE = "";
     Gdato gDato = new Gdato();
 
-    public EjecutarFs(DocumentoFs doc, String direccionE) {
-        this.direccionE = direccionE;
-        gDato.setDirI(direccionE);
+    public EjecutarFs(DocumentoFs doc) {
+        this.direccionE = doc.direccion;
+        gDato.setDirI(doc.direccion);
         ambienteGlobal = new TablaAmbientes();
         ambienteGlobal.addAmbiente(new TablaEjecucion("global"));
         strAmbito = "main";
@@ -126,9 +126,9 @@ public class EjecutarFs {
     }
 
     private Valor ejecutarSentencias(NodoArbol raiz, TablaAmbientes ambientes) {
-        int i = 0;
+        //int i = 0;
         for (NodoArbol nSentencia : raiz.getHijosNodo()) {
-
+            //System.out.println("etiqueta:" + nSentencia.strEtiqueta + "|valor:" + nSentencia.valor + "|linea:" + nSentencia.linea);
             Valor v = new Valor("", ConstantesFs.TIPO_NULL);
             if (nSentencia.isEtiquetaIgual(ConstantesFs.DECLARAR)) {
                 ejecutarDeclaracion(nSentencia, ambientes);
@@ -173,7 +173,7 @@ public class EjecutarFs {
             if (v.getProveniente() == ConstantesFs.RETORNO_VALOR) {
                 return v;
             }
-            i += 1;
+            
         }
         return new Valor("metodo", ConstantesFs.RETORNO_METODO);
     }
@@ -185,17 +185,17 @@ public class EjecutarFs {
                     && raiz.getElemento(0).getElemento(0).isEtiquetaIgual(ConstantesFs.LISTA_PUNTO)) {
                 Valor v = evaluarElemento(raiz.getElemento(0), ambientes);
             } else {
-                //error
+                detectarError("error en ejecucion ID.id :" + raiz.getValor(), ambientes, raiz);
             }
         } else if (raiz.getElemento(0).isTipoIgual(ConstantesFs.LLAMADA_METODO)) {
             if (raiz.getElemento(0).getTamanioH() == 1
                     && raiz.getElemento(0).getElemento(0).isEtiquetaIgual(ConstantesFs.LISTA_PUNTO)) {
                 Valor v = evaluarElemento(raiz.getElemento(0), ambientes);
             } else {
-                //error
+                detectarError("error en ejecucion LLAMADA METODO . Id :" + raiz.getValor(), ambientes, raiz);
             }
         } else {
-            //error
+            detectarError("SE INTENTA USAR COMO SENTENCIA ALGO:" + raiz.getValor(), ambientes, raiz);
         }
     }
 
@@ -251,7 +251,7 @@ public class EjecutarFs {
         NodoArbol ladoAsig = raiz.getElemento(0);
         Valor variable = evaluarElemento(ladoAsig, ambientes);
         if (!variable.isNull()) {
-            Valor result = evaluarExp(raiz.getElemento(0), ambientes);
+            Valor result = evaluarExp(raiz.getElemento(1), ambientes);
             if (!result.isNull()) {
 
                 variable.copiarValor(result);
@@ -406,10 +406,24 @@ public class EjecutarFs {
                     return evaluarAumento(vI, vD, ambientes, raizOperacion);
                 case ConstantesFs.DISMINUCION:
                     return evaluarDisminucion(vI, vD, ambientes, raizOperacion);
+                case ConstantesFs.TERNARIO:
+                    Valor vw = evaluarExp(raizOperacion.getHijosNodo().get(2), ambientes);
+                    return evaluarTernario(vI, vD, vw, ambientes, raizOperacion);
 
             }
         }
         return new Valor("", ConstantesFs.TIPO_NULL);
+    }
+
+    public Valor evaluarTernario(Valor vI, Valor vD, Valor vC, TablaAmbientes ambientes, NodoArbol raiz) {
+        if (vI.isTipoIgual(ConstantesFs.TIPO_BOOLEANO)) {
+            if (vI.getBoolean()) {
+                return vD;
+            } else {
+                return vC;
+            }
+        }
+        return detectarError("ERROR en TERNARIO, la condicion no es BOOLEANO", ambientes, raiz);
     }
 
     public Valor evaluarSuma(Valor vI, Valor vD, TablaAmbientes ambientes, NodoArbol raiz) {
@@ -418,8 +432,6 @@ public class EjecutarFs {
             switch (vI.etqTipo) {
                 case ConstantesFs.TIPO_CADENA:
                     switch (vD.etqTipo) {
-                        case ConstantesFs.TIPO_BOOLEANO:
-                            return new Valor(vI.getString() + boolToString(vD), ConstantesFs.TIPO_CADENA);
                         case ConstantesFs.TIPO_CADENA:
                             return new Valor(vI.getString() + vD.getString(), ConstantesFs.TIPO_CADENA);
                         case ConstantesFs.TIPO_NUMERO:
@@ -517,7 +529,16 @@ public class EjecutarFs {
                     switch (vD.etqTipo) {
                         case ConstantesFs.TIPO_NUMERO:
                             //agregar codigo de asignacion ;
-                            return new Valor(vI.getNumber() + vD.getNumber(), ConstantesFs.TIPO_NUMERO);
+                            NodoArbol ladoAsig = raiz.getElemento(0);
+                            if (ladoAsig.isTipoIgual(ConstantesFs.ID) || ladoAsig.isTipoIgual(ConstantesFs.ID_VECTOR)) {
+                                Valor variable = evaluarElemento(ladoAsig, ambientes);
+                                if (variable.isTipoIgual(ConstantesFs.TIPO_NUMERO)) {
+                                    Valor v = new Valor(vI.getNumber(), ConstantesFs.TIPO_NUMERO);
+                                    variable.setValor(vI.getNumber() + vD.getNumber());
+
+                                    return v;
+                                }
+                            }
                     }
                     break;
             }
@@ -534,7 +555,16 @@ public class EjecutarFs {
                     switch (vD.etqTipo) {
                         //agregar codigo de asignacion ;
                         case ConstantesFs.TIPO_NUMERO:
-                            return new Valor(vI.getNumber() - vD.getNumber(), ConstantesFs.TIPO_NUMERO);
+                            NodoArbol ladoAsig = raiz.getElemento(0);
+                            if (ladoAsig.isTipoIgual(ConstantesFs.ID) || ladoAsig.isTipoIgual(ConstantesFs.ID_VECTOR)) {
+                                Valor variable = evaluarElemento(ladoAsig, ambientes);
+                                if (variable.isTipoIgual(ConstantesFs.TIPO_NUMERO)) {
+                                    Valor v = new Valor(vI.getNumber(), ConstantesFs.TIPO_NUMERO);
+                                    variable.setValor(vI.getNumber() - vD.getNumber());
+
+                                    return v;
+                                }
+                            }
                     }
                     break;
             }
@@ -871,34 +901,35 @@ public class EjecutarFs {
                                     && parametrosLlamada.get(3).isTipoIgual(ConstantesFs.TIPO_CADENA)) {
                                 /////////////////////////////////////////////////////////
                                 InterfazVentana vent = new InterfazVentana(parametrosLlamada.get(0).getString(), (int) parametrosLlamada.get(1).getNumber(), (int) parametrosLlamada.get(2).getNumber(), parametrosLlamada.get(3).getString());
-                                vent.show();
+                                //88888vent.show();
                                 Object oVent = vent;
                                 return new Valor(oVent, ConstantesFs.INTERFAZ_VENTANA);
                             } else {
-                                //error
+                                return detectarError("ERROR AL TRATAR DE CREAR VENTANA, NO CUMPLIO CON TIPOS PARA METODO :" + raizOperacion.getValor(), ambientes, raizOperacion);
                             }
+                        } else {
+                            return detectarError("ERROR AL TRATAR DE CREAR VENTANA, No. parametros diferente:" + raizOperacion.getValor(), ambientes, raizOperacion);
                         }
-                        break;
                     }
                     case "leergxml": {
                         if (raizOperacion.getElemento(0).getTamanioH() == 1) {
                             Valor param = evaluarExp(raizOperacion.getElemento(0).getElemento(0), ambientes);
                             if (param.isTipoIgual(ConstantesFs.TIPO_CADENA)) {
-                                String ruta = param.getString();
+                                String ruta = param.getString().trim();
                                 if (ruta.length() > 0) {
-                                    ruta = (ruta.charAt(0) != '\'' || ruta.charAt(0) != '/') ? "\\" + ruta : ruta;
+                                    ruta = (ruta.charAt(0) != '\'' && ruta.charAt(0) != '/') ? "\\" + ruta : ruta;
                                 }
                                 File f = new File(direccionE + ruta);
                                 if (f.isFile()) {
                                     Documento docGxml = new Documento(f, direccionE);
                                     ObjetoGxml obj = new ObjetoGxml();
-                                    ArrayList<ObjetoGxml> lista=obj.getListaObjetos(docGxml);
+                                    ArrayList<ObjetoGxml> lista = obj.getListaObjetos(docGxml);
                                     return new Valor(lista, ConstantesFs.TIPO_GXML);
                                 } else {
-                                    //error
+                                    return detectarError("ERROR CON LEER_GXML: NO ES UN ARCHIVO" + raizOperacion.getValor(), ambientes, raizOperacion);
                                 }
                             } else {
-                                //error
+                                return detectarError("ERROR CON LEER_GXML: NO ES DE TIPO CADENA" + raizOperacion.getValor(), ambientes, raizOperacion);
                             }
                         } else {
                             //error
@@ -913,11 +944,14 @@ public class EjecutarFs {
                                 if (vect != null) {
                                     return new Valor(vect, ConstantesFs.VECTOR_HOMOGENEO);
                                 } else {
-                                    //error
+                                    return detectarError("ERROR CON CREAR DESDE ARCHIVO: EL VECTOR ES NULO" + raizOperacion.getValor(), ambientes, raizOperacion);
                                 }
+                            } else {
+                                return detectarError("ERROR CON CREAR DESDE ARCHIVO: no es de tipo cadena" + raizOperacion.getValor(), ambientes, raizOperacion);
                             }
+                        } else {
+                            return detectarError("ERROR CON CREAR DESDE ARCHIVO: numero de parametros diferente" + raizOperacion.getValor(), ambientes, raizOperacion);
                         }
-                        break;
                     }
                     default: {
                         Valor retornoMetodo = ejecutarMetodo(raizOperacion, ambientes, null);
@@ -971,7 +1005,7 @@ public class EjecutarFs {
                     }
                 } else if (actual.getValor().equals("creararraydesdearchivo") && actual.getElemento(0).getTamanioH() == 0) {
                     InterfazVentana contenedor = (InterfazVentana) valorSalida.valor;
-                    contenedor.escribirGdato();
+                    contenedor.escribirGdato(this.direccionE);
                 } else if (actual.getValor().equals("alcargar") && actual.getElemento(0).getTamanioH() == 1) {
                     InterfazVentana vent = (InterfazVentana) valorSalida.valor;
                     vent.alCargar(this, ambientes, actual.getElemento(0).getElemento(0));
@@ -1025,7 +1059,7 @@ public class EjecutarFs {
                             vent.add(ob, (Component) oVent);
                             valorSalida = new Valor(oVent, ConstantesFs.TIPO_INDEFINIDO);
                         } else {
-                            //error
+                            return detectarError("ERROR CON " + actual.getValor() + ": no cumplio con tipos de parametros" + actual.getValor(), ambientes, actual);
                         }
                     } else if (actual.getValor().equals("crearcajatexto") && actual.getElemento(0).getTamanioH() == 11) {
                         if (parametrosLlamada.get(0).isTipoIgual(ConstantesFs.TIPO_NUMERO)
@@ -1058,7 +1092,7 @@ public class EjecutarFs {
                             vent.add(ob, (Component) oVent);
                             valorSalida = new Valor(oVent, ConstantesFs.TIPO_INDEFINIDO);
                         } else {
-                            //error
+                            return detectarError("ERROR CON " + actual.getValor() + ": no cumplio con tipos de parametros" + actual.getValor(), ambientes, actual);
                         }
                     } else if (actual.getValor().equals("crearareatexto") && actual.getElemento(0).getTamanioH() == 11) {
                         if (parametrosLlamada.get(0).isTipoIgual(ConstantesFs.TIPO_NUMERO)
@@ -1091,7 +1125,7 @@ public class EjecutarFs {
                             vent.add(ob, (Component) oVent);
                             valorSalida = new Valor(oVent, ConstantesFs.TIPO_INDEFINIDO);
                         } else {
-                            //error
+                            return detectarError("ERROR CON " + actual.getValor() + ": no cumplio con tipos de parametros" + actual.getValor(), ambientes, actual);
                         }
                     } else if (actual.getValor().equals("crearcontrolnumerico") && actual.getElemento(0).getTamanioH() == 8) {
                         if (parametrosLlamada.get(0).isTipoIgual(ConstantesFs.TIPO_NUMERO)
@@ -1119,7 +1153,7 @@ public class EjecutarFs {
                             vent.add(ob, (Component) oVent);
                             valorSalida = new Valor(oVent, ConstantesFs.TIPO_INDEFINIDO);
                         } else {
-                            //error
+                            return detectarError("ERROR CON " + actual.getValor() + ": no cumplio con tipos de parametros" + actual.getValor(), ambientes, actual);
                         }
                     } else if (actual.getValor().equals("creardesplegable") && actual.getElemento(0).getTamanioH() == 7) {
                         if (parametrosLlamada.get(0).isTipoIgual(ConstantesFs.TIPO_NUMERO)
@@ -1145,7 +1179,7 @@ public class EjecutarFs {
                             vent.add(ob, (Component) oVent);
                             valorSalida = new Valor(oVent, ConstantesFs.TIPO_INDEFINIDO);
                         } else {
-                            //error
+                            return detectarError("ERROR CON " + actual.getValor() + ": no cumplio con tipos de parametros" + actual.getValor(), ambientes, actual);
                         }
                     } else if (actual.getValor().equals("crearboton") && actual.getElemento(0).getTamanioH() == 9) {
                         if (parametrosLlamada.get(0).isTipoIgual(ConstantesFs.TIPO_CADENA)
@@ -1177,7 +1211,7 @@ public class EjecutarFs {
                             vent.add(ob, (Component) oVent);
                             valorSalida = new Valor(ob, ConstantesFs.INTERFAZ_BOTON);
                         } else {
-                            //error
+                            return detectarError("ERROR CON " + actual.getValor() + ": no cumplio con tipos de parametros" + actual.getValor(), ambientes, actual);
                         }
                     } else if (actual.getValor().equals("crearimagen") && actual.getElemento(0).getTamanioH() == 5) {
                         if (parametrosLlamada.get(0).isTipoIgual(ConstantesFs.TIPO_CADENA)
@@ -1186,9 +1220,9 @@ public class EjecutarFs {
                                 && parametrosLlamada.get(3).isTipoIgual(ConstantesFs.TIPO_NUMERO)
                                 && parametrosLlamada.get(4).isTipoIgual(ConstantesFs.TIPO_NUMERO)) {
                             ///////////////////////////////////////////////////////
-                            String dirRelativa = parametrosLlamada.get(0).getString();
+                            String dirRelativa = parametrosLlamada.get(0).getString().trim();
                             if (dirRelativa.length() > 0) {
-                                dirRelativa = (dirRelativa.charAt(0) != '\\' || dirRelativa.charAt(0) != '/') ? "\\" + dirRelativa : dirRelativa;
+                                dirRelativa = (dirRelativa.charAt(0) != '\\' && dirRelativa.charAt(0) != '/') ? "\\" + dirRelativa : dirRelativa;
                             }
                             Object oVent = ob.crearImagen(direccionE + dirRelativa,
                                     (int) parametrosLlamada.get(1).getNumber(),
@@ -1198,10 +1232,10 @@ public class EjecutarFs {
 
                             InterfazContenedor vent = (InterfazContenedor) valorSalida.valor;
                             vent.add(ob, (Component) oVent);
-                            ((PantallaVideo) oVent).start();
+                            //((PantallaVideo) oVent).start();
                             valorSalida = new Valor(oVent, ConstantesFs.TIPO_INDEFINIDO);
                         } else {
-                            //error
+                            return detectarError("ERROR CON " + actual.getValor() + ": no cumplio con tipos de parametros" + actual.getValor(), ambientes, actual);
                         }
                     } else if (actual.getValor().equals("crearreproductor") && actual.getElemento(0).getTamanioH() == 6) {
                         if (parametrosLlamada.get(0).isTipoIgual(ConstantesFs.TIPO_CADENA)
@@ -1211,9 +1245,9 @@ public class EjecutarFs {
                                 && parametrosLlamada.get(4).isTipoIgual(ConstantesFs.TIPO_NUMERO)
                                 && parametrosLlamada.get(5).isTipoIgual(ConstantesFs.TIPO_NUMERO)) {
                             /////////////////////////////////////////////////////////
-                            String dirRelativa = parametrosLlamada.get(0).getString();
+                            String dirRelativa = parametrosLlamada.get(0).getString().trim();
                             if (dirRelativa.length() > 0) {
-                                dirRelativa = (dirRelativa.charAt(0) != '\'' || dirRelativa.charAt(0) != '/') ? "\\" + dirRelativa : dirRelativa;
+                                dirRelativa = (dirRelativa.charAt(0) != '\'' && dirRelativa.charAt(0) != '/') ? "\\" + dirRelativa : dirRelativa;
                             }
                             Object oVent = ob.crearReproductor(direccionE + dirRelativa,
                                     (int) parametrosLlamada.get(1).getNumber(),
@@ -1225,10 +1259,10 @@ public class EjecutarFs {
                             InterfazContenedor vent = (InterfazContenedor) valorSalida.valor;
 
                             vent.add(ob, (Component) oVent);
-                            ((PantallaVideo) oVent).start();
+                            //((PantallaVideo) oVent).start();
                             valorSalida = new Valor(oVent, ConstantesFs.TIPO_INDEFINIDO);
                         } else {
-                            //error
+                            return detectarError("ERROR CON " + actual.getValor() + ": no cumplio con tipos de parametros" + actual.getValor(), ambientes, actual);
                         }
                     } else if (actual.getValor().equals("crearvideo") && actual.getElemento(0).getTamanioH() == 6) {
                         if (parametrosLlamada.get(0).isTipoIgual(ConstantesFs.TIPO_CADENA)
@@ -1238,9 +1272,9 @@ public class EjecutarFs {
                                 && parametrosLlamada.get(4).isTipoIgual(ConstantesFs.TIPO_NUMERO)
                                 && parametrosLlamada.get(5).isTipoIgual(ConstantesFs.TIPO_NUMERO)) {
                             /////////////////////////////////////////////////////////
-                            String dirRelativa = parametrosLlamada.get(0).getString();
+                            String dirRelativa = parametrosLlamada.get(0).getString().trim();
                             if (dirRelativa.length() > 0) {
-                                dirRelativa = (dirRelativa.charAt(0) != '\'' || dirRelativa.charAt(0) != '/') ? "\\" + dirRelativa : dirRelativa;
+                                dirRelativa = (dirRelativa.charAt(0) != '\'' && dirRelativa.charAt(0) != '/') ? "\\" + dirRelativa : dirRelativa;
                             }
                             Object oVent = ob.crearVideo(direccionE + dirRelativa,
                                     (int) parametrosLlamada.get(1).getNumber(),
@@ -1251,10 +1285,10 @@ public class EjecutarFs {
 
                             InterfazContenedor vent = (InterfazContenedor) valorSalida.valor;
                             vent.add(ob, (Component) oVent);
-                            ((PantallaVideo) oVent).start();
+                            //((PantallaVideo) oVent).start();
                             valorSalida = new Valor(oVent, ConstantesFs.TIPO_INDEFINIDO);
                         } else {
-                            //error
+                            return detectarError("ERROR CON " + actual.getValor() + ": no cumplio con tipos de parametros" + actual.getValor(), ambientes, actual);
                         }
                     }
                 }
@@ -1263,7 +1297,7 @@ public class EjecutarFs {
                     if (actual.getElemento(0).getElemento(0).isEtiquetaIgual(ConstantesFs.LLAMADA_METODO)) {
                         ((ObjInterfaz) valorSalida.valor).eventoClic(this, ambientes, actual.getElemento(0).getElemento(0));
                     } else {
-                        //error
+                        return detectarError("ERROR CON " + actual.getValor() + ": no cumplio con tipos de parametros" + actual.getValor(), ambientes, actual);
                     }
                 }
             } else if (valorSalida.isTipoIgual(ConstantesFs.TIPO_GXML)) {
@@ -1272,28 +1306,44 @@ public class EjecutarFs {
                     if (v.isTipoIgual(ConstantesFs.TIPO_CADENA)) {
                         ArrayList<Valor> listaGxml = new ArrayList();
                         ArrayList<ObjetoGxml> objetoGuardado = (ArrayList<ObjetoGxml>) valorSalida.valor;
-                        for(ObjetoGxml o:objetoGuardado){
+                        for (ObjetoGxml o : objetoGuardado) {
                             o.obtenerPorEtiqueta(listaGxml, v.getString());
                         }
-                        return new Valor(listaGxml,ConstantesFs.VECTOR_HOMOGENEO);
+                        return new Valor(listaGxml, ConstantesFs.VECTOR_HOMOGENEO);
                     } else {
-                        //error
+                        return detectarError("ERROR CON " + actual.getValor() + ": no cumplio con tipos de parametros" + actual.getValor(), ambientes, actual);
                     }
                 } else if (actual.getValor().equals("obtenerporid") && actual.getElemento(0).getTamanioH() == 1) {
-                    if (actual.getElemento(0).getElemento(0).isEtiquetaIgual(ConstantesFs.LLAMADA_METODO)) {
-                        
+                    Valor v = evaluarExp(actual.getElemento(0).getElemento(0), ambientes);
+                    if (v.isTipoIgual(ConstantesFs.TIPO_CADENA)) {
+                        ArrayList<ObjetoGxml> objetoGuardado = (ArrayList<ObjetoGxml>) valorSalida.valor;
+                        for (ObjetoGxml o : objetoGuardado) {
+                            Valor valResult = o.obtenerPorId(v.getString());
+                            if (!valResult.isNull()) {
+                                return valResult;
+                            }
+                        }
+                        return detectarError("ERROR CON " + actual.getValor() + ": no se pudo encontrar" + actual.getValor(), ambientes, actual);
                     } else {
-                        //error
+                        return detectarError("ERROR CON " + actual.getValor() + ": no cumplio con tipos de parametros" + actual.getValor(), ambientes, actual);
                     }
                 } else if (actual.getValor().equals("obtenerpornombre") && actual.getElemento(0).getTamanioH() == 1) {
-                    if (actual.getElemento(0).getElemento(0).isEtiquetaIgual(ConstantesFs.LLAMADA_METODO)) {
-                        
+                    Valor v = evaluarExp(actual.getElemento(0).getElemento(0), ambientes);
+                    if (v.isTipoIgual(ConstantesFs.TIPO_CADENA)) {
+                        ArrayList<ObjetoGxml> objetoGuardado = (ArrayList<ObjetoGxml>) valorSalida.valor;
+                        for (ObjetoGxml o : objetoGuardado) {
+                            Valor valResult = o.obtenerPorNombre(v.getString());
+                            if (!valResult.isNull()) {
+                                return valResult;
+                            }
+                        }
+                        return detectarError("ERROR CON " + actual.getValor() + ": no se pudo encontrar" + actual.getValor(), ambientes, actual);
                     } else {
-                        //error
+                        return detectarError("ERROR CON " + actual.getValor() + ": no cumplio con tipos de parametros" + actual.getValor(), ambientes, actual);
                     }
                 }
             } else {
-                //error
+                return detectarError("el tipo de la variable a la que se le intenta aplicar un metodo no es valida:" + actual.getValor() + "" + actual.getValor(), ambientes, actual);
             }
         }
         return valorSalida;
@@ -1630,9 +1680,8 @@ public class EjecutarFs {
                 }
             } else if (vAnterior.isTipoIgual(ConstantesFs.LLAMADA_METODO)) {
                 //error
-                //falta codigo
+                return detectarError("se intenta aplicar una funcion a una variable no posible", ambientes, raizOperacion);
             }
-
         }
         return vAnterior;
 

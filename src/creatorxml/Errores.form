@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<Form version="1.3" maxVersion="1.9" type="org.netbeans.modules.form.forminfo.JFrameFormInfo">
+  <Properties>
+    <Property name="defaultCloseOperation" type="int" value="2"/>
+  </Properties>
+  <SyntheticProperties>
+    <SyntheticProperty name="formSizePolicy" type="int" value="1"/>
+    <SyntheticProperty name="generateCenter" type="boolean" value="false"/>
+  </SyntheticProperties>
+  <AuxValues>
+    <AuxValue name="FormSettings_autoResourcing" type="java.lang.Integer" value="0"/>
+    <AuxValue name="FormSettings_autoSetComponentName" type="java.lang.Boolean" value="false"/>
+    <AuxValue name="FormSettings_generateFQN" type="java.lang.Boolean" value="true"/>
+    <AuxValue name="FormSettings_generateMnemonicsCode" type="java.lang.Boolean" value="false"/>
+    <AuxValue name="FormSettings_i18nAutoMode" type="java.lang.Boolean" value="false"/>
+    <AuxValue name="FormSettings_layoutCodeTarget" type="java.lang.Integer" value="1"/>
+    <AuxValue name="FormSettings_listenerGenerationStyle" type="java.lang.Integer" value="0"/>
+    <AuxValue name="FormSettings_variablesLocal" type="java.lang.Boolean" value="false"/>
+    <AuxValue name="FormSettings_variablesModifier" type="java.lang.Integer" value="2"/>
+  </AuxValues>
+
+  <Layout>
+    <DimensionLayout dim="0">
+      <Group type="103" groupAlignment="0" attributes="0">
+          <Group type="102" alignment="0" attributes="0">
+              <EmptySpace max="-2" attributes="0"/>
+              <Component id="jScrollPane2" pref="931" max="32767" attributes="0"/>
+          </Group>
+      </Group>
+    </DimensionLayout>
+    <DimensionLayout dim="1">
+      <Group type="103" groupAlignment="0" attributes="0">
+          <Group type="102" alignment="1" attributes="0">
+              <EmptySpace min="0" pref="13" max="32767" attributes="0"/>
+              <Component id="jScrollPane2" min="-2" pref="770" max="-2" attributes="0"/>
+          </Group>
+      </Group>
+    </DimensionLayout>
+  </Layout>
+  <SubComponents>
+    <Container class="javax.swing.JScrollPane" name="jScrollPane2">
+      <AuxValues>
+        <AuxValue name="autoScrollPane" type="java.lang.Boolean" value="true"/>
+      </AuxValues>
+
+      <Layout class="org.netbeans.modules.form.compat2.layouts.support.JScrollPaneSupportLayout"/>
+      <SubComponents>
+        <Component class="javax.swing.JEditorPane" name="jEditorPane2">
+          <Properties>
+            <Property name="contentType" type="java.lang.String" value="text/html" noResource="true"/>
+            <Property name="text" type="java.lang.String" value="&lt;html&gt; &#x9;&lt;head&gt; &#x9;&#x9;&lt;title&gt;Tabla de Simbolos&lt;/title&gt;&lt;meta charset=&quot;utf-8&quot;&gt; &#x9;&#x9;&lt;link rel=&quot;stylesheet&quot;type=&quot;text/css&quot; href=&quot;Estilo.css&quot;&gt; &#x9;&lt;/head&gt; &#x9;&lt;body&gt; &#x9;&#x9;&lt;div style=&quot;text-align:left;&quot;&gt; &#x9;&#x9;&#x9;&lt;h1&gt;TABLA DE SIMBOLOS&lt;/h1&gt; &#x9;&#x9;&#x9;&lt;h2&gt;Dia de ejecuci&#xf3;n:20 de Marzo de 2019&lt;/h2&gt; &#x9;&#x9;&#x9;&lt;h2&gt;Hora de ejecuci&#xf3;n:17:52:28 p.m.&lt;/h2&gt; &#x9;&#x9;&#x9;&lt;table style=&quot;margin: margin: 5 auto;&quot; border=&quot;2&quot;&gt; &#x9;&#x9;&#x9;&#x9;&lt;TR&gt; &#x9;&#x9;&#x9;&#x9;&#x9;&lt;TH&gt;Clase Ejecucion&lt;/TH&gt; &lt;TH&gt;Tipo&lt;/TH&gt; &lt;TH&gt;ambito&lt;/TH&gt; &lt;TH&gt;error&lt;/TH&gt; &lt;TH&gt;linea&lt;/TH&gt;&lt;TH&gt;columna&lt;/TH&gt; &#x9;&#x9;&#x9;&#x9;&lt;/TR&gt; &#x9;&#x9;&#x9;&#x9;&lt;TR&gt; &#x9;&#x9;&#x9;&#x9;&#x9;&lt;TD&gt;Sintactico Gxml&lt;/TD&gt;&lt;TD&gt;sintactico&lt;/TD&gt;&lt;TD&gt;sintactico&lt;/TD&gt;&lt;TD&gt;el token &quot;base&quot; no es valida &lt;/TD&gt;&lt;TD&gt;1&lt;/TD&gt;&lt;TD&gt;17&lt;/TD&gt; &#x9;&#x9;&#x9;&#x9;&lt;/TR&gt; &#x9;&#x9;&#x9;&#x9;&lt;TR&gt; &#x9;&#x9;&#x9;&#x9;&#x9;&lt;TD&gt;Sintactico Gxml&lt;/TD&gt;&lt;TD&gt;sintactico&lt;/TD&gt;&lt;TD&gt;sintactico&lt;/TD&gt;&lt;TD&gt;el token &quot;clasificacion&quot; no es valida &lt;/TD&gt;&lt;TD&gt;1&lt;/TD&gt;&lt;TD&gt;16&lt;/TD&gt; &#x9;&#x9;&#x9;&#x9;&lt;/TR&gt; &#x9;&#x9;&#x9;&#x9;&lt;TR&gt; &#x9;&#x9;&#x9;&#x9;&#x9;&lt;TD&gt;Sintactico Gxml&lt;/TD&gt;&lt;TD&gt;sintactico&lt;/TD&gt;&lt;TD&gt;sintactico&lt;/TD&gt;&lt;TD&gt;el token &quot;tipo&quot; no es valida &lt;/TD&gt;&lt;TD&gt;35&lt;/TD&gt;&lt;TD&gt;17&lt;/TD&gt; &#x9;&#x9;&#x9;&#x9;&lt;/TR&gt; &#x9;&#x9;&#x9;&#x9;&lt;TR&gt; &#x9;&#x9;&#x9;&#x9;&#x9;&lt;TD&gt;Sintactico Gxml&lt;/TD&gt;&lt;TD&gt;sintactico&lt;/TD&gt;&lt;TD&gt;sintactico&lt;/TD&gt;&lt;TD&gt;el token &quot;discos&quot; no es valida &lt;/TD&gt;&lt;TD&gt;1&lt;/TD&gt;&lt;TD&gt;14&lt;/TD&gt; &#x9;&#x9;&#x9;&#x9;&lt;/TR&gt; &#x9;&#x9;&#x9;&#x9;&lt;TR&gt; &#x9;&#x9;&#x9;&#x9;&#x9;&lt;TD&gt;Sintactico Gxml&lt;/TD&gt;&lt;TD&gt;sintactico&lt;/TD&gt;&lt;TD&gt;sintactico&lt;/TD&gt;&lt;TD&gt;el token &quot;item&quot; no es valida &lt;/TD&gt;&lt;TD&gt;35&lt;/TD&gt;&lt;TD&gt;27&lt;/TD&gt; &#x9;&#x9;&#x9;&#x9;&lt;/TR&gt; &#x9;&#x9;&#x9;&lt;/table&gt; &#x9;&#x9;&lt;/div&gt; &#x9;&lt;/body&gt; &lt;/html&gt;   "/>
+          </Properties>
+        </Component>
+      </SubComponents>
+    </Container>
+  </SubComponents>
+</Form>

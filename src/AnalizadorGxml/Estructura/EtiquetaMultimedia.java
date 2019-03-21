@@ -63,10 +63,10 @@ public class EtiquetaMultimedia extends Etiqueta {
 
         String tipo = salidaConversion(Constantes.atb_tipo, "");
 
-        String alto = salidaConversion(Constantes.atb_alto, "50");
-        String ancho = salidaConversion(Constantes.atb_ancho, "100");
+        String alto = salidaConversion(Constantes.atb_alto, "200");
+        String ancho = salidaConversion(Constantes.atb_ancho, "200");
         String ruta = salidaConversion(Constantes.atb_path, "");
-        String auto_r = salidaConversion(Constantes.atb_autoRepro, "500");
+        String auto_r = salidaConversion(Constantes.atb_autoRepro, "verdadero");
 
         String x = salidaConversion(Constantes.atb_x, "0");
         String y = salidaConversion(Constantes.atb_y, "0");

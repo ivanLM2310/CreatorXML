@@ -46,6 +46,8 @@ public class Main extends javax.swing.JFrame {
     //public String dirProyecto = "";
     Thread HiloEjecucion;
 
+    public static Errores erroresGrafico = new Errores();
+
     public Main() {
         /* inicializamos los componentes */
         initComponents();
@@ -81,15 +83,29 @@ public class Main extends javax.swing.JFrame {
             try {
                 scannerFs lexicoG = new scannerFs(new BufferedReader(new StringReader(listaPestanias.get(contentPane.getSelectedIndex()).textPane.getText())));
                 sintacticoFs sintactico = new sintacticoFs(lexicoG);
+                sintactico.setDireccion("editor");
                 ErrorEjecucion err = new ErrorEjecucion();
                 sintactico.parse();
                 NodoArbol doc = sintactico.getNodoRaiz();
                 if (doc != null) {
-                    DocumentoFs fs = new DocumentoFs(doc);
+                    DocumentoFs fs = new DocumentoFs(doc, listaPestanias.get(contentPane.getSelectedIndex()).dirProyecto);
                     fs.setDireccionDocumento(listaPestanias.get(contentPane.getSelectedIndex()).dirProyecto);
                     //doc.setDireccionDocumento(listaPestañas.get(contentPane.getSelectedIndex()).dirProyecto);
                     //doc.compilar();
                     fs.ejecutarDocumento();
+                    err.printTablaSimbolos(Main.errores);
+                    if (Main.errores.isEmpty()) {
+                        JOptionPane.showMessageDialog(null,
+                                "No ocurrieron errores !!",
+                                "Warning",
+                                JOptionPane.INFORMATION_MESSAGE);
+                    } else {
+                        JOptionPane.showMessageDialog(null,
+                                "hubieron errores en la ejecucion !!",
+                                "Warning",
+                                JOptionPane.INFORMATION_MESSAGE);
+                    }
+                    Main.errores = new ArrayList<>();
                 } else {
                     err.printTablaSimbolos(Main.errores);
                     Main.errores = new ArrayList<>();
@@ -117,6 +133,7 @@ public class Main extends javax.swing.JFrame {
 
                 scannerGxml lexicoG = new scannerGxml(new BufferedReader(new StringReader(listaPestanias.get(contentPane.getSelectedIndex()).textPane.getText())));
                 sintacticoGxml sintactico = new sintacticoGxml(lexicoG);
+                sintactico.setDireccion("editor");
                 ErrorEjecucion err = new ErrorEjecucion();
                 sintactico.parse();
                 Documento doc = sintactico.getDocumento();
@@ -124,7 +141,15 @@ public class Main extends javax.swing.JFrame {
                 doc.compilar();
 
                 if (Main.errores.isEmpty()) {
-                    doc.generarFS();
+                    JOptionPane.showMessageDialog(null,
+                            "No ocurrieron errores !!",
+                            "Warning",
+                            JOptionPane.INFORMATION_MESSAGE);
+                } else {
+                    JOptionPane.showMessageDialog(null,
+                            "hubieron errores en la ejecucion !!",
+                            "Warning",
+                            JOptionPane.INFORMATION_MESSAGE);
                 }
                 err.printTablaSimbolos(Main.errores);
                 Main.errores = new ArrayList<>();
@@ -165,6 +190,7 @@ public class Main extends javax.swing.JFrame {
                     input = new BufferedReader(new FileReader(name));
                     StringBuilder buffer = new StringBuilder();
                     String text;
+                    int num = contentPane.getSelectedIndex();
                     listaPestanias.get(contentPane.getSelectedIndex()).textPane.setText("");
                     while ((text = input.readLine()) != null) {
                         buffer.append(text).append("\n");
@@ -251,7 +277,7 @@ public class Main extends javax.swing.JFrame {
         } else {
             try {
                 try (PrintWriter output = new PrintWriter(
-                        new FileWriter(listaPestanias.get(contentPane.getSelectedIndex()).archivo.getName()))) {
+                        new FileWriter(listaPestanias.get(contentPane.getSelectedIndex()).archivo.getAbsolutePath()))) {
                     output.write(listaPestanias.get(contentPane.getSelectedIndex()).textPane.getText());
                 }
             } catch (IOException ioException) {
@@ -279,6 +305,7 @@ public class Main extends javax.swing.JFrame {
         jLabel1 = new javax.swing.JLabel();
         btnRunWithTable = new javax.swing.JButton();
         jSeparator4 = new javax.swing.JToolBar.Separator();
+        jButton1 = new javax.swing.JButton();
         jSplitPane1 = new javax.swing.JSplitPane();
         contentPane = new javax.swing.JTabbedPane();
         jScrollPane1 = new javax.swing.JScrollPane();
@@ -361,6 +388,17 @@ public class Main extends javax.swing.JFrame {
         });
         toolsBar.add(btnRunWithTable);
         toolsBar.add(jSeparator4);
+
+        jButton1.setText("Errores");
+        jButton1.setFocusable(false);
+        jButton1.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        jButton1.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        jButton1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton1ActionPerformed(evt);
+            }
+        });
+        toolsBar.add(jButton1);
 
         jSplitPane1.setDividerLocation(450);
         jSplitPane1.setDividerSize(10);
@@ -540,6 +578,10 @@ public class Main extends javax.swing.JFrame {
         nuevoArchivo();
     }//GEN-LAST:event_btnNuevoActionPerformed
 
+    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+        erroresGrafico.setVisible(true);
+    }//GEN-LAST:event_jButton1ActionPerformed
+
     boolean banderaActivado = false;
 
     /**
@@ -600,6 +642,7 @@ public class Main extends javax.swing.JFrame {
     private javax.swing.JMenuItem itemNuevo;
     private javax.swing.JMenuItem itemPegar;
     private javax.swing.JMenuItem itemSalir;
+    private javax.swing.JButton jButton1;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel5;
     private javax.swing.JScrollPane jScrollPane1;

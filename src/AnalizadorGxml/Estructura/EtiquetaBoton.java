@@ -18,6 +18,7 @@ import creatorxml.Main;
 public class EtiquetaBoton extends Etiqueta {
 
     String textoEtiqueta;
+    String codigoGenerado = "";
 
     public EtiquetaBoton(String texto) {
         super();
@@ -76,20 +77,35 @@ public class EtiquetaBoton extends Etiqueta {
         String id = salidaConversion(Constantes.atb_nombre, "");
         String idPadre = padre.salidaConversion(Constantes.atb_id, "");
 
-        String fuente = salidaConversion(Constantes.atb_fuente, "500");
-        String tamanio = salidaConversion(Constantes.atb_tam, "500");
-        String color = salidaConversion(Constantes.atb_color, "#F3EEED");
+        String fuente = salidaConversion(Constantes.atb_fuente, "\"Arial\"");
+        String tamanio = salidaConversion(Constantes.atb_tam, "14");
+        String color = salidaConversion(Constantes.atb_color, "\"#F3EEED\"");
         String x = salidaConversion(Constantes.atb_x, "0");
         String y = salidaConversion(Constantes.atb_y, "0");
         String referencia = salidaConversion(Constantes.atb_referencia, "nulo");
         referencia = "CargarVentana_" + referencia + "()";
-        String alto = salidaConversion(Constantes.atb_alto, "500");
-        String ancho = salidaConversion(Constantes.atb_ancho, "500");
+        String alto = salidaConversion(Constantes.atb_alto, "75");
+        String ancho = salidaConversion(Constantes.atb_ancho, "100");
 
         String parametros = concatenarComas(fuente, tamanio, color, x, y, referencia, "\"" + textoEtiqueta + "\"", alto, ancho);
-        return concatenar("Var", id + "_" + textoVentana, "=", idPadre + "_" + textoVentana + ".CrearBoton(" + parametros + ");\n");
+        String salida = concatenar("Var", id + "_" + textoVentana, "=", idPadre + "_" + textoVentana + ".CrearBoton(" + parametros + ");\n");
+        String Alclic = id + "_" + textoVentana + ".AlClic( Ejecutar_" + id + "_" + textoVentana + "());\n";
+
+        String accion = salidaConversion(Constantes.atb_accion, "");
+        String contFunE = "";
+        if (!accion.isEmpty()) {
+            accion = accion.trim();
+            if (accion.charAt(accion.length() - 1) != ';') {
+                accion = accion + ";";
+            }
+            contFunE += accion + "\n";
+        }
+
+        codigoGenerado += "funcion Ejecutar_" + id + "_" + textoVentana + "(){\n\t" + contFunE + "}\n";
+
+        return salida + Alclic;
     }
-    
+
     @Override
     public Valor generarObjeto() {
         Objeto objNuevo = new Objeto();
@@ -97,8 +113,8 @@ public class EtiquetaBoton extends Etiqueta {
         for (int i = 0; i < tam; i++) {
             objNuevo.addAtributoValor(atributos.get(i).textoAtributo, atributos.get(i).getObjValor());
         }
-        if(contenido.isEmpty()){
-            objNuevo.addAtributoValor("valor",new Valor(textoEtiqueta,ConstantesFs.TIPO_CADENA));
+        if (contenido.isEmpty()) {
+            objNuevo.addAtributoValor("valor", new Valor(textoEtiqueta, ConstantesFs.TIPO_CADENA));
         }
         return new Valor(objNuevo, ConstantesFs.TIPO_OBJETO);
     }

@@ -69,20 +69,20 @@ public class EtiquetaControlador extends Etiqueta {
 
         String alto = salidaConversion(Constantes.atb_alto, "50");
         String ancho = salidaConversion(Constantes.atb_ancho, "100");
-        String fuente = salidaConversion(Constantes.atb_fuente, "");
-        String tamanio = salidaConversion(Constantes.atb_tam, "500");
-        String color = salidaConversion(Constantes.atb_color, "F3EEED");
+        String fuente = salidaConversion(Constantes.atb_fuente, "\"Arial\"");
+        String tamanio = salidaConversion(Constantes.atb_tam, "14");
+        String color = salidaConversion(Constantes.atb_color, "\"#000000\"");
         String x = salidaConversion(Constantes.atb_x, "0");
         String y = salidaConversion(Constantes.atb_y, "0");
         String negrita = salidaConversion(Constantes.atb_negrita, "falso");
         String cursiva = salidaConversion(Constantes.atb_cursiva, "falso");
 
-        String maximo = salidaConversion(Constantes.atb_maximo, "falso");
-        String minimo = salidaConversion(Constantes.atb_minimo, "falso");
+        String maximo = salidaConversion(Constantes.atb_maximo, "50000");
+        String minimo = salidaConversion(Constantes.atb_minimo, "0");
 
         String parametros;
 
-        String defecto = "nulo";
+        String defecto = "";
         String listaDatos = "nulo";
         switch (this.contenido.size()) {
             case 0:
@@ -90,7 +90,7 @@ public class EtiquetaControlador extends Etiqueta {
                 break;
             case 1:
                 if (this.contenido.get(0) instanceof EtiquetaDefecto) {
-                    defecto = ((EtiquetaDefecto) this.contenido.get(0)).textoEtiqueta;
+                    defecto = ((EtiquetaDefecto) this.contenido.get(0)).textoEtiqueta.trim();
                 } else if (this.contenido.get(0) instanceof EtiquetaListaDatos) {
                     listaDatos = ((EtiquetaListaDatos) this.contenido.get(0)).generarCodigo(null);
                 }
@@ -126,15 +126,18 @@ public class EtiquetaControlador extends Etiqueta {
             case "numerico":
                 //contro numerico
                 //alto, ancho, maximo,minimo,x,y
-                parametros = concatenarComas(alto, ancho, maximo, minimo, x, y, "\"" + defecto + "\"", "\"" + id + "\"");
+                if(defecto.isEmpty()){
+                    defecto = minimo;
+                }
+                parametros = concatenarComas(alto, ancho, maximo, minimo, x, y,  defecto , "\"" + id + "\"");
                 return concatenar(idPadre+"_"+textoVentana+ ".CrearControlNumerico(" + parametros + ");\n");
 
             case "desplegable":
                 //control desplegable
                 //alto,ancho,listaDatos,X,y,defecto
-
-                parametros = concatenarComas(alto, ancho, listaDatos, fuente, x, y, "\"" + defecto + "\"", "\"" + id + "\"");
-                return concatenar(idPadre+"_"+textoVentana+ ".CrearDesplegable(" + parametros + ")");
+                String strListaDatos = id+"_listaDatos";
+                parametros = concatenarComas(alto, ancho, strListaDatos, fuente, x, y, "\"" + defecto + "\"", "\"" + id + "\"");
+                return concatenar( listaDatos +"\n"+idPadre+"_"+textoVentana+ ".CrearDesplegable(" + parametros + ");\n");
             default:
                 break;
         }

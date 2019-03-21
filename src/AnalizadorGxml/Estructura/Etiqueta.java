@@ -134,7 +134,7 @@ public abstract class Etiqueta {
         }
         return new Valor("",ConstantesFs.TIPO_NULL);
     }
-
+ 
     public Atributo getAtributoEsp(int atributo) {
         int num = 0;
         while (num < this.atributos.size()) {
@@ -175,6 +175,20 @@ public abstract class Etiqueta {
             objNuevo.addAtributoValor(atributos.get(i).textoAtributo, atributos.get(i).getObjValor());
         }
         return new Valor(objNuevo, ConstantesFs.TIPO_OBJETO);
+    }
+    
+    public Etiqueta obtenerPadreVentana(){
+        Etiqueta salida = null;
+        if(padre instanceof EtiquetaVentana){
+            return padre;
+        }else{
+            salida = padre.obtenerPadreVentana();
+            if(salida != null){
+                return salida;
+            }
+        }
+        return salida;
+    
     }
 
     public abstract void addAtributo(Atributo atb);

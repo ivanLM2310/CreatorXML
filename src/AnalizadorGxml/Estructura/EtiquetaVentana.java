@@ -58,9 +58,9 @@ public class EtiquetaVentana extends Etiqueta {
 
         //String id = String.valueOf((getAtributoEsp(Constantes.atb_id) != null) ? getAtributoEsp(Constantes.atb_id).valor : "");
         String id = salidaConversion(Constantes.atb_id, "");
-        String color = salidaConversion(Constantes.atb_color, "#F3EEED");
+        String color = salidaConversion(Constantes.atb_color, "\"#ffffff\"");
         //= String.valueOf((getAtributoEsp(Constantes.atb_color) != null) ? getAtributoEsp(Constantes.atb_color).valor : "");
-        return concatenar("Var", "Ven_" + id, "=", "CrearVentana(", color, ",", "100", ",", "100", ");\n");
+        return concatenar("Var", "Ven_" + id, "=", "CrearVentana(", color, ",", "100", ",", "100",",", "\"" + id+"\"", ");\n");
     }
 
 }

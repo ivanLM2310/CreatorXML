@@ -38,9 +38,9 @@ public class EtiquetaImportar extends Etiqueta {
     public String generarCodigo(String textoVentana) {
 
         if (textoEtiqueta.length() > 0) {
-            textoEtiqueta = (textoEtiqueta.charAt(0) != '\'' || textoEtiqueta.charAt(0) != '/') ? "\\" + textoEtiqueta : textoEtiqueta;
+            textoEtiqueta = (textoEtiqueta.charAt(0) != '\'' && textoEtiqueta.charAt(0) != '/') ? "\\" + textoEtiqueta : textoEtiqueta;
         }
-        File a = new File(textoVentana + textoEtiqueta);
+        File a = new File(textoVentana + textoEtiqueta.trim());
         if (a.isFile()) {
             String ext = "";
             String name = a.getName();
@@ -49,7 +49,7 @@ public class EtiquetaImportar extends Etiqueta {
                 return "i"; // empty extension
             }
             ext = name.substring(lastIndexOf);
-            if (ext.toLowerCase().equals("gxml")) {
+            if (ext.toLowerCase().equals(".gxml")) {
                 return "gxml";
             }
             return "Importar(\"" + textoEtiqueta + "\");";

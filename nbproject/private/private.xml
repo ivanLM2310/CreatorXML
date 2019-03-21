@@ -3,13 +3,17 @@
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
-            <file>file:/C:/Users/ivanl/Documents/GitHub/CreatorXML/src/AnalizadorGxml/Estructura/EtiquetaImportar.java</file>
+            <file>file:/C:/Users/ivanl/Documents/GitHub/CreatorXML/src/AnalizadorGxml/ASDASD.TXT</file>
+            <file>file:/C:/Users/ivanl/Documents/GitHub/CreatorXML/src/AnalizadorFs/Estructura/DocumentoFs.java</file>
+            <file>file:/C:/Users/ivanl/Documents/GitHub/CreatorXML/src/AnalizadorGxml/Estructura/EtiquetaBoton.java</file>
+            <file>file:/C:/Users/ivanl/Documents/GitHub/CreatorXML/src/AnalizadorGxml/lexicoGxml.jflex</file>
+            <file>file:/C:/Users/ivanl/Documents/GitHub/CreatorXML/src/AnalizadorGxml/Sintactico.bat</file>
             <file>file:/C:/Users/ivanl/Documents/GitHub/CreatorXML/src/AnalizadorFs/Estructura/EjecutarFs.java</file>
             <file>file:/C:/Users/ivanl/Documents/GitHub/CreatorXML/src/creatorxml/Main.java</file>
-            <file>file:/C:/Users/ivanl/Documents/GitHub/CreatorXML/src/AnalizadorFs/Interfaz/ObjInterfaz.java</file>
-            <file>file:/C:/Users/ivanl/Documents/GitHub/CreatorXML/src/AnalizadorFs/Estructura/Gdato.java</file>
-            <file>file:/C:/Users/ivanl/Documents/GitHub/CreatorXML/src/AnalizadorFs/Interfaz/InterfazVentana.java</file>
-            <file>file:/C:/Users/ivanl/Documents/GitHub/CreatorXML/src/creatorxml/CreatorXML.java</file>
+            <file>file:/C:/Users/ivanl/Documents/GitHub/CreatorXML/src/AnalizadorGxml/gramatica.txt</file>
+            <file>file:/C:/Users/ivanl/Documents/GitHub/CreatorXML/src/AnalizadorGxml/Estructura/EtiquetaTexto.java</file>
+            <file>file:/C:/Users/ivanl/Documents/GitHub/CreatorXML/src/AnalizadorGxml/scannerGxml.java</file>
+            <file>file:/C:/Users/ivanl/Documents/GitHub/CreatorXML/src/AnalizadorGxml/Estructura/Documento.java</file>
         </group>
     </open-files>
 </project-private>

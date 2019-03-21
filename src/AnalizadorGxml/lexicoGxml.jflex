@@ -105,8 +105,8 @@ ENTER   = [\ \n]
 
 <YYINITIAL>{
     {abrir}  { System.out.println("Token:|"+yytext() + "|");  yybegin(PALABRASTAG); return new Symbol(symGxml.abrir, yyline, yycolumn, yytext()); } 
-    {abrird}  { System.out.println("Token:|"+yytext() + "|"); yybegin(PALABRASFINALESTAG); return new Symbol(symGxml.abrird, yyline, yycolumn, yytext()); }   
-    {textoXml} {System.out.println("TEXTO1:"+ yytext()); return new Symbol(symGxml.textoXml, yyline, yycolumn, yytext());}
+    {abrird}  { System.out.println("Token:|"+yytext() + "|"); yybegin(PALABRASFINALESTAG); return new Symbol(symGxml.abrird, yyline, yycolumn, yytext().trim()); }   
+    {textoXml} {System.out.println("TEXTO1:"+ yytext()); return new Symbol(symGxml.textoXml, yyline, yycolumn, yytext().trim());}
 	{COMENTARIO1}   {System.out.println("comentario una linea:"+yytext());}    
     {COMENTARIO2}   {System.out.println("comentario una multilinea:"+yytext());}   
 	
@@ -148,8 +148,8 @@ ENTER   = [\ \n]
     {auto_reprodu}        { System.out.println("Token1:|"+yytext() + "|");return new Symbol(symGxml.atb_auto_reprodu, yyline, yycolumn, yytext()); } 
 
     {igual}             { System.out.println("Token1:|"+yytext() + "|");return new Symbol(symGxml.igual, yyline, yycolumn, yytext()); }
-    {cadenat}           { System.out.println("Token1:|"+yytext() + "|"); String txt = yytext();return new Symbol(symGxml.cadenaXml, yyline, yycolumn, new String (txt.substring(1,txt.length()-1))); }
-	{codigo}           	{ System.out.println("Token1:|"+yytext() + "|");return new Symbol(symGxml.codigo, yyline, yycolumn, yytext()); }
+    {cadenat}           { System.out.println("Token1:|"+yytext() + "|");String txt = yytext();return new Symbol(symGxml.cadenaXml, yyline, yycolumn, new String (txt.substring(1,txt.length()-1))); }
+	{codigo}           	{ System.out.println("Token1:|"+yytext() + "|");String txt = yytext();return new Symbol(symGxml.codigo, yyline, yycolumn, new String (txt.substring(1,txt.length()-1))); }
 	{numero}           	{ System.out.println("Token1:|"+yytext() + "|");return new Symbol(symGxml.numero, yyline, yycolumn, yytext()); }
 	{verdadero}         { System.out.println("Token1:|"+yytext() + "|");return new Symbol(symGxml.verdadero, yyline, yycolumn, yytext()); }
 	{falso}           	{ System.out.println("Token1:|"+yytext() + "|");return new Symbol(symGxml.falso, yyline, yycolumn, yytext()); }

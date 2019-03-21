@@ -114,7 +114,7 @@ public class Atributo {
                 textoAtributo = "accion";
                 break;
             case Constantes.atb_referencia:
-                textoAtributo = "feferencia";
+                textoAtributo = "referencia";
                 break;
             case Constantes.atb_path:
                 textoAtributo = "path";
